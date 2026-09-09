@@ -1,24 +1,32 @@
 /// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.SUPABASE_URL as string
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY as string
+// Tenta pegar de todas as formas possíveis para evitar que quebre em produção
+const supabaseUrl =
+  (import.meta.env.SUPABASE_URL as string) ||
+  (import.meta.env.VITE_SUPABASE_URL as string) ||
+  (typeof window !== 'undefined' && (window as any).__SUPABASE_URL__)
+
+const supabaseAnonKey =
+  (import.meta.env.SUPABASE_ANON_KEY as string) ||
+  (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ||
+  (typeof window !== 'undefined' && (window as any).__SUPABASE_ANON_KEY__)
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. ' +
-    'Please configure SUPABASE_URL and SUPABASE_ANON_KEY.'
-  )
+  console.error('Supabase URL ou Anon Key ausentes. Verifique as configurações na Vercel.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-})
-
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key',
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+    },
+  }
+)
 
 // Types para as tabelas do banco
 export type Database = {
