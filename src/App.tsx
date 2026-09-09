@@ -6,7 +6,6 @@ import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Login from './pages/Login'
-import { ProtectedRoute } from './components/ProtectedRoute'
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -45,14 +44,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </BrowserRouter>
