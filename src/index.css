@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Maybug MS';
+  src: url('/logo/font/MaybugMSRegular.eot');
+  src: local('Maybug MS'), local('MaybugMSRegular'),
+    url('/logo/font/MaybugMSRegular.eot?#iefix') format('embedded-opentype'),
+    url('/logo/font/MaybugMSRegular.woff2') format('woff2'),
+    url('/logo/font/MaybugMSRegular.woff') format('woff'),
+    url('/logo/font/MaybugMSRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Maybug MS';
+  src: url('/logo/font/MaybugMSBlack.eot');
+  src: local('Maybug MS Black'), local('MaybugMSBlack'),
+    url('/logo/font/MaybugMSBlack.eot?#iefix') format('embedded-opentype'),
+    url('/logo/font/MaybugMSBlack.woff2') format('woff2'),
+    url('/logo/font/MaybugMSBlack.woff') format('woff'),
+    url('/logo/font/MaybugMSBlack.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Maybug MS Handwritten';
+  src: url('/logo/font/MaybugMSHandwritten.eot');
+  src: local('Maybug MS Handwritten'), local('MaybugMSHandwritten'),
+    url('/logo/font/MaybugMSHandwritten.eot?#iefix') format('embedded-opentype'),
+    url('/logo/font/MaybugMSHandwritten.woff2') format('woff2'),
+    url('/logo/font/MaybugMSHandwritten.woff') format('woff'),
+    url('/logo/font/MaybugMSHandwritten.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Maybug MS Decorative';
+  src: url('/logo/font/MaybugMSDecorative.eot');
+  src: local('Maybug MS Decorative'), local('MaybugMSDecorative'),
+    url('/logo/font/MaybugMSDecorative.eot?#iefix') format('embedded-opentype'),
+    url('/logo/font/MaybugMSDecorative.woff2') format('woff2'),
+    url('/logo/font/MaybugMSDecorative.woff') format('woff'),
+    url('/logo/font/MaybugMSDecorative.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-amz-areia text-amz-terra-dark font-sans antialiased transition-colors duration-300;
+    overflow-x: hidden;
+  }
+
+  .dark body {
+    @apply bg-amz-terra-dark text-amz-areia;
+  }
+
+  ::selection {
+    @apply bg-amz-terra text-white;
+  }
+
+  .dark ::selection {
+    @apply bg-amz-dourado text-amz-terra-dark;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-amz-terra text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:bg-amz-terra-dark hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-md;
+  }
+
+  .dark .btn-primary {
+    @apply bg-amz-dourado text-amz-terra-dark hover:bg-amber-700;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-transparent border-2 border-amz-terra text-amz-terra font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:bg-amz-terra hover:text-white;
+  }
+
+  .dark .btn-secondary {
+    @apply border-amz-dourado text-amz-dourado hover:bg-amz-dourado hover:text-amz-terra-dark;
+  }
+
+  .card-exp {
+    @apply bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .dark .card-exp {
+    @apply bg-amz-terra/30 border border-white/5 text-amz-areia;
+  }
+
+  .section-title {
+    @apply font-maybug text-3xl md:text-4xl text-amz-terra;
+  }
+
+  .dark .section-title {
+    @apply text-amz-areia;
+  }
+
+  .section-subtitle {
+    @apply font-sans text-sm uppercase tracking-widest text-amz-terra-light;
+  }
+
+  .dark .section-subtitle {
+    @apply text-amz-areia/60;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

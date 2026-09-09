@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Maybug MS Handwritten';
+    src: url('MaybugMSHandwritten.eot');
+    src: local('Maybug MS Handwritten'), local('MaybugMSHandwritten'),
+        url('MaybugMSHandwritten.eot?#iefix') format('embedded-opentype'),
+        url('MaybugMSHandwritten.woff2') format('woff2'),
+        url('MaybugMSHandwritten.woff') format('woff'),
+        url('MaybugMSHandwritten.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Maybug MS';
+    src: url('MaybugMSRegular.eot');
+    src: local('Maybug MS'), local('MaybugMSRegular'),
+        url('MaybugMSRegular.eot?#iefix') format('embedded-opentype'),
+        url('MaybugMSRegular.woff2') format('woff2'),
+        url('MaybugMSRegular.woff') format('woff'),
+        url('MaybugMSRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Maybug MS';
+    src: url('MaybugMSBlack.eot');
+    src: local('Maybug MS Black'), local('MaybugMSBlack'),
+        url('MaybugMSBlack.eot?#iefix') format('embedded-opentype'),
+        url('MaybugMSBlack.woff2') format('woff2'),
+        url('MaybugMSBlack.woff') format('woff'),
+        url('MaybugMSBlack.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Maybug MS Decorative';
+    src: url('MaybugMSDecorative.eot');
+    src: local('Maybug MS Decorative'), local('MaybugMSDecorative'),
+        url('MaybugMSDecorative.eot?#iefix') format('embedded-opentype'),
+        url('MaybugMSDecorative.woff2') format('woff2'),
+        url('MaybugMSDecorative.woff') format('woff'),
+        url('MaybugMSDecorative.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
