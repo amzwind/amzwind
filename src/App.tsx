@@ -4,7 +4,8 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
-import AdminDashboard from './pages/AdminDashboard'
+import { AdminDashboard } from './pages/AdminDashboard'
+import { Login } from './pages/Login' // <- Importando a tela de Login
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -42,6 +43,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} /> {/* <- Rota de Login adicionada */}
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </BrowserRouter>
