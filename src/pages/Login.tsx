@@ -1,72 +1,108 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 
-export default function Login() {
+export function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [status, setStatus] = useState('Pronto para login')
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/admin', { replace: true })
+      } else {
+        setLoading(false)
+      }
+    })
+  }, [navigate])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStatus('Autenticando...')
+    setSubmitting(true)
+    setErrorMessage('')
 
     try {
-      // Usando apenas o error para satisfazer o TypeScript estrito
+      // TypeScript corrigido: Usamos apenas o { error }
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
 
-      setStatus('Sucesso! Redirecionando...')
-      setTimeout(() => {
-        navigate('/admin')
-      }, 500)
+      navigate('/admin', { replace: true })
     } catch (err: any) {
-      setStatus('Erro: ' + (err.message || 'Falha ao autenticar'))
+      setErrorMessage(err.message || 'Credenciais inválidas. Verifique seu e-mail e senha.')
+    } finally {
+      setSubmitting(false)
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center">
+        <div className="text-amz-terra dark:text-amz-areia font-maybug text-lg animate-pulse">
+          Carregando...
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '400px', margin: '0 auto', color: '#333' }}>
-      <h2>Amazon Wind — Login Teste</h2>
-      <p style={{ fontSize: '12px', color: '#666' }}>Status: {status}</p>
+    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-[#3D1D0F] max-w-md w-full p-8 rounded-2xl shadow-xl border border-amber-900/20 text-amz-terra-dark dark:text-amz-areia">
+        <h1 className="font-maybug text-3xl mb-2 text-center text-amz-terra dark:text-amz-dourado">Amazon Wind</h1>
+        <p className="text-xs uppercase tracking-widest text-center text-amz-terra-light dark:text-amz-areia/60 mb-6">Painel Administrativo</p>
 
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px' }}>E-mail</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
-            placeholder="admin@amazonwind.com"
-          />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px' }}>Senha</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
-            placeholder="••••••••"
-          />
-        </div>
-        <button
-          type="submit"
-          style={{ padding: '12px', background: '#0284c7', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          Entrar no Sistema
-        </button>
-      </form>
+        {errorMessage && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500 text-red-600 dark:text-red-400 text-xs rounded-lg text-center font-medium">
+            {errorMessage}
+          </div>
+        )}
 
-      <div style={{ marginTop: '20px' }}>
-        <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: '#0284c7', cursor: 'pointer', padding: 0 }}>
-          ← Voltar para a Home
-        </button>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-xs uppercase font-semibold mb-1">E-mail</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+              placeholder="admin@amazonwind.com"
+            />
+          </div>
+          <div>
+            <label className="block text-xs uppercase font-semibold mb-1">Senha</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full bg-amz-terra text-white hover:bg-amz-terra-dark dark:bg-amz-dourado dark:text-amz-terra-dark py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition disabled:opacity-50 mt-4"
+          >
+            {submitting ? 'Autenticando...' : 'Acessar Painel'}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center border-t border-amber-900/10 pt-6">
+          <button
+            onClick={() => navigate('/')}
+            className="text-xs font-semibold text-amz-terra-light dark:text-amz-areia/70 hover:text-amz-terra dark:hover:text-white transition"
+          >
+            ← Voltar para o site principal
+          </button>
+        </div>
       </div>
     </div>
   )
 }
+
+export default Login
