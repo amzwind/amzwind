@@ -13,7 +13,8 @@ export default function Login() {
     setStatus('Autenticando...')
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      // Usando apenas o error para satisfazer o TypeScript estrito
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
 
       setStatus('Sucesso! Redirecionando...')
