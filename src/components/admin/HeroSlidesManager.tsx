@@ -8,7 +8,6 @@ export function HeroSlidesManager() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
 
-    // Campos do Slide
     const [title, setTitle] = useState('')
     const [subtitle, setSubtitle] = useState('')
     const [mediaUrl, setMediaUrl] = useState('')
@@ -16,8 +15,6 @@ export function HeroSlidesManager() {
     const [ctaText, setCtaText] = useState('')
     const [ctaLink, setCtaLink] = useState('')
     const [displayOrder, setDisplayOrder] = useState('0')
-
-    // Modal de Confirmação de Exclusão
     const [deleteId, setDeleteId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -33,7 +30,7 @@ export function HeroSlidesManager() {
             if (error) throw error
             if (data) setSlides(data)
         } catch (err) {
-            console.error('Erro ao buscar slides da Hero:', err)
+            console.error('Erro ao buscar slides:', err)
         } finally {
             setLoading(false)
         }
@@ -66,7 +63,7 @@ export function HeroSlidesManager() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!mediaUrl) {
-            alert('Por favor, envie ou informe a URL da mídia de fundo.')
+            alert('Por favor, informe ou envie a mídia de fundo.')
             return
         }
 
@@ -104,7 +101,7 @@ export function HeroSlidesManager() {
             setDeleteId(null)
             fetchSlides()
         } catch (err: any) {
-            alert('Erro ao excluir slide: ' + err.message)
+            alert('Erro ao excluir: ' + err.message)
         }
     }
 
@@ -115,7 +112,7 @@ export function HeroSlidesManager() {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-xl font-maybug">Gerenciar Fundo da Hero (Slider Dinâmico)</h2>
-                    <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">Configure as imagens e vídeos de destaque da página inicial.</p>
+                    <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">Controle as imagens e vídeos em destaque da página inicial.</p>
                 </div>
                 <button onClick={openCreateModal} className="btn-primary text-xs py-2 px-4 cursor-pointer">
                     + Novo Slide
@@ -124,7 +121,7 @@ export function HeroSlidesManager() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {slides.map((slide) => (
-                    <div key={slide.id} className="bg-white dark:bg-amz-terra/30 p-4 rounded-xl border border-amber-900/10 flex flex-col justify-between">
+                    <div key={slide.id} className="bg-white dark:bg-amz-terra/30 p-4 rounded-xl border border-amber-900/10 flex flex-col justify-between shadow-sm">
                         <div className="relative h-36 bg-black/10 rounded-lg overflow-hidden mb-3">
                             {slide.media_type === 'video' ? (
                                 <video src={slide.media_url} className="w-full h-full object-cover" muted autoPlay loop />
@@ -154,16 +151,15 @@ export function HeroSlidesManager() {
             {/* Modal de Criação / Edição */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-                    <div className="bg-white dark:bg-[#3D1D0F] max-w-lg w-full p-6 rounded-2xl shadow-xl border border-amber-900/20 my-8">
+                    <div className="bg-white dark:bg-[#3D1D0F] max-w-lg w-full p-6 rounded-2xl shadow-xl border border-amber-900/25 my-8">
                         <h3 className="font-maybug text-2xl mb-2 text-amz-terra dark:text-amz-dourado">
-                            {editingId ? 'Editar Slide da Hero' : 'Adicionar Novo Slide'}
+                            {editingId ? 'Editar Slide' : 'Novo Slide da Hero'}
                         </h3>
 
-                        {/* Guia Visual de Dimensões Recomendadas */}
                         <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-800 dark:text-amber-200">
-                            💡 <strong>Dica de Performance e Design:</strong>
-                            <br />• <strong>Resolução ideal:</strong> 1920x1080px (Proporção 16:9).
-                            <br />• <strong>Vídeos:</strong> Formato MP4 otimizado (Codec H.264), tamanho recomendado menor que 15MB.
+                            💡 <strong>Sugestão de Dimensões e Formato:</strong>
+                            <br />• <strong>Resolução recomendada:</strong> 1920x1080px (Proporção 16:9).
+                            <br />• Você pode fazer upload de arquivo ou colar diretamente o link público (URL) de uma imagem/vídeo.
                         </div>
 
                         <form onSubmit={handleSave} className="space-y-4">
@@ -185,27 +181,33 @@ export function HeroSlidesManager() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs uppercase font-semibold mb-1">Ordem de Exibição</label>
+                                    <label className="block text-xs uppercase font-semibold mb-1">Ordem</label>
                                     <input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" />
                                 </div>
                             </div>
 
-                            {/* Upload da Mídia corrigido para usar onUpload */}
-                            <FileUpload
-                                label={mediaType === 'image' ? 'Arquivo de Imagem (1920x1080px)' : 'Arquivo de Vídeo MP4'}
-                                accept={mediaType === 'image' ? 'image/*' : 'video/mp4'}
-                                value={mediaUrl}
-                                onUpload={setMediaUrl}
-                            />
+                            {/* Upload direto ou URL */}
+                            <div className="space-y-2">
+                                <FileUpload
+                                    label="Fazer Upload do Arquivo"
+                                    accept={mediaType === 'image' ? 'image/*' : 'video/mp4'}
+                                    value={mediaUrl}
+                                    onUpload={setMediaUrl}
+                                />
+                                <div>
+                                    <label className="block text-xs uppercase font-semibold mb-1">Ou cole o link direto (URL)</label>
+                                    <input type="url" value={mediaUrl} onChange={(e) => setMediaUrl(e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="w-full px-3 py-2 rounded-lg border border-amber-900/20 bg-transparent text-xs" />
+                                </div>
+                            </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs uppercase font-semibold mb-1">Texto do Botão (CTA)</label>
-                                    <input type="text" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" placeholder="Ex: Ver Roteiros" />
+                                    <label className="block text-xs uppercase font-semibold mb-1">Texto do Botão</label>
+                                    <input type="text" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" />
                                 </div>
                                 <div>
                                     <label className="block text-xs uppercase font-semibold mb-1">Link do Botão</label>
-                                    <input type="text" value={ctaLink} onChange={(e) => setCtaLink(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" placeholder="Ex: #experiencias" />
+                                    <input type="text" value={ctaLink} onChange={(e) => setCtaLink(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" />
                                 </div>
                             </div>
 
@@ -218,27 +220,15 @@ export function HeroSlidesManager() {
                 </div>
             )}
 
-            {/* Modal de Exclusão Blindado */}
+            {/* Modal de Exclusão */}
             {deleteId && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
                     <div className="bg-white dark:bg-[#3D1D0F] max-w-sm w-full p-6 rounded-2xl shadow-xl border border-amber-900/20 text-center">
-                        <h3 className="font-maybug text-xl mb-2 text-amz-terra dark:text-amz-dourado">Excluir Slide da Hero</h3>
+                        <h3 className="font-maybug text-xl mb-2 text-amz-terra dark:text-amz-dourado">Excluir Slide</h3>
                         <p className="text-xs opacity-80 mb-6">Tem certeza que deseja remover este slide do carrossel principal?</p>
                         <div className="flex justify-center gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setDeleteId(null)}
-                                className="px-4 py-2 rounded-full text-xs font-semibold border border-amber-900/20 cursor-pointer"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="button"
-                                onClick={confirmDelete}
-                                className="px-4 py-2 rounded-full text-xs font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer"
-                            >
-                                Sim, Excluir
-                            </button>
+                            <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-full text-xs font-semibold border border-amber-900/20 cursor-pointer">Cancelar</button>
+                            <button onClick={confirmDelete} className="px-4 py-2 rounded-full text-xs font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer">Sim, Excluir</button>
                         </div>
                     </div>
                 </div>

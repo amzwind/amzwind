@@ -1,141 +1,188 @@
-import { useState, useEffect, type FormEvent } from 'react'
-import { supabase, type Tables } from '../../services/supabase'
-import { useLanguage } from '../../contexts/LanguageContext'
-import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast, ConfirmModal } from './SharedUI'
+import React, { useEffect, useState } from 'react'
+import { supabase } from '../../services/supabase'
+import { FileUpload } from './SharedUI'
 
-type ClassItem = Tables<'experiences'>
+export function ClassesManager() {
+  const [classes, setClasses] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
-export default function ClassesManager() {
-  const { t } = useLanguage()
-  const [classes, setClasses] = useState<ClassItem[]>([])
-  const [showModal, setShowModal] = useState(false)
-  const [editing, setEditing] = useState<ClassItem | null>(null)
-  const [formLoading, setFormLoading] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const [search, setSearch] = useState('')
-  const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [price, setPrice] = useState('')
+  const [duration, setDuration] = useState('2h')
+  const [level, setLevel] = useState('Iniciante')
+  const [imageUrl, setImageUrl] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([])
+  const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const emptyForm = { title: '', description: '', price: '', duration: '', level: t.adminLevels[0], community: '' }
-  const [form, setForm] = useState(emptyForm)
+  useEffect(() => {
+    fetchClasses()
+  }, [])
 
-  useEffect(() => { loadData() }, [])
-
-  async function loadData() {
-    const { data } = await supabase.from('experiences').select('*').order('created_at', { ascending: false })
-    if (data) setClasses(data)
+  const fetchClasses = async () => {
+    try {
+      const { data, error } = await supabase.from('classes').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      if (data) setClasses(data)
+    } catch (err) {
+      console.error('Erro ao buscar aulas:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function openCreate() {
-    setEditing(null)
-    setForm(emptyForm)
-    setShowModal(true)
+  const openCreateModal = () => {
+    setEditingId(null)
+    setTitle('')
+    setDescription('')
+    setPrice('')
+    setDuration('2h')
+    setLevel('Iniciante')
+    setImageUrl('')
+    setVideoUrl('')
+    setGalleryUrls([])
+    setIsModalOpen(true)
   }
 
-  function openEdit(c: ClassItem) {
-    setEditing(c)
-    setForm({ title: c.title, description: c.description || '', price: String(c.price), duration: c.duration || '', level: c.level || t.adminLevels[0], community: c.community || '' })
-    setShowModal(true)
+  const openEditModal = (cls: any) => {
+    setEditingId(cls.id)
+    setTitle(cls.title || '')
+    setDescription(cls.description || '')
+    setPrice(cls.price?.toString() || '')
+    setDuration(cls.duration || '2h')
+    setLevel(cls.level || 'Iniciante')
+    setImageUrl(cls.image_url || '')
+    setVideoUrl(cls.video_url || '')
+    setGalleryUrls(cls.gallery_urls || [])
+    setIsModalOpen(true)
   }
 
-  async function handleSubmit(e: FormEvent) {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormLoading(true)
+    try {
+      const payload = {
+        title,
+        description,
+        price: parseFloat(price) || 0,
+        duration,
+        level,
+        image_url: imageUrl,
+        video_url: videoUrl,
+        gallery_urls: galleryUrls
+      }
 
-    const slug = form.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      if (editingId) {
+        const { error } = await supabase.from('classes').update(payload).eq('id', editingId)
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('classes').insert(payload)
+        if (error) throw error
+      }
 
-    let categoryId = ''
-    const { data: existingCat } = await supabase.from('categories').select('id').eq('slug', 'aula-kitesurf').eq('type', 'class').single()
-    if (existingCat) {
-      categoryId = existingCat.id
-    } else {
-      const { data: newCat } = await supabase.from('categories').insert({ name: 'Aula de Kitesurf', slug: 'aula-kitesurf', type: 'class' }).select('id').single()
-      categoryId = newCat?.id || ''
+      setIsModalOpen(false)
+      fetchClasses()
+    } catch (err: any) {
+      alert('Erro ao salvar aula: ' + err.message)
     }
-
-    const payload = {
-      title: form.title, slug,
-      description: form.description || null, price: Number(form.price) || 0, duration: form.duration || null,
-      level: form.level || null, community: form.community || null, category_id: categoryId,
-    }
-    const { error } = editing
-      ? await supabase.from('experiences').update(payload).eq('id', editing.id)
-      : await supabase.from('experiences').insert(payload)
-    if (error) setToast({ message: error.message, type: 'error' })
-    else { setToast({ message: editing ? t.adminClassUpdated : t.adminClassCreated, type: 'success' }); setShowModal(false); await loadData() }
-    setFormLoading(false)
   }
 
-  async function handleDelete() {
-    if (!deleteTarget) return
-    const { error } = await supabase.from('experiences').delete().eq('id', deleteTarget.id)
-    if (error) setToast({ message: error.message, type: 'error' })
-    else { setToast({ message: t.adminClassDeleted, type: 'success' }); await loadData() }
-    setDeleteTarget(null)
+  const confirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      const { error } = await supabase.from('classes').delete().eq('id', deleteId)
+      if (error) throw error
+      setDeleteId(null)
+      fetchClasses()
+    } catch (err: any) {
+      alert('Erro ao excluir: ' + err.message)
+    }
   }
 
-  const filtered = classes.filter((c) => !search || c.title.toLowerCase().includes(search.toLowerCase()))
+  if (loading) return <div className="p-6 text-sm opacity-60">Carregando aulas...</div>
 
   return (
     <div className="space-y-6">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      {deleteTarget && <ConfirmModal title={t.adminClassDeleteConfirm} message={`"${deleteTarget.title}" será excluída permanentemente.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} danger />}
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.adminClassTitle}</h2>
-          <p className="text-sm text-gray-500 dark:text-white/40 mt-0.5">{t.adminClassSubtitle}</p>
+          <h2 className="text-xl font-maybug">Gerenciar Aulas (KiteSchool)</h2>
+          <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">Configure os pacotes de aulas, mídias e valores.</p>
         </div>
-        <PrimaryButton onClick={openCreate}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          {t.adminNewClass}
-        </PrimaryButton>
+        <button onClick={openCreateModal} className="btn-primary text-xs py-2 px-4 cursor-pointer">+ Nova Aula</button>
       </div>
 
-      <div className="relative">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.adminSearch} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 transition-all" />
-      </div>
-
-      {filtered.length === 0 ? (
-        <EmptyState icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>} message={t.adminClassNoData} />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((c) => (
-            <div key={c.id} className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 hover:shadow-lg transition-all duration-300">
-              <h3 className="font-bold text-gray-900 dark:text-white">{c.title}</h3>
-              <p className="text-xs text-gray-400 dark:text-white/30 mt-1">{c.duration || '—'} · {c.level || '—'}</p>
-              <p className="text-lg font-bold text-amz-dourado mt-3">R$ {c.price}</p>
-              {c.description && <p className="text-xs text-gray-500 dark:text-white/40 mt-2 line-clamp-2">{c.description}</p>}
-              <div className="flex gap-2 mt-4">
-                <button onClick={() => openEdit(c)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">{t.adminEdit}</button>
-                <button onClick={() => setDeleteTarget(c)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {classes.map((cls) => (
+          <div key={cls.id} className="bg-white dark:bg-amz-terra/30 p-4 rounded-xl border border-amber-900/10 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              {cls.image_url && <img src={cls.image_url} alt={cls.title} className="w-16 h-16 object-cover rounded-lg" />}
+              <div>
+                <h3 className="font-bold text-base">{cls.title}</h3>
+                <p className="text-xs text-amz-terra-light dark:text-amz-areia/70">{cls.duration} • {cls.level}</p>
+                <p className="text-sm font-semibold text-amz-terra dark:text-amz-dourado mt-1">R$ {cls.price}</p>
               </div>
             </div>
-          ))}
+            <div className="flex gap-2">
+              <button onClick={() => openEditModal(cls)} className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-semibold cursor-pointer">Editar</button>
+              <button onClick={() => setDeleteId(cls.id)} className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold cursor-pointer">Excluir</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white dark:bg-[#3D1D0F] max-w-lg w-full p-6 rounded-2xl shadow-xl border border-amber-900/25 my-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="font-maybug text-2xl mb-4 text-amz-terra dark:text-amz-dourado">{editingId ? 'Editar Aula' : 'Nova Aula'}</h3>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div>
+                <label className="block text-xs uppercase font-semibold mb-1">Título</label>
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" placeholder="Ex: Aula Particular de Kite" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs uppercase font-semibold mb-1">Preço (R$)</label>
+                  <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" />
+                </div>
+                <div>
+                  <label className="block text-xs uppercase font-semibold mb-1">Duração</label>
+                  <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" placeholder="Ex: 2h30" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs uppercase font-semibold mb-1">Nível</label>
+                <input type="text" value={level} onChange={(e) => setLevel(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" placeholder="Ex: Iniciante / Intermediário" />
+              </div>
+              <div>
+                <label className="block text-xs uppercase font-semibold mb-1">Descrição</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm" />
+              </div>
+
+              <FileUpload label="Imagem Principal da Aula" accept="image/*" value={imageUrl} onUpload={setImageUrl} />
+              <FileUpload label="Vídeo Promocional (Opcional)" accept="video/*" value={videoUrl} onUpload={setVideoUrl} />
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-amber-900/10">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-full text-sm font-semibold border border-amber-900/20 cursor-pointer">Cancelar</button>
+                <button type="submit" className="btn-primary text-sm py-2 px-6 cursor-pointer">Salvar Aula</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {showModal && (
-        <ModalShell onClose={() => setShowModal(false)} title={editing ? t.adminEditClass : t.adminNewClass}>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormField label={t.adminClassFormTitle}><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></FormField>
-            <FormField label={t.adminClassFormDescription}><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></FormField>
-            <div className="grid grid-cols-2 gap-3">
-              <FormField label={t.adminClassFormPrice}><Input type="number" required min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></FormField>
-              <FormField label={t.adminClassFormDuration}><Input value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="2h" /></FormField>
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-[#3D1D0F] max-w-sm w-full p-6 rounded-2xl shadow-xl border border-amber-900/20 text-center">
+            <h3 className="font-maybug text-xl mb-2 text-amz-terra dark:text-amz-dourado">Excluir Aula</h3>
+            <p className="text-xs opacity-80 mb-6">Tem certeza que deseja remover esta aula permanentemente?</p>
+            <div className="flex justify-center gap-3">
+              <button onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-full text-xs font-semibold border border-amber-900/20 cursor-pointer">Cancelar</button>
+              <button onClick={confirmDelete} className="px-4 py-2 rounded-full text-xs font-semibold bg-red-600 text-white hover:bg-red-700 cursor-pointer">Sim, Excluir</button>
             </div>
-            <FormField label={t.adminClassFormLevel}>
-              <Select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
-                {t.adminLevels.map((l) => <option key={l} value={l}>{l}</option>)}
-              </Select>
-            </FormField>
-            <FormField label={t.adminClassFormInstructor}><Input value={form.community} onChange={(e) => setForm({ ...form, community: e.target.value })} placeholder="Pingo / Pablo / Rafael" /></FormField>
-            <div className="flex gap-3 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
-              <GhostButton type="button" onClick={() => setShowModal(false)} className="flex-1">{t.adminCancel}</GhostButton>
-              <PrimaryButton type="submit" disabled={formLoading} className="flex-1">{formLoading ? '...' : editing ? t.adminClassFormUpdate : t.adminClassFormCreate}</PrimaryButton>
-            </div>
-          </form>
-        </ModalShell>
+          </div>
+        </div>
       )}
     </div>
   )

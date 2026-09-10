@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { supabase } from '../services/supabase'
-
-gsap.registerPlugin(ScrollTrigger)
 
 const fallbackSlides = [
   {
@@ -44,7 +41,6 @@ export default function Hero() {
     fetchHeroSlides()
   }, [])
 
-  // Auto-play do carrossel a cada 6 segundos
   useEffect(() => {
     if (slides.length <= 1) return
     const timer = setInterval(() => {
@@ -53,41 +49,27 @@ export default function Hero() {
     return () => clearInterval(timer)
   }, [slides.length])
 
-  // Animações GSAP de Zoom Cinematográfico e ScrollTrigger (Desfoque/Parallax)
+  // Efeito Ken Burns limpo e sem oscilações escuras
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Efeito Ken Burns (Zoom sutil contínuo na mídia ativa)
       if (mediaRef.current) {
         gsap.fromTo(
           mediaRef.current,
-          { scale: 1, filter: 'blur(0px)' },
+          { scale: 1 },
           {
-            scale: 1.12,
-            duration: 7,
+            scale: 1.08,
+            duration: 8,
             ease: 'power1.out',
             repeat: -1,
             yoyo: true
           }
         )
-
-        // Efeito ScrollTrigger: Desfoca e escurece ao rolar para baixo
-        gsap.to(mediaRef.current, {
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true
-          },
-          filter: 'blur(12px) brightness(0.5)',
-          y: 100
-        })
       }
 
-      // Animação de entrada do texto
       if (contentRef.current) {
         gsap.fromTo(
           contentRef.current,
-          { y: 30, opacity: 0 },
+          { y: 20, opacity: 0 },
           { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }
         )
       }
@@ -100,7 +82,6 @@ export default function Hero() {
 
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* Container da Mídia com Efeito de Fundo */}
       <div ref={mediaRef} className="absolute inset-0 w-full h-full overflow-hidden z-0">
         {slide.media_type === 'video' ? (
           <video
@@ -120,11 +101,9 @@ export default function Hero() {
             className="w-full h-full object-cover"
           />
         )}
-        {/* Overlay escuro elegante para legibilidade */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-black/40" />
       </div>
 
-      {/* Conteúdo Central */}
       <div ref={contentRef} className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white mt-12">
         <span className="inline-block text-xs uppercase tracking-[0.3em] font-bold px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md mb-4 border border-white/20">
           Amazon Wind Expeditions
@@ -149,7 +128,6 @@ export default function Hero() {
         )}
       </div>
 
-      {/* Indicadores de Slide (Dots) */}
       {slides.length > 1 && (
         <div className="absolute bottom-8 z-20 flex gap-2">
           {slides.map((_, idx) => (
