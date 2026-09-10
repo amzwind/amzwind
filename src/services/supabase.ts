@@ -204,6 +204,114 @@ export type Database = {
           updated_at?: string
         }
       }
+      contacts: {
+        Row: {
+          id: string
+          contact_type: 'contact' | 'newsletter'
+          full_name: string | null
+          email: string
+          message: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          contact_type: 'contact' | 'newsletter'
+          full_name?: string | null
+          email: string
+          message?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          contact_type?: 'contact' | 'newsletter'
+          full_name?: string | null
+          email?: string
+          message?: string | null
+          created_at?: string
+        }
+      }
+      financial_accounts: {
+        Row: {
+          id: string
+          account_type: 'payable' | 'receivable'
+          description: string
+          amount: number
+          due_date: string
+          status: 'pending' | 'paid' | 'overdue'
+          category: string | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          account_type: 'payable' | 'receivable'
+          description: string
+          amount?: number
+          due_date: string
+          status?: 'pending' | 'paid' | 'overdue'
+          category?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          account_type?: 'payable' | 'receivable'
+          description?: string
+          amount?: number
+          due_date?: string
+          status?: 'pending' | 'paid' | 'overdue'
+          category?: string | null
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      about_page: {
+        Row: {
+          id: string
+          locale: 'pt' | 'en' | 'es'
+          title: string
+          subtitle: string | null
+          description: string | null
+          cover_url: string | null
+          video_url: string | null
+          gallery_urls: string[]
+          mission: string | null
+          vision: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          locale?: 'pt' | 'en' | 'es'
+          title?: string
+          subtitle?: string | null
+          description?: string | null
+          cover_url?: string | null
+          video_url?: string | null
+          gallery_urls?: string[]
+          mission?: string | null
+          vision?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          locale?: 'pt' | 'en' | 'es'
+          title?: string
+          subtitle?: string | null
+          description?: string | null
+          cover_url?: string | null
+          video_url?: string | null
+          gallery_urls?: string[]
+          mission?: string | null
+          vision?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {

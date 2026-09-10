@@ -199,6 +199,29 @@ export type TranslationKeys = {
   adminBookStatus: string
   adminBookActions: string
 
+  // Financial Manager
+  adminFinancial: string
+  adminFinPayable: string
+  adminFinReceivable: string
+  adminFinPending: string
+  adminFinPaid: string
+  adminFinOverdue: string
+  adminFinNewAccount: string
+  adminFinEditAccount: string
+  adminFinDescription: string
+  adminFinAmount: string
+  adminFinDueDate: string
+  adminFinCategory: string
+  adminFinNotes: string
+  adminFinSave: string
+  adminFinDeleteConfirm: string
+
+  // About Page
+  aboutTitle: string
+  aboutSubtitle: string
+  aboutMission: string
+  aboutVision: string
+
   // Cart / Checkout
   cartTitle: string
   cartEmpty: string
@@ -510,6 +533,29 @@ const pt: TranslationKeys = {
   adminBookStatus: 'Status',
   adminBookActions: 'Ações',
 
+  // Financial Manager
+  adminFinancial: 'Financeiro',
+  adminFinPayable: 'A Pagar',
+  adminFinReceivable: 'A Receber',
+  adminFinPending: 'Pendente',
+  adminFinPaid: 'Pago',
+  adminFinOverdue: 'Atrasado',
+  adminFinNewAccount: 'Nova Conta',
+  adminFinEditAccount: 'Editar Conta',
+  adminFinDescription: 'Descrição',
+  adminFinAmount: 'Valor',
+  adminFinDueDate: 'Vencimento',
+  adminFinCategory: 'Categoria',
+  adminFinNotes: 'Observações',
+  adminFinSave: 'Salvar',
+  adminFinDeleteConfirm: 'Tem certeza que deseja excluir esta conta?',
+
+  // About Page
+  aboutTitle: 'Sobre a Amazon Wind',
+  aboutSubtitle: 'Escola de Kitesurf & Expedições na Amazônia Atlântica',
+  aboutMission: 'Missão',
+  aboutVision: 'Visão',
+
   cartTitle: 'Carrinho & Checkout',
   cartEmpty: 'Seu carrinho está vazio',
   cartAddExperience: 'Adicionar Experiência',
@@ -818,6 +864,29 @@ const en: TranslationKeys = {
   adminBookStatus: 'Status',
   adminBookActions: 'Actions',
 
+  // Financial Manager
+  adminFinancial: 'Financial',
+  adminFinPayable: 'Payable',
+  adminFinReceivable: 'Receivable',
+  adminFinPending: 'Pending',
+  adminFinPaid: 'Paid',
+  adminFinOverdue: 'Overdue',
+  adminFinNewAccount: 'New Account',
+  adminFinEditAccount: 'Edit Account',
+  adminFinDescription: 'Description',
+  adminFinAmount: 'Amount',
+  adminFinDueDate: 'Due Date',
+  adminFinCategory: 'Category',
+  adminFinNotes: 'Notes',
+  adminFinSave: 'Save',
+  adminFinDeleteConfirm: 'Are you sure you want to delete this account?',
+
+  // About Page
+  aboutTitle: 'About Amazon Wind',
+  aboutSubtitle: 'Kitesurf School & Expeditions in the Amazon',
+  aboutMission: 'Mission',
+  aboutVision: 'Vision',
+
   cartTitle: 'Cart & Checkout',
   cartEmpty: 'Your cart is empty',
   cartAddExperience: 'Add Experience',
@@ -1125,6 +1194,29 @@ const es: TranslationKeys = {
   adminBookType: 'Tipo',
   adminBookStatus: 'Estado',
   adminBookActions: 'Acciones',
+
+  // Financial Manager
+  adminFinancial: 'Financiero',
+  adminFinPayable: 'A Pagar',
+  adminFinReceivable: 'A Recibir',
+  adminFinPending: 'Pendiente',
+  adminFinPaid: 'Pagado',
+  adminFinOverdue: 'Atrasado',
+  adminFinNewAccount: 'Nueva Cuenta',
+  adminFinEditAccount: 'Editar Cuenta',
+  adminFinDescription: 'Descripción',
+  adminFinAmount: 'Monto',
+  adminFinDueDate: 'Vencimiento',
+  adminFinCategory: 'Categoría',
+  adminFinNotes: 'Notas',
+  adminFinSave: 'Guardar',
+  adminFinDeleteConfirm: '¿Está seguro de que desea eliminar esta cuenta?',
+
+  // About Page
+  aboutTitle: 'Sobre Amazon Wind',
+  aboutSubtitle: 'Escuela de Kitesurf y Expediciones en la Amazonía',
+  aboutMission: 'Misión',
+  aboutVision: 'Visión',
 
   cartTitle: 'Carrito & Checkout',
   cartEmpty: 'Tu carrito está vacío',

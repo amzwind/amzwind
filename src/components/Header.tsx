@@ -56,6 +56,9 @@ export default function Header() {
           <a href="#servicos" className="text-sm font-medium text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
             {t.navServicos}
           </a>
+          <a href="/sobre" className="text-sm font-medium text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
+            {t.aboutTitle ? 'Sobre' : 'About'}
+          </a>
 
           {/* Cart */}
           <a href="/checkout" className="relative p-2 text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
@@ -142,6 +145,9 @@ export default function Header() {
             </a>
             <a href="#servicos" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
               {t.navServicos}
+            </a>
+            <a href="/sobre" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
+              {t.aboutTitle ? 'Sobre' : 'About'}
             </a>
             <a href="/checkout" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

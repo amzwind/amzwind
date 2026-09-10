@@ -29,7 +29,8 @@ export default function Servicos() {
   const [formName, setFormName] = useState('')
   const [formEmail, setFormEmail] = useState('')
   const [formPhone, setFormPhone] = useState('')
-  const [formDate, setFormDate] = useState('')
+  const [formCheckIn, setFormCheckIn] = useState('')
+  const [formCheckOut, setFormCheckOut] = useState('')
   const [formMsg, setFormMsg] = useState('')
 
   const services: ServiceItem[] = [
@@ -96,7 +97,8 @@ export default function Servicos() {
     setFormName('')
     setFormEmail('')
     setFormPhone('')
-    setFormDate('')
+    setFormCheckIn('')
+    setFormCheckOut('')
     setFormMsg('')
     setModalOpen(true)
   }
@@ -113,6 +115,17 @@ export default function Servicos() {
       return
     }
 
+    if (activeService === 'hospedagem') {
+      if (!formCheckIn || !formCheckOut) {
+        setError(t.svcRequired)
+        return
+      }
+      if (formCheckOut <= formCheckIn) {
+        setError('Check-out deve ser posterior ao Check-in')
+        return
+      }
+    }
+
     setSending(true)
     setError('')
 
@@ -120,22 +133,30 @@ export default function Servicos() {
       activeService === 'transfer' ? t.svc3Title :
       activeService === 'hospedagem' ? t.svc4Title : ''
 
-    const notes = JSON.stringify({
+    const notesData: Record<string, string> = {
       service: serviceTitle,
-      service_key: activeService,
+      service_key: activeService || '',
       contact_name: formName.trim(),
       contact_email: formEmail.trim(),
       contact_phone: formPhone.trim(),
-      preferred_date: formDate,
       message: formMsg.trim(),
-    })
+    }
+
+    if (activeService === 'hospedagem') {
+      notesData.check_in = formCheckIn
+      notesData.check_out = formCheckOut
+    } else {
+      notesData.preferred_date = formCheckIn
+    }
+
+    const notes = JSON.stringify(notesData)
 
     const { error: insertError } = await supabase.from('bookings').insert({
       user_id: PLACEHOLDER_ID,
       item_type: 'experience',
       item_id: PLACEHOLDER_ID,
       status: 'pending',
-      booking_date: formDate || new Date().toISOString().slice(0, 10),
+      booking_date: formCheckIn || new Date().toISOString().slice(0, 10),
       notes,
     })
 
@@ -292,18 +313,48 @@ export default function Servicos() {
                     />
                   </div>
 
-                  {/* Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
-                      {t.svcDateLabel}
-                    </label>
-                    <input
-                      type="date"
-                      value={formDate}
-                      onChange={(e) => setFormDate(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
-                    />
-                  </div>
+                  {/* Check-in / Check-out (hospedagem) OR Date (transfer) */}
+                  {activeService === 'hospedagem' ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
+                          Check-in <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={formCheckIn}
+                          onChange={(e) => setFormCheckIn(e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
+                          Check-out <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={formCheckOut}
+                          min={formCheckIn || undefined}
+                          onChange={(e) => setFormCheckOut(e.target.value)}
+                          className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
+                        {t.svcDateLabel}
+                      </label>
+                      <input
+                        type="date"
+                        value={formCheckIn}
+                        onChange={(e) => setFormCheckIn(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                      />
+                    </div>
+                  )}
 
                   {/* Message */}
                   <div>

@@ -154,6 +154,61 @@ CREATE TRIGGER update_bookings_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================
+-- 6b. TABELA: financial_accounts
+-- Contas a pagar e a receber
+-- ============================================================
+
+CREATE TYPE financial_account_type AS ENUM ('payable', 'receivable');
+CREATE TYPE financial_account_status AS ENUM ('pending', 'paid', 'overdue');
+
+CREATE TABLE financial_accounts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_type financial_account_type NOT NULL,
+  description TEXT NOT NULL,
+  amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+  due_date DATE NOT NULL,
+  status financial_account_status NOT NULL DEFAULT 'pending',
+  category TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_financial_accounts_type ON financial_accounts(account_type);
+CREATE INDEX idx_financial_accounts_status ON financial_accounts(status);
+CREATE INDEX idx_financial_accounts_due_date ON financial_accounts(due_date);
+
+CREATE TRIGGER update_financial_accounts_updated_at
+  BEFORE UPDATE ON financial_accounts
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
+-- 6c. TABELA: about_page
+-- Conteúdo da página Sobre (multi-idioma)
+-- ============================================================
+
+CREATE TABLE about_page (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  locale TEXT NOT NULL DEFAULT 'pt' CHECK (locale IN ('pt', 'en', 'es')),
+  title TEXT NOT NULL DEFAULT 'Sobre a Amazon Wind',
+  subtitle TEXT,
+  description TEXT,
+  cover_url TEXT,
+  video_url TEXT,
+  gallery_urls JSONB DEFAULT '[]'::jsonb,
+  mission TEXT,
+  vision TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX idx_about_page_locale ON about_page(locale);
+
+CREATE TRIGGER update_about_page_updated_at
+  BEFORE UPDATE ON about_page
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
 -- 7. ROW LEVEL SECURITY (RLS)
 -- ============================================================
 
@@ -163,6 +218,8 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE experiences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE financial_accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE about_page ENABLE ROW LEVEL SECURITY;
 
 -- Função helper para verificar se o usuário é admin
 CREATE OR REPLACE FUNCTION is_admin()
@@ -302,6 +359,56 @@ CREATE POLICY "Admins can update any booking"
 -- Admins podem excluir reservas
 CREATE POLICY "Admins can delete bookings"
   ON bookings FOR DELETE
+  USING (is_admin());
+
+-- ----------------------------------------------------------
+-- POLICIES: financial_accounts
+-- ----------------------------------------------------------
+
+-- Admins veem todas as contas financeiras
+CREATE POLICY "Admins can view financial accounts"
+  ON financial_accounts FOR SELECT
+  USING (is_admin());
+
+-- Admins podem inserir contas financeiras
+CREATE POLICY "Admins can insert financial accounts"
+  ON financial_accounts FOR INSERT
+  WITH CHECK (is_admin());
+
+-- Admins podem atualizar contas financeiras
+CREATE POLICY "Admins can update financial accounts"
+  ON financial_accounts FOR UPDATE
+  USING (is_admin())
+  WITH CHECK (is_admin());
+
+-- Admins podem excluir contas financeiras
+CREATE POLICY "Admins can delete financial accounts"
+  ON financial_accounts FOR DELETE
+  USING (is_admin());
+
+-- ----------------------------------------------------------
+-- POLICIES: about_page
+-- ----------------------------------------------------------
+
+-- Leitura pública para todos
+CREATE POLICY "Public can view about page"
+  ON about_page FOR SELECT
+  USING (TRUE);
+
+-- Apenas admins podem inserir
+CREATE POLICY "Admins can insert about page"
+  ON about_page FOR INSERT
+  WITH CHECK (is_admin());
+
+-- Apenas admins podem atualizar
+CREATE POLICY "Admins can update about page"
+  ON about_page FOR UPDATE
+  USING (is_admin())
+  WITH CHECK (is_admin());
+
+-- Apenas admins podem excluir
+CREATE POLICY "Admins can delete about page"
+  ON about_page FOR DELETE
   USING (is_admin());
 
 -- ============================================================

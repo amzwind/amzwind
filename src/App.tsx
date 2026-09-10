@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { CartProvider } from './contexts/CartContext'
 import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
+import Sobre from './pages/Sobre'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Login from './pages/Login'
 import ExperienceDetail from './pages/ExperienceDetail'
@@ -50,6 +51,7 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/sobre" element={<Sobre />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />

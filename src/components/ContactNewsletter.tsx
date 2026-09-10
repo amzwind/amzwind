@@ -18,16 +18,15 @@ export default function ContactNewsletter() {
     e.preventDefault()
     setLoading(true)
     setContactError('')
-    const { error } = await supabase.from('bookings').insert({
-      user_id: '00000000-0000-0000-0000-000000000000',
-      item_type: 'experience',
-      item_id: '00000000-0000-0000-0000-000000000000',
-      status: 'pending',
-      notes: `[CONTATO] ${name} | ${email} | ${message}`,
+    const { error } = await supabase.from('contacts').insert({
+      contact_type: 'contact',
+      full_name: name.trim(),
+      email: email.trim(),
+      message: message.trim(),
     })
     setLoading(false)
     if (error) {
-      setContactError(t.contactSuccess)
+      setContactError(error.message)
       return
     }
     setContactSent(true)
@@ -38,12 +37,9 @@ export default function ContactNewsletter() {
     e.preventDefault()
     setLoading(true)
     setNlError('')
-    const { error } = await supabase.from('bookings').insert({
-      user_id: '00000000-0000-0000-0000-000000000000',
-      item_type: 'product',
-      item_id: '00000000-0000-0000-0000-000000000000',
-      status: 'confirmed',
-      notes: `[NEWSLETTER] ${nlEmail}`,
+    const { error } = await supabase.from('contacts').insert({
+      contact_type: 'newsletter',
+      email: nlEmail.trim(),
     })
     setLoading(false)
     if (error) {
