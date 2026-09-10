@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../services/supabase'
-import { ConfirmModal, FileUpload } from './SharedUI'
+import { FileUpload } from './SharedUI'
 
 export function HeroSlidesManager() {
     const [slides, setSlides] = useState<any[]>([])
