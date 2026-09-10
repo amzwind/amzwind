@@ -18,11 +18,10 @@ export default function MetricCard({ label, value, icon, color = 'text-amz-doura
           {icon}
         </div>
         {trend && (
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-            trend.positive
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${trend.positive
               ? 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10'
               : 'text-red-500 bg-red-50 dark:text-red-400 dark:bg-red-500/10'
-          }`}>
+            }`}>
             {trend.positive ? '+' : ''}{trend.value}%
           </span>
         )}
@@ -158,9 +157,8 @@ export function ConfirmModal({ title, message, onConfirm, onCancel, danger }: { 
           <GhostButton onClick={onCancel} className="flex-1">{t.adminCancel}</GhostButton>
           <button
             onClick={onConfirm}
-            className={`flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-white ${
-              danger ? 'bg-red-600 hover:bg-red-700' : 'bg-amz-dourado hover:bg-amber-700'
-            }`}
+            className={`flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-white ${danger ? 'bg-red-600 hover:bg-red-700' : 'bg-amz-dourado hover:bg-amber-700'
+              }`}
           >
             {t.adminConfirm}
           </button>
@@ -203,11 +201,10 @@ export function FileUpload({ label, value, onUpload, bucket = 'experiences', acc
 
 export function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   return (
-    <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-[70] p-3.5 rounded-xl shadow-2xl text-sm font-medium flex items-center gap-2.5 animate-[slideDown_0.3s_ease-out] ${
-      type === 'success'
+    <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-[70] p-3.5 rounded-xl shadow-2xl text-sm font-medium flex items-center gap-2.5 animate-[slideDown_0.3s_ease-out] ${type === 'success'
         ? 'bg-emerald-600 text-white'
         : 'bg-red-600 text-white'
-    }`}>
+      }`}>
       {type === 'success' ? (
         <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

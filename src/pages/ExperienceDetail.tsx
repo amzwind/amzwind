@@ -10,7 +10,7 @@ import TripCalendar from '../components/TripCalendar'
 type Experience = Tables<'experiences'>
 
 export default function ExperienceDetail() {
-  const { slug } = useParams<{ slug: string }>()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useLanguage()
   const { addItem, checkIn, checkOut, setCheckIn, setCheckOut } = useCart()
@@ -19,9 +19,9 @@ export default function ExperienceDetail() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!slug) return
+    if (!id) return
     async function load() {
-      const { data } = await supabase.from('experiences').select('*').eq('slug', slug).single()
+      const { data } = await supabase.from('experiences').select('*').eq('id', id).single()
       if (data) {
         setExp(data)
         const { data: rel } = await supabase.from('experiences').select('*').eq('category_id', data.category_id).neq('id', data.id).limit(3)
@@ -30,7 +30,7 @@ export default function ExperienceDetail() {
       setLoading(false)
     }
     load()
-  }, [slug])
+  }, [id])
 
   if (loading) {
     return (
@@ -51,7 +51,7 @@ export default function ExperienceDetail() {
   function handleAddToCart() {
     if (!exp) return
     addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url })
-    navigate('/admin')
+    navigate('/checkout')
   }
 
   return (
@@ -108,7 +108,7 @@ export default function ExperienceDetail() {
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.expDetailRelated}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {related.map((r) => (
-                    <a key={r.id} href={`/experiencia/${r.slug}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
+                    <a key={r.id} href={`/experiencia/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
                       {r.image_url && <div className="h-24 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
                       <div className="p-3">
                         <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{r.title}</p>

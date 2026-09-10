@@ -7,9 +7,8 @@ import { ExperiencesManager } from '../components/admin/ExperiencesManager'
 import { ProductsManager } from '../components/admin/ProductsManager'
 import { ClassesManager } from '../components/admin/ClassesManager'
 import { BookingsManager } from '../components/admin/BookingsManager'
-import { HeroSlidesManager } from '../components/admin/HeroSlidesManager'
 
-type AdminTab = 'dashboard' | 'experiences' | 'products' | 'classes' | 'hero' | 'bookings' | 'reviews'
+type AdminTab = 'dashboard' | 'experiences' | 'products' | 'classes' | 'bookings' | 'cart'
 
 export function AdminDashboard() {
   const navigate = useNavigate()
@@ -19,7 +18,6 @@ export function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard')
 
-  // Stats data
   const [stats, setStats] = useState({
     experiencesCount: 0,
     productsCount: 0,
@@ -54,7 +52,7 @@ export function AdminDashboard() {
       setIsAdmin(true)
       loadStats()
     } catch (err) {
-      console.error('Erro ao verificar permissões:', err)
+      console.error('Erro de permissão:', err)
       navigate('/login')
     } finally {
       setLoading(false)
@@ -99,7 +97,7 @@ export function AdminDashboard() {
       <header className="bg-white dark:bg-amz-terra/40 shadow-sm border-b border-amber-900/10 px-6 py-4 flex justify-between items-center sticky top-0 z-30 backdrop-blur-md">
         <div>
           <h1 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia">Amazon Wind — Gestão</h1>
-          <p className="text-xs uppercase tracking-widest text-amz-terra-light dark:text-amz-areia/60">Painel Operacional Avançado</p>
+          <p className="text-xs uppercase tracking-widest text-amz-terra-light dark:text-amz-areia/60">Painel Operacional</p>
         </div>
         <button
           onClick={() => navigate('/')}
@@ -122,42 +120,36 @@ export function AdminDashboard() {
             onClick={() => setActiveTab('experiences')}
             className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'experiences' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
           >
-            Expedições & Roteiros
+            Experiências
           </button>
           <button
             onClick={() => setActiveTab('products')}
             className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'products' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
           >
-            Produtos Físicos (Loja)
+            Produtos
           </button>
           <button
             onClick={() => setActiveTab('classes')}
             className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'classes' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
           >
-            Aulas (KiteSchool)
-          </button>
-          <button
-            onClick={() => setActiveTab('hero')}
-            className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'hero' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
-          >
-            Fundo da Hero (Slider)
+            Aulas
           </button>
           <button
             onClick={() => setActiveTab('bookings')}
             className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'bookings' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
           >
-            Reservas & Agenda
+            Reservas
           </button>
           <button
-            onClick={() => setActiveTab('reviews')}
-            className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'reviews' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
+            onClick={() => setActiveTab('cart')}
+            className={`px-4 py-2 rounded-full font-semibold text-xs transition cursor-pointer ${activeTab === 'cart' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
           >
-            Moderação de Avaliações
+            Carrinho / Checkout
           </button>
         </div>
       </div>
 
-      {/* Conteúdo da Aba Ativa */}
+      {/* Conteúdo da Aba */}
       <main className="max-w-7xl mx-auto px-6 mt-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
@@ -167,24 +159,17 @@ export function AdminDashboard() {
                 <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{stats.experiencesCount}</p>
               </div>
               <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Produtos Físicos</h3>
+                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Produtos</h3>
                 <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{stats.productsCount}</p>
               </div>
               <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Aulas Cadastradas</h3>
+                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Aulas</h3>
                 <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{stats.classesCount}</p>
               </div>
               <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Total de Reservas</h3>
+                <h3 className="text-xs uppercase text-amz-terra-light dark:text-amz-areia/60 font-semibold">Reservas</h3>
                 <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{stats.bookingsCount}</p>
               </div>
-            </div>
-
-            <div className="bg-white dark:bg-amz-terra/30 p-8 rounded-3xl border border-amber-900/10 shadow-sm">
-              <h3 className="font-maybug text-xl mb-3 text-amz-terra dark:text-amz-dourado">Boas-vindas ao Painel Executivo</h3>
-              <p className="text-sm text-amz-terra-light dark:text-amz-areia/70 leading-relaxed max-w-2xl">
-                Utilize o menu superior para gerenciar os roteiros de downwind, atualizar o estoque de produtos físicos, configurar pacotes de aulas, alterar as imagens da Hero principal com suporte a links ou uploads, e registrar reservas manuais de clientes com facilidade.
-              </p>
             </div>
           </div>
         )}
@@ -192,16 +177,11 @@ export function AdminDashboard() {
         {activeTab === 'experiences' && <ExperiencesManager />}
         {activeTab === 'products' && <ProductsManager />}
         {activeTab === 'classes' && <ClassesManager />}
-        {activeTab === 'hero' && <HeroSlidesManager />}
         {activeTab === 'bookings' && <BookingsManager />}
-
-        {activeTab === 'reviews' && (
-          <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl border border-amber-900/10">
-            <h2 className="text-xl font-maybug mb-2">Moderação de Avaliações</h2>
-            <p className="text-xs text-amz-terra-light dark:text-amz-areia/60 mb-6">Aprove ou rejeite comentários enviados pelos usuários nas experiências e produtos.</p>
-            <div className="p-8 text-center text-sm opacity-60 italic border border-dashed border-amber-900/20 rounded-xl">
-              Nenhuma avaliação pendente de moderação no momento.
-            </div>
+        {activeTab === 'cart' && (
+          <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl border border-amber-900/10 text-center py-12">
+            <h3 className="font-maybug text-xl mb-2">Módulo de Carrinho Administrativo</h3>
+            <p className="text-xs opacity-70">Utilize esta área para conferência de simulação de preços e motor de checkout.</p>
           </div>
         )}
       </main>

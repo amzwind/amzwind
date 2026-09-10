@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
+import { useCart } from '../contexts/CartContext'
 import { locales } from '../i18n/translations'
 import { supabase } from '../services/supabase'
 import type { Session } from '@supabase/supabase-js'
@@ -10,7 +11,9 @@ export default function Header() {
   const [langOpen, setLangOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const { theme, toggleTheme } = useTheme()
+  const { getItemCount } = useCart()
   const [session, setSession] = useState<Session | null>(null)
+  const cartCount = getItemCount()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => setSession(s))
@@ -52,6 +55,18 @@ export default function Header() {
           </a>
           <a href="#servicos" className="text-sm font-medium text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
             {t.navServicos}
+          </a>
+
+          {/* Cart */}
+          <a href="/checkout" className="relative p-2 text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+            </svg>
+            {cartCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-4.5 h-4.5 bg-amz-dourado text-white text-[10px] font-bold rounded-full flex items-center justify-center min-w-[18px] h-[18px]">
+                {cartCount}
+              </span>
+            )}
           </a>
 
           {/* Language Selector */}
@@ -127,6 +142,12 @@ export default function Header() {
             </a>
             <a href="#servicos" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
               {t.navServicos}
+            </a>
+            <a href="/checkout" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+              </svg>
+              Carrinho {cartCount > 0 && <span className="ml-1 px-1.5 py-0.5 bg-amz-dourado text-white text-[10px] font-bold rounded-full">{cartCount}</span>}
             </a>
 
             {/* Mobile Lang + Theme */}

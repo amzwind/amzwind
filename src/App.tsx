@@ -11,6 +11,7 @@ import ExperienceDetail from './pages/ExperienceDetail'
 import ProductCategory from './pages/ProductCategory'
 import ProductDetail from './pages/ProductDetail'
 import CustomerDashboard from './pages/CustomerDashboard'
+import CartCheckout from './components/CartCheckout'
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -52,10 +53,11 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />
-              <Route path="/experiencia/:slug" element={<ExperienceDetail />} />
+              <Route path="/experiencia/:id" element={<ExperienceDetail />} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
+              <Route path="/checkout" element={<div className="pt-24 pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
               <Route path="*" element={<Home />} />
             </Routes>
           </BrowserRouter>

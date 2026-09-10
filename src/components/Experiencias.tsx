@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const experiencias = [
   {
     id: 1,
@@ -55,7 +57,11 @@ export default function Experiencias() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {experiencias.map((exp) => (
-            <div key={exp.id} className="card-exp fade-up group cursor-pointer">
+            <Link
+              key={exp.id}
+              to={`/experiencia/${exp.id}`}
+              className="card-exp fade-up group cursor-pointer block rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-all duration-300"
+            >
               <div className={`h-2 bg-gradient-to-r ${exp.cor}`} />
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
@@ -63,7 +69,7 @@ export default function Experiencias() {
                     <span className="text-xs font-semibold uppercase tracking-wider text-amz-oceano bg-amz-oceano/10 px-2 py-1 rounded-full">
                       {exp.tipo}
                     </span>
-                    <h3 className="text-xl font-maybug text-amz-terra mt-2">
+                    <h3 className="text-xl font-maybug text-amz-terra mt-2 group-hover:text-amber-700 transition-colors">
                       {exp.titulo}
                     </h3>
                   </div>
@@ -74,22 +80,27 @@ export default function Experiencias() {
                   {exp.descricao}
                 </p>
 
-                <div className="flex items-center gap-4 text-xs text-amz-terra-light">
-                  <span className="flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {exp.duracao}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    {exp.nivel}
+                <div className="flex items-center justify-between text-xs text-amz-terra-light pt-3 border-t border-amber-900/10">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {exp.duracao}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      {exp.nivel}
+                    </span>
+                  </div>
+                  <span className="font-semibold text-amz-terra flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    Ver Detalhes →
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

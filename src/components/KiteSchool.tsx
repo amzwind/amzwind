@@ -1,18 +1,24 @@
+import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useCart } from '../contexts/CartContext'
 
 export default function KiteSchool() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
+  const { addItem } = useCart()
 
   const aulas = [
     {
       titulo: t.ksBasic,
       preco: 'R$ 150',
+      precoNum: 150,
       duracao: '2h',
       inclui: t.ksBasicIncludes,
     },
     {
       titulo: t.ksBeginner,
       preco: 'R$ 250',
+      precoNum: 250,
       duracao: '3h',
       inclui: t.ksBeginnerIncludes,
       destaque: true,
@@ -20,10 +26,22 @@ export default function KiteSchool() {
     {
       titulo: t.ksSpecific,
       preco: 'R$ 350',
+      precoNum: 350,
       duracao: '4h',
       inclui: t.ksSpecificIncludes,
     },
   ]
+
+  function handleSchedule(aula: typeof aulas[number]) {
+    addItem({
+      id: `class-${aula.titulo}`,
+      type: 'class',
+      title: `${t.customerTypeClass}: ${aula.titulo}`,
+      price: aula.precoNum,
+      image_url: null,
+    })
+    navigate('/checkout')
+  }
 
   return (
     <section id="escola" className="py-16 md:py-24 px-4 bg-white dark:bg-[#2A1508] transition-colors duration-500">
@@ -98,6 +116,7 @@ export default function KiteSchool() {
               </ul>
 
               <button
+                onClick={() => handleSchedule(aula)}
                 className={`relative w-full py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 ${
                   aula.destaque
                     ? 'bg-white text-amz-terra hover:bg-amz-areia hover:shadow-lg'

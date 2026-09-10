@@ -11,35 +11,47 @@ export default function ContactNewsletter() {
   const [contactSent, setContactSent] = useState(false)
   const [nlSent, setNlSent] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [contactError, setContactError] = useState('')
+  const [nlError, setNlError] = useState('')
 
   async function handleContact(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    await supabase.from('bookings').insert({
+    setContactError('')
+    const { error } = await supabase.from('bookings').insert({
       user_id: '00000000-0000-0000-0000-000000000000',
       item_type: 'experience',
       item_id: '00000000-0000-0000-0000-000000000000',
       status: 'pending',
       notes: `[CONTATO] ${name} | ${email} | ${message}`,
     })
+    setLoading(false)
+    if (error) {
+      setContactError(t.contactSuccess)
+      return
+    }
     setContactSent(true)
     setName(''); setEmail(''); setMessage('')
-    setLoading(false)
   }
 
   async function handleNewsletter(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    await supabase.from('bookings').insert({
+    setNlError('')
+    const { error } = await supabase.from('bookings').insert({
       user_id: '00000000-0000-0000-0000-000000000000',
       item_type: 'product',
       item_id: '00000000-0000-0000-0000-000000000000',
       status: 'confirmed',
       notes: `[NEWSLETTER] ${nlEmail}`,
     })
+    setLoading(false)
+    if (error) {
+      setNlError(error.message)
+      return
+    }
     setNlSent(true)
     setNlEmail('')
-    setLoading(false)
   }
 
   return (
@@ -76,6 +88,7 @@ export default function ContactNewsletter() {
                 <button type="submit" disabled={loading} className="btn-primary w-full !py-3.5 disabled:opacity-50">
                   {loading ? '...' : t.contactSend}
                 </button>
+                {contactError && <p className="text-sm text-red-500 dark:text-red-400 mt-2">{contactError}</p>}
               </form>
             )}
           </div>
@@ -94,12 +107,15 @@ export default function ContactNewsletter() {
                   <p className="font-semibold">{t.newsletterSuccess}</p>
                 </div>
               ) : (
-                <form onSubmit={handleNewsletter} className="flex gap-2">
-                  <input type="email" required value={nlEmail} onChange={(e) => setNlEmail(e.target.value)} placeholder={t.newsletterPlaceholder} className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 text-sm" />
-                  <button type="submit" disabled={loading} className="btn-primary !px-6 disabled:opacity-50">
-                    {loading ? '...' : t.newsletterButton}
-                  </button>
-                </form>
+                <>
+                  <form onSubmit={handleNewsletter} className="flex gap-2">
+                    <input type="email" required value={nlEmail} onChange={(e) => setNlEmail(e.target.value)} placeholder={t.newsletterPlaceholder} className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 text-sm" />
+                    <button type="submit" disabled={loading} className="btn-primary !px-6 disabled:opacity-50">
+                      {loading ? '...' : t.newsletterButton}
+                    </button>
+                  </form>
+                  {nlError && <p className="text-sm text-red-300 mt-2">{nlError}</p>}
+                </>
               )}
             </div>
           </div>

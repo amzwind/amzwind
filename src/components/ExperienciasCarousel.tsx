@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { supabase } from '../services/supabase'
@@ -124,9 +125,10 @@ export default function ExperienciasCarousel() {
             {hasDbItems ? (
               // Renderiza os dados vindos do Supabase (Painel Admin)
               dbExperiences.map((exp) => (
-                <div
+                <Link
+                  to={`/experiencia/${exp.id}`}
                   key={exp.id}
-                  className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer"
+                  className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer block"
                 >
                   <div className="bg-white dark:bg-amz-terra/40 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amz-areia-dark/30 dark:border-white/5 backdrop-blur-sm flex flex-col h-full">
                     <div className="relative h-48 bg-gradient-to-br from-amz-oceano to-amz-oceano-dark overflow-hidden">
@@ -163,16 +165,13 @@ export default function ExperienciasCarousel() {
                         <span className="font-maybug text-lg text-amz-terra dark:text-amz-dourado">
                           R$ {Number(exp.price).toFixed(2)}
                         </span>
-                        <button
-                          onClick={() => alert(`Reserva para: ${exp.title}`)}
-                          className="btn-primary text-xs py-2 px-4 rounded-full font-semibold cursor-pointer"
-                        >
-                          Reservar Rota
-                        </button>
+                        <span className="btn-primary text-xs py-2 px-4 rounded-full font-semibold">
+                          {t.expDetailBook || 'Ver Detalhes'}
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))
             ) : (
               // Renderiza os dados estáticos caso o banco esteja vazio
@@ -184,9 +183,10 @@ export default function ExperienciasCarousel() {
                 const durations = ['2h30', '3h', '4h', '2h']
 
                 return (
-                  <div
+                  <Link
+                    to={`/experiencia/${exp.id}`}
                     key={exp.id}
-                    className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer"
+                    className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer block"
                   >
                     <div className="bg-white dark:bg-amz-terra/40 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amz-areia-dark/30 dark:border-white/5 backdrop-blur-sm">
                       <div className={`relative h-48 bg-gradient-to-br ${exp.gradient} overflow-hidden`}>
@@ -234,7 +234,7 @@ export default function ExperienciasCarousel() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 )
               })
             )}

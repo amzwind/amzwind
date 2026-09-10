@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
-import { useCart } from '../contexts/CartContext'
+import { useCart, type CartItem } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import TripCalendar from './TripCalendar'
 import { Toast } from './admin/SharedUI'
@@ -9,13 +9,35 @@ import { Toast } from './admin/SharedUI'
 type Experience = Tables<'experiences'>
 type Product = Tables<'products'>
 
+const CART_STORAGE_KEY = 'amzwind-cart'
+
+interface StoredCart {
+  items: CartItem[]
+  checkIn: string | null
+  checkOut: string | null
+}
+
+function loadCart(): StoredCart | null {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as StoredCart
+  } catch {
+    return null
+  }
+}
+
+function saveCart(items: CartItem[], checkIn: string | null, checkOut: string | null) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items, checkIn, checkOut }))
+}
+
 export default function CartCheckout() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const {
     items, checkIn, checkOut, nights, basePricePerNight,
     addItem, removeItem, updateQuantity, setCheckIn, setCheckOut,
-    clearCart, getAccommodationTotal, getTotal,
+    clearCart, getAccommodationTotal, getTotal, getSubtotal,
   } = useCart()
 
   const [experiences, setExperiences] = useState<Experience[]>([])
@@ -23,75 +45,169 @@ export default function CartCheckout() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [activePicker, setActivePicker] = useState<'none' | 'experience' | 'product'>('none')
+  const [loaded, setLoaded] = useState(false)
+
+  const [sessionUserId, setSessionUserId] = useState<string | null>(null)
+
+  const [guestName, setGuestName] = useState('')
+  const [guestEmail, setGuestEmail] = useState('')
+  const [guestPhone, setGuestPhone] = useState('')
+  const [guestMsg, setGuestMsg] = useState('')
+  const [successIds, setSuccessIds] = useState<string[]>([])
 
   useEffect(() => {
-    async function load() {
-      const [eRes, pRes] = await Promise.all([
+    async function init() {
+      const [{ data: { session } }, eRes, pRes] = await Promise.all([
+        supabase.auth.getSession(),
         supabase.from('experiences').select('*').order('title'),
         supabase.from('products').select('*').order('title'),
       ])
+      if (session) setSessionUserId(session.user.id)
       if (eRes.data) setExperiences(eRes.data)
       if (pRes.data) setProducts(pRes.data)
+
+      const stored = loadCart()
+      if (stored && items.length === 0) {
+        stored.items.forEach((item) => addItem(item))
+        if (stored.checkIn) setCheckIn(stored.checkIn)
+        if (stored.checkOut) setCheckOut(stored.checkOut)
+      }
+      setLoaded(true)
     }
-    load()
+    init()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function handleCheckout() {
-    if (items.length === 0) return
-    setSubmitting(true)
+  useEffect(() => {
+    if (loaded) saveCart(items, checkIn, checkOut)
+  }, [items, checkIn, checkOut, loaded])
 
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      setToast({ message: 'Faça login para finalizar a reserva.', type: 'error' })
-      setSubmitting(false)
+  const isGuest = !sessionUserId
+
+  function validate(): string | null {
+    if (items.length === 0) return t.cartEmpty
+    if (isGuest) {
+      if (!guestName.trim()) return t.checkoutNameRequired
+      if (!guestEmail.trim()) return t.checkoutEmailRequired
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) return t.checkoutEmailInvalid
+    }
+    return null
+  }
+
+  async function handleCheckout() {
+    const err = validate()
+    if (err) {
+      setToast({ message: err, type: 'error' })
       return
     }
 
+    setSubmitting(true)
+
+    const userId = sessionUserId || '00000000-0000-0000-0000-000000000000'
+
+    const accommodation = nights > 0 ? {
+      check_in: checkIn,
+      check_out: checkOut,
+      nights,
+      base_price_per_night: basePricePerNight,
+      total: getAccommodationTotal(),
+    } : null
+
+    const contact = isGuest ? {
+      name: guestName.trim(),
+      email: guestEmail.trim(),
+      phone: guestPhone.trim(),
+      message: guestMsg.trim(),
+    } : null
+
+    const notes = JSON.stringify({
+      items: items.map((i) => ({
+        id: i.id,
+        type: i.type,
+        title: i.title,
+        price: i.price,
+        quantity: i.quantity,
+      })),
+      accommodation,
+      contact,
+      subtotal: getSubtotal(),
+      total: getTotal(),
+    })
+
     const bookingPromises = items.map((item) =>
       supabase.from('bookings').insert({
-        user_id: session.user.id,
+        user_id: userId,
         item_type: item.type,
         item_id: item.id,
         status: 'pending',
-        booking_date: checkIn || new Date().toISOString(),
-        notes: `${item.title} x${item.quantity}${nights > 0 ? ` | ${nights} noites` : ''}`,
-      })
+        booking_date: checkIn || new Date().toISOString().slice(0, 10),
+        notes,
+      }).select('id')
     )
 
     const results = await Promise.all(bookingPromises)
     const errors = results.filter((r) => r.error)
+    const ids = results.filter((r) => r.data).map((r) => r.data![0].id)
 
     if (errors.length > 0) {
-      setToast({ message: `Erro ao criar ${errors.length} reserva(s).`, type: 'error' })
+      setToast({ message: `${t.checkoutError} (${errors.length})`, type: 'error' })
     } else {
-      setToast({ message: `${bookingPromises.length} reserva(s) criada(s)!`, type: 'success' })
+      setSuccessIds(ids)
       clearCart()
+      localStorage.removeItem(CART_STORAGE_KEY)
     }
 
     setSubmitting(false)
   }
 
-  const formatBRL = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+  const formatBRL = (v: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
+  if (successIds.length > 0) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+        <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-6">
+          <svg className="w-10 h-10 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-maybug text-amz-terra dark:text-amz-areia mb-3">{t.checkoutSuccess}</h1>
+        <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mb-2 max-w-md">
+          {t.checkoutSuccessDetail}
+        </p>
+        {successIds.length > 0 && (
+          <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mb-6">
+            #{successIds.slice(0, 3).join(' · #')}
+          </p>
+        )}
+        <div className="flex gap-3">
+          <button onClick={() => navigate('/')} className="px-6 py-2.5 rounded-xl text-sm font-semibold border border-amz-areia-dark/20 dark:border-white/10 text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors">
+            {t.navHome}
+          </button>
+          <button onClick={() => navigate('/minha-conta')} className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors">
+            {t.cartMyBookings}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.cartTitle}</h1>
         <p className="text-sm text-gray-500 dark:text-white/40 mt-1">
-          {items.length > 0 ? `${items.length} item(s) no carrinho` : t.cartEmpty}
+          {items.length > 0 ? `${items.length} ${t.cartItemCount}` : t.cartEmpty}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Items + Picker */}
+        {/* Left */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Calendar */}
           <TripCalendar checkIn={checkIn} checkOut={checkOut} onCheckInChange={setCheckIn} onCheckOutChange={setCheckOut} />
 
-          {/* Add items */}
           <div className="flex gap-2">
             <button onClick={() => setActivePicker(activePicker === 'experience' ? 'none' : 'experience')} className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all ${activePicker === 'experience' ? 'bg-amz-dourado text-white' : 'bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.06] text-gray-600 dark:text-white/40'}`}>
               + {t.cartAddExperience}
@@ -101,9 +217,9 @@ export default function CartCheckout() {
             </button>
           </div>
 
-          {/* Picker panels */}
           {activePicker === 'experience' && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-2 max-h-64 overflow-y-auto">
+              {experiences.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">{t.cartEmpty}</p>}
               {experiences.map((exp) => (
                 <button key={exp.id} onClick={() => { addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url }); setActivePicker('none') }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors text-left">
@@ -120,6 +236,7 @@ export default function CartCheckout() {
 
           {activePicker === 'product' && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-2 max-h-64 overflow-y-auto">
+              {products.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">{t.cartEmpty}</p>}
               {products.map((prod) => (
                 <button key={prod.id} onClick={() => { addItem({ id: prod.id, type: 'product', title: prod.title, price: prod.price, image_url: prod.image_url }); setActivePicker('none') }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors text-left">
@@ -134,7 +251,6 @@ export default function CartCheckout() {
             </div>
           )}
 
-          {/* Cart items */}
           {items.length > 0 && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] divide-y divide-gray-50 dark:divide-white/[0.03]">
               {items.map((item) => (
@@ -156,14 +272,45 @@ export default function CartCheckout() {
               ))}
             </div>
           )}
+
+          {isGuest && items.length > 0 && (
+            <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 space-y-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.checkoutContactInfo}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">
+                    {t.checkoutName} <span className="text-red-500">*</span>
+                  </label>
+                  <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">
+                    {t.checkoutEmail} <span className="text-red-500">*</span>
+                  </label>
+                  <input type="email" required value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutPhone}</label>
+                  <input type="tel" value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutMessage}</label>
+                  <input type="text" value={guestMsg} onChange={(e) => setGuestMsg(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right: Summary */}
         <div className="space-y-4">
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 sticky top-24 space-y-4">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Resumo</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.cartSummary}</h3>
 
-            {/* Accommodation */}
             {nights > 0 && (
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -175,13 +322,12 @@ export default function CartCheckout() {
                   <span className="font-semibold text-gray-900 dark:text-white">×{nights}</span>
                 </div>
                 <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-gray-700 dark:text-white/60">Hospedagem</span>
+                  <span className="text-gray-700 dark:text-white/60">{t.cartAccommodation}</span>
                   <span className="text-amz-dourado">{formatBRL(getAccommodationTotal())}</span>
                 </div>
               </div>
             )}
 
-            {/* Items subtotal */}
             {items.length > 0 && (
               <div className="space-y-2 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
                 {items.map((item) => (
@@ -193,7 +339,21 @@ export default function CartCheckout() {
               </div>
             )}
 
-            {/* Total */}
+            {items.length > 0 && (
+              <>
+                <div className="flex justify-between text-sm pt-2 border-t border-gray-100 dark:border-white/[0.06]">
+                  <span className="text-gray-500 dark:text-white/40">{t.cartSubtotal}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{formatBRL(getSubtotal())}</span>
+                </div>
+                {nights > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 dark:text-white/40">{t.cartAccommodation}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{formatBRL(getAccommodationTotal())}</span>
+                  </div>
+                )}
+              </>
+            )}
+
             <div className="pt-3 border-t border-gray-100 dark:border-white/[0.06]">
               <div className="flex justify-between">
                 <span className="text-base font-bold text-gray-900 dark:text-white">{t.cartTotal}</span>
@@ -206,7 +366,14 @@ export default function CartCheckout() {
               disabled={items.length === 0 || submitting}
               className="w-full py-3 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? '...' : t.cartCheckout}
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  {t.checkoutProcessing}
+                </span>
+              ) : (
+                t.cartCheckout
+              )}
             </button>
 
             <button onClick={() => navigate(-1)} className="w-full py-2 text-xs font-semibold text-gray-400 hover:text-gray-600 dark:hover:text-white/60 transition-colors">

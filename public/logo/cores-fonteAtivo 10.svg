@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Camada_2" data-name="Camada 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 841.89 595.28">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+      }
+
+      .cls-2 {
+        fill: #a05d2e;
+      }
+
+      .cls-3 {
+        font-family: MaybugMSRegular, 'Maybug MS';
+        font-size: 72px;
+      }
+
+      .cls-3, .cls-4 {
+        fill: #000304;
+      }
+
+      .cls-5 {
+        fill: #472313;
+      }
+
+      .cls-6 {
+        fill: #f6dfb8;
+      }
+
+      .cls-4 {
+        font-family: Resolve-Semilight, 'Resolve Semilight';
+        font-size: 18px;
+        font-weight: 300;
+      }
+
+      .cls-7 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-1" width="841.89" height="595.28"/>
+    </clipPath>
+  </defs>
+  <g id="Camada_1-2" data-name="Camada 1">
+    <g class="cls-7">
+      <text class="cls-4" transform="translate(99.51 94.78)"><tspan x="0" y="0">F</tspan></text>
+      <text class="cls-4" transform="translate(109.54 94.78)"><tspan x="0" y="0">ont</tspan></text>
+      <text class="cls-4" transform="translate(135.92 94.78)"><tspan x="0" y="0">e</tspan></text>
+      <text class="cls-3" transform="translate(92.65 198.23)"><tspan x="0" y="0">May</tspan></text>
+      <text class="cls-3" transform="translate(200.43 198.23)"><tspan x="0" y="0">bug MS</tspan></text>
+      <text class="cls-4" transform="translate(99.51 326.94)"><tspan x="0" y="0">Cor</tspan></text>
+      <text class="cls-4" transform="translate(128.29 326.94)"><tspan x="0" y="0">es</tspan></text>
+      <rect class="cls-6" x="100.94" y="355.37" width="49.75" height="49.75"/>
+      <rect class="cls-5" x="158.98" y="355.37" width="49.75" height="49.75"/>
+      <rect class="cls-2" x="217.02" y="355.37" width="49.75" height="49.75"/>
+    </g>
+  </g>
+</svg>

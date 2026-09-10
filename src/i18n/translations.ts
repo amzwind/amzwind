@@ -75,6 +75,13 @@ export type TranslationKeys = {
   svc4Title: string
   svc4Desc: string
   svc4Price: string
+  svcBook: string
+  svcBookTitle: string
+  svcBookSuccess: string
+  svcDateLabel: string
+  svcSchedule: string
+  svcRequired: string
+  svcServiceLabel: string
 
   // Footer
   footerAbout: string
@@ -210,6 +217,23 @@ export type TranslationKeys = {
   cartDays: string
   cartPerNight: string
   cartSelectDates: string
+  cartSummary: string
+  cartAccommodation: string
+  cartItemCount: string
+  cartMyBookings: string
+  navHome: string
+  checkoutContactInfo: string
+  checkoutName: string
+  checkoutEmail: string
+  checkoutPhone: string
+  checkoutMessage: string
+  checkoutNameRequired: string
+  checkoutEmailRequired: string
+  checkoutEmailInvalid: string
+  checkoutError: string
+  checkoutSuccess: string
+  checkoutSuccessDetail: string
+  checkoutProcessing: string
 
   // Common
   adminSave: string
@@ -232,6 +256,7 @@ export type TranslationKeys = {
   contactSubtitle: string
   contactName: string
   contactEmail: string
+  contactPhone: string
   contactMessage: string
   contactSend: string
   contactSuccess: string
@@ -273,8 +298,27 @@ export type TranslationKeys = {
   customerProfile: string
   customerName: string
   customerPhone: string
+  customerEmail: string
   customerSave: string
   customerSaved: string
+  customerError: string
+  customerCancelBooking: string
+  customerCancelConfirm: string
+  customerCancelled: string
+  customerBookingDate: string
+  customerBookingType: string
+  customerBookingStatus: string
+  customerBookingNotes: string
+  customerStatsTotal: string
+  customerStatsConfirmed: string
+  customerStatsPending: string
+  customerStatusPending: string
+  customerStatusConfirmed: string
+  customerStatusCancelled: string
+  customerTypeExperience: string
+  customerTypeClass: string
+  customerTypeProduct: string
+  customerJoinDate: string
 
   // Admin - Manual Booking & Calendar
   adminManualBooking: string
@@ -352,6 +396,13 @@ const pt: TranslationKeys = {
   svc4Title: 'Hospedagem',
   svc4Desc: 'Parceria com pousadas e residências em Salinópolis e Ajuruteua.',
   svc4Price: 'Sob consulta',
+  svcBook: 'Agendar',
+  svcBookTitle: 'Agendar Serviço',
+  svcBookSuccess: 'Solicitação enviada com sucesso! Entraremos em contato.',
+  svcDateLabel: 'Data preferida',
+  svcSchedule: 'Agendar agora',
+  svcRequired: 'Campos obrigatórios',
+  svcServiceLabel: 'Serviço',
 
   footerAbout: 'Escola de Kitesurf e Expedições na Amazônia Atlântica. Fundada por Pingo, Pablo e Rafael.',
   footerContact: 'Contato',
@@ -476,6 +527,23 @@ const pt: TranslationKeys = {
   cartDays: 'dias',
   cartPerNight: 'por noite',
   cartSelectDates: 'Selecione as datas da viagem',
+  cartSummary: 'Resumo',
+  cartAccommodation: 'Hospedagem',
+  cartItemCount: 'itens no carrinho',
+  cartMyBookings: 'Minhas Reservas',
+  navHome: 'Início',
+  checkoutContactInfo: 'Dados de Contato',
+  checkoutName: 'Nome',
+  checkoutEmail: 'E-mail',
+  checkoutPhone: 'Telefone',
+  checkoutMessage: 'Mensagem',
+  checkoutNameRequired: 'Informe seu nome.',
+  checkoutEmailRequired: 'Informe seu e-mail.',
+  checkoutEmailInvalid: 'E-mail inválido.',
+  checkoutError: 'Erro ao criar reserva(s).',
+  checkoutSuccess: 'Reserva confirmada!',
+  checkoutSuccessDetail: 'Você receberá um e-mail de confirmação em breve. Acompanhe suas reservas no painel.',
+  checkoutProcessing: 'Processando...',
 
   adminSave: 'Salvar',
   adminCancel: 'Cancelar',
@@ -500,6 +568,7 @@ const pt: TranslationKeys = {
   contactSubtitle: 'Tem dúvidas? Envie uma mensagem.',
   contactName: 'Nome',
   contactEmail: 'E-mail',
+  contactPhone: 'Telefone',
   contactMessage: 'Mensagem',
   contactSend: 'Enviar Mensagem',
   contactSuccess: 'Mensagem enviada com sucesso!',
@@ -540,6 +609,25 @@ const pt: TranslationKeys = {
   customerPhone: 'Telefone',
   customerSave: 'Salvar Alterações',
   customerSaved: 'Perfil atualizado!',
+  customerError: 'Erro ao salvar. Tente novamente.',
+  customerCancelBooking: 'Cancelar',
+  customerCancelConfirm: 'Tem certeza que deseja cancelar esta reserva?',
+  customerCancelled: 'Reserva cancelada.',
+  customerBookingDate: 'Data',
+  customerBookingType: 'Tipo',
+  customerBookingStatus: 'Status',
+  customerBookingNotes: 'Observações',
+  customerStatsTotal: 'Total',
+  customerStatsConfirmed: 'Confirmadas',
+  customerStatsPending: 'Pendentes',
+  customerStatusPending: 'Pendente',
+  customerStatusConfirmed: 'Confirmada',
+  customerStatusCancelled: 'Cancelada',
+  customerTypeExperience: 'Experiência',
+  customerTypeClass: 'Aula',
+  customerTypeProduct: 'Produto',
+  customerJoinDate: 'Membro desde',
+  customerEmail: 'E-mail',
 
   adminManualBooking: 'Reserva Manual',
   adminManualBookingTitle: 'Criar Reserva Manual',
@@ -616,6 +704,13 @@ const en: TranslationKeys = {
   svc4Title: 'Accommodation',
   svc4Desc: 'Partnership with inns and residences in Salinópolis and Ajuruteua.',
   svc4Price: 'Upon request',
+  svcBook: 'Book',
+  svcBookTitle: 'Book Service',
+  svcBookSuccess: 'Request sent successfully! We will get in touch.',
+  svcDateLabel: 'Preferred date',
+  svcSchedule: 'Book now',
+  svcRequired: 'Required fields',
+  svcServiceLabel: 'Service',
 
   footerAbout: 'Kitesurf School and Expeditions in the Atlantic Amazon. Founded by Pingo, Pablo and Rafael.',
   footerContact: 'Contact',
@@ -740,6 +835,23 @@ const en: TranslationKeys = {
   cartDays: 'days',
   cartPerNight: 'per night',
   cartSelectDates: 'Select trip dates',
+  cartSummary: 'Summary',
+  cartAccommodation: 'Accommodation',
+  cartItemCount: 'items in cart',
+  cartMyBookings: 'My Bookings',
+  navHome: 'Home',
+  checkoutContactInfo: 'Contact Information',
+  checkoutName: 'Name',
+  checkoutEmail: 'Email',
+  checkoutPhone: 'Phone',
+  checkoutMessage: 'Message',
+  checkoutNameRequired: 'Please enter your name.',
+  checkoutEmailRequired: 'Please enter your email.',
+  checkoutEmailInvalid: 'Invalid email address.',
+  checkoutError: 'Error creating booking(s).',
+  checkoutSuccess: 'Booking confirmed!',
+  checkoutSuccessDetail: 'You will receive a confirmation email shortly. Track your bookings in the dashboard.',
+  checkoutProcessing: 'Processing...',
 
   adminSave: 'Save',
   adminCancel: 'Cancel',
@@ -764,6 +876,7 @@ const en: TranslationKeys = {
   contactSubtitle: 'Questions? Send us a message.',
   contactName: 'Name',
   contactEmail: 'Email',
+  contactPhone: 'Phone',
   contactMessage: 'Message',
   contactSend: 'Send Message',
   contactSuccess: 'Message sent successfully!',
@@ -804,6 +917,25 @@ const en: TranslationKeys = {
   customerPhone: 'Phone',
   customerSave: 'Save Changes',
   customerSaved: 'Profile updated!',
+  customerError: 'Error saving. Please try again.',
+  customerCancelBooking: 'Cancel',
+  customerCancelConfirm: 'Are you sure you want to cancel this booking?',
+  customerCancelled: 'Booking cancelled.',
+  customerBookingDate: 'Date',
+  customerBookingType: 'Type',
+  customerBookingStatus: 'Status',
+  customerBookingNotes: 'Notes',
+  customerStatsTotal: 'Total',
+  customerStatsConfirmed: 'Confirmed',
+  customerStatsPending: 'Pending',
+  customerStatusPending: 'Pending',
+  customerStatusConfirmed: 'Confirmed',
+  customerStatusCancelled: 'Cancelled',
+  customerTypeExperience: 'Experience',
+  customerTypeClass: 'Class',
+  customerTypeProduct: 'Product',
+  customerJoinDate: 'Member since',
+  customerEmail: 'Email',
 
   adminManualBooking: 'Manual Booking',
   adminManualBookingTitle: 'Create Manual Booking',
@@ -880,6 +1012,13 @@ const es: TranslationKeys = {
   svc4Title: 'Alojamiento',
   svc4Desc: 'Asociación con posadas y residencias en Salinópolis y Ajuruteua.',
   svc4Price: 'Bajo consulta',
+  svcBook: 'Agendar',
+  svcBookTitle: 'Agendar Servicio',
+  svcBookSuccess: '¡Solicitud enviada con éxito! Nos pondremos en contacto.',
+  svcDateLabel: 'Fecha preferida',
+  svcSchedule: 'Agendar ahora',
+  svcRequired: 'Campos obligatorios',
+  svcServiceLabel: 'Servicio',
 
   footerAbout: 'Escuela de Kitesurf y Expediciones en la Amazonia Atlántica. Fundada por Pingo, Pablo y Rafael.',
   footerContact: 'Contacto',
@@ -1004,6 +1143,23 @@ const es: TranslationKeys = {
   cartDays: 'días',
   cartPerNight: 'por noche',
   cartSelectDates: 'Selecciona las fechas del viaje',
+  cartSummary: 'Resumen',
+  cartAccommodation: 'Alojamiento',
+  cartItemCount: 'artículos en el carrito',
+  cartMyBookings: 'Mis Reservas',
+  navHome: 'Inicio',
+  checkoutContactInfo: 'Información de Contacto',
+  checkoutName: 'Nombre',
+  checkoutEmail: 'Correo',
+  checkoutPhone: 'Teléfono',
+  checkoutMessage: 'Mensaje',
+  checkoutNameRequired: 'Ingresa tu nombre.',
+  checkoutEmailRequired: 'Ingresa tu correo.',
+  checkoutEmailInvalid: 'Correo inválido.',
+  checkoutError: 'Error al crear reserva(s).',
+  checkoutSuccess: '¡Reserva confirmada!',
+  checkoutSuccessDetail: 'Recibirás un correo de confirmação pronto. Sigue tus reservas en el panel.',
+  checkoutProcessing: 'Procesando...',
 
   adminSave: 'Guardar',
   adminCancel: 'Cancelar',
@@ -1028,6 +1184,7 @@ const es: TranslationKeys = {
   contactSubtitle: '¿Dudas? Envíanos un mensaje.',
   contactName: 'Nombre',
   contactEmail: 'Correo',
+  contactPhone: 'Teléfono',
   contactMessage: 'Mensaje',
   contactSend: 'Enviar Mensaje',
   contactSuccess: '¡Mensaje enviado con éxito!',
@@ -1068,6 +1225,25 @@ const es: TranslationKeys = {
   customerPhone: 'Teléfono',
   customerSave: 'Guardar Cambios',
   customerSaved: '¡Perfil actualizado!',
+  customerError: 'Error al guardar. Inténtalo de nuevo.',
+  customerCancelBooking: 'Cancelar',
+  customerCancelConfirm: '¿Estás seguro de que deseas cancelar esta reserva?',
+  customerCancelled: 'Reserva cancelada.',
+  customerBookingDate: 'Fecha',
+  customerBookingType: 'Tipo',
+  customerBookingStatus: 'Estado',
+  customerBookingNotes: 'Notas',
+  customerStatsTotal: 'Total',
+  customerStatsConfirmed: 'Confirmadas',
+  customerStatsPending: 'Pendientes',
+  customerStatusPending: 'Pendiente',
+  customerStatusConfirmed: 'Confirmada',
+  customerStatusCancelled: 'Cancelada',
+  customerTypeExperience: 'Experiencia',
+  customerTypeClass: 'Clase',
+  customerTypeProduct: 'Producto',
+  customerJoinDate: 'Miembro desde',
+  customerEmail: 'Correo',
 
   adminManualBooking: 'Reserva Manual',
   adminManualBookingTitle: 'Crear Reserva Manual',
