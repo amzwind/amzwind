@@ -6,7 +6,7 @@ import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostBut
 type Product = Tables<'products'>
 type Category = Tables<'categories'>
 
-export default function ProductsManager() {
+export function ProductsManager() {
   const { t } = useLanguage()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])

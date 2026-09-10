@@ -7,7 +7,7 @@ type Booking = Tables<'bookings'>
 
 type Filter = 'all' | 'pending' | 'confirmed' | 'cancelled'
 
-export default function BookingsManager() {
+export function BookingsManager() {
   const { t } = useLanguage()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [filter, setFilter] = useState<Filter>('all')
