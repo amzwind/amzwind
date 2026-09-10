@@ -2,7 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { supabase } from '../services/supabase'
 
-const fallbackSlides = [
+interface HeroSlide {
+  id: string
+  title: string
+  subtitle: string | null
+  media_url: string
+  media_type: 'image' | 'video'
+  cta_text: string | null
+  cta_link: string | null
+}
+
+const fallbackSlides: HeroSlide[] = [
   {
     id: 'default-1',
     title: 'Amazônia Atlântica & Kitesurf',
@@ -15,7 +25,7 @@ const fallbackSlides = [
 ]
 
 export default function Hero() {
-  const [slides, setSlides] = useState<any[]>(fallbackSlides)
+  const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides)
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const heroRef = useRef<HTMLDivElement>(null)
@@ -26,13 +36,13 @@ export default function Hero() {
     async function fetchHeroSlides() {
       try {
         const { data, error } = await supabase
-          .from('hero_slides')
+          .from('hero_slides' as any)
           .select('*')
           .order('display_order', { ascending: true })
 
         if (error) throw error
         if (data && data.length > 0) {
-          setSlides(data)
+          setSlides(data as unknown as HeroSlide[])
         }
       } catch (err) {
         console.error('Usando slides padrão da Hero:', err)

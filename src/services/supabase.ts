@@ -353,6 +353,41 @@ export type Database = {
           updated_at?: string
         }
       }
+      hero_slides: {
+        Row: {
+          id: string
+          title: string
+          subtitle: string | null
+          media_url: string
+          media_type: 'image' | 'video'
+          cta_text: string | null
+          cta_link: string | null
+          display_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          subtitle?: string | null
+          media_url: string
+          media_type?: 'image' | 'video'
+          cta_text?: string | null
+          cta_link?: string | null
+          display_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          subtitle?: string | null
+          media_url?: string
+          media_type?: 'image' | 'video'
+          cta_text?: string | null
+          cta_link?: string | null
+          display_order?: number
+          created_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {
