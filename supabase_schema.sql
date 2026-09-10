@@ -154,6 +154,31 @@ CREATE TRIGGER update_bookings_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================
+-- 6a. TABELA: classes
+-- Pacotes de aulas de kitesurf
+-- ============================================================
+
+CREATE TABLE classes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  price NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  duration TEXT,
+  level TEXT,
+  image_url TEXT,
+  video_url TEXT,
+  gallery_urls JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_classes_created_at ON classes(created_at DESC);
+
+CREATE TRIGGER update_classes_updated_at
+  BEFORE UPDATE ON classes
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================
 -- 6b. TABELA: financial_accounts
 -- Contas a pagar e a receber
 -- ============================================================
@@ -218,6 +243,7 @@ ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE experiences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE financial_accounts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE about_page ENABLE ROW LEVEL SECURITY;
 
@@ -359,6 +385,31 @@ CREATE POLICY "Admins can update any booking"
 -- Admins podem excluir reservas
 CREATE POLICY "Admins can delete bookings"
   ON bookings FOR DELETE
+  USING (is_admin());
+
+-- ----------------------------------------------------------
+-- POLICIES: classes
+-- ----------------------------------------------------------
+
+-- Leitura pública para todos
+CREATE POLICY "Public can view classes"
+  ON classes FOR SELECT
+  USING (TRUE);
+
+-- Apenas admins podem inserir
+CREATE POLICY "Admins can insert classes"
+  ON classes FOR INSERT
+  WITH CHECK (is_admin());
+
+-- Apenas admins podem atualizar
+CREATE POLICY "Admins can update classes"
+  ON classes FOR UPDATE
+  USING (is_admin())
+  WITH CHECK (is_admin());
+
+-- Apenas admins podem excluir
+CREATE POLICY "Admins can delete classes"
+  ON classes FOR DELETE
   USING (is_admin());
 
 -- ----------------------------------------------------------

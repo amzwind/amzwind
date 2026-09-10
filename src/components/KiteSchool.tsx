@@ -58,16 +58,14 @@ export default function KiteSchool() {
           {aulas.map((aula) => (
             <div
               key={aula.titulo}
-              className={`group rounded-3xl p-6 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden ${
-                aula.destaque
+              className={`group rounded-3xl p-6 transition-all duration-500 hover:-translate-y-2 relative overflow-hidden ${aula.destaque
                   ? 'bg-gradient-to-br from-amz-terra via-amz-terra to-amz-terra-dark text-white shadow-2xl scale-[1.02] ring-2 ring-amz-dourado/30'
                   : 'bg-amz-areia/50 dark:bg-white/5 shadow-md hover:shadow-xl backdrop-blur-sm border border-amz-areia-dark/30 dark:border-white/5'
-              }`}
+                }`}
             >
               {/* Glassmorphism decorative element */}
-              <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${
-                aula.destaque ? 'bg-amz-dourado/20 opacity-100' : 'bg-amz-oceano/10 opacity-0 group-hover:opacity-100'
-              }`} />
+              <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${aula.destaque ? 'bg-amz-dourado/20 opacity-100' : 'bg-amz-oceano/10 opacity-0 group-hover:opacity-100'
+                }`} />
 
               {aula.destaque && (
                 <span className="relative inline-block text-xs font-bold uppercase tracking-wider bg-amz-dourado text-white px-4 py-1.5 rounded-full mb-4 shadow-lg">
@@ -91,11 +89,10 @@ export default function KiteSchool() {
               <ul className="relative space-y-3 mb-8">
                 {aula.inclui.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      aula.destaque
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${aula.destaque
                         ? 'bg-amz-dourado/20'
                         : 'bg-amz-bio/10 dark:bg-amz-bio/20'
-                    }`}>
+                      }`}>
                       <svg
                         className={`w-3 h-3 ${aula.destaque ? 'text-amz-dourado' : 'text-amz-bio'}`}
                         fill="currentColor"
@@ -117,11 +114,10 @@ export default function KiteSchool() {
 
               <button
                 onClick={() => handleSchedule(aula)}
-                className={`relative w-full py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 ${
-                  aula.destaque
+                className={`relative w-full py-3.5 rounded-2xl font-semibold text-sm transition-all duration-300 ${aula.destaque
                     ? 'bg-white text-amz-terra hover:bg-amz-areia hover:shadow-lg'
                     : 'bg-amz-terra text-white hover:bg-amz-terra-dark hover:shadow-lg dark:bg-amz-areia dark:text-amz-terra-dark dark:hover:bg-white'
-                }`}
+                  }`}
               >
                 {t.ksSchedule}
               </button>

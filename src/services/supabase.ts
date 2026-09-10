@@ -312,6 +312,47 @@ export type Database = {
           updated_at?: string
         }
       }
+      classes: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          price: number
+          duration: string | null
+          level: string | null
+          image_url: string | null
+          video_url: string | null
+          gallery_urls: string[]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          price?: number
+          duration?: string | null
+          level?: string | null
+          image_url?: string | null
+          video_url?: string | null
+          gallery_urls?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          price?: number
+          duration?: string | null
+          level?: string | null
+          image_url?: string | null
+          video_url?: string | null
+          gallery_urls?: string[]
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {
