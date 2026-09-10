@@ -170,17 +170,27 @@ export function ConfirmModal({ title, message, onConfirm, onCancel, danger }: { 
 
 export function FileUpload({ label, value, onUpload, bucket = 'experiences', accept = 'image/*' }: { label: string; value: string; onUpload: (url: string) => void; bucket?: string; accept?: string }) {
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const isVideo = accept?.includes('video') || value?.endsWith('.mp4') || value?.endsWith('.webm') || value?.includes('video')
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
+    setUploadError(null)
     const ext = file.name.split('.').pop() || 'jpg'
     const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const { error } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type })
-    if (!error) {
+    if (error) {
+      setUploadError(error.message)
+    } else {
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path)
-      if (urlData?.publicUrl) onUpload(urlData.publicUrl)
+      if (urlData?.publicUrl) {
+        onUpload(urlData.publicUrl)
+      } else {
+        setUploadError('Não foi possível obter a URL do arquivo.')
+      }
     }
     setUploading(false)
   }
@@ -188,10 +198,19 @@ export function FileUpload({ label, value, onUpload, bucket = 'experiences', acc
   return (
     <FormField label={label}>
       <div className="space-y-2">
-        {value && <img src={value} alt="" className="w-full h-32 rounded-xl object-cover" />}
+        {value && (
+          isVideo ? (
+            <video src={value} className="w-full h-32 rounded-xl object-cover" muted autoPlay loop playsInline />
+          ) : (
+            <img src={value} alt="" className="w-full h-32 rounded-xl object-cover" />
+          )
+        )}
+        {uploadError && (
+          <p className="text-xs text-red-500 dark:text-red-400">{uploadError}</p>
+        )}
         <label className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-dashed border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-500 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-white/[0.05] cursor-pointer transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-          {uploading ? 'Enviando...' : 'Escolher imagem'}
+          {uploading ? 'Enviando...' : isVideo ? 'Escolher vídeo' : 'Escolher imagem'}
           <input type="file" accept={accept} onChange={handleFile} className="hidden" />
         </label>
       </div>

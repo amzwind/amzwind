@@ -36,6 +36,7 @@ export type Database = {
         Row: {
           id: string
           full_name: string | null
+          bio: string | null
           avatar_url: string | null
           phone: string | null
           role: 'customer' | 'admin'
@@ -45,6 +46,7 @@ export type Database = {
         Insert: {
           id: string
           full_name?: string | null
+          bio?: string | null
           avatar_url?: string | null
           phone?: string | null
           role?: 'customer' | 'admin'
@@ -54,6 +56,7 @@ export type Database = {
         Update: {
           id?: string
           full_name?: string | null
+          bio?: string | null
           avatar_url?: string | null
           phone?: string | null
           role?: 'customer' | 'admin'

@@ -12,6 +12,7 @@ import ExperienceDetail from './pages/ExperienceDetail'
 import ProductCategory from './pages/ProductCategory'
 import ProductDetail from './pages/ProductDetail'
 import CustomerDashboard from './pages/CustomerDashboard'
+import UserProfile from './pages/UserProfile'
 import CartCheckout from './components/CartCheckout'
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />
+              <Route path="/perfil" element={<UserProfile />} />
               <Route path="/experiencia/:id" element={<ExperienceDetail />} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />

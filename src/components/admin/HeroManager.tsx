@@ -93,20 +93,23 @@ export function HeroManager() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    if (!formData.media_url.trim()) {
+    const mediaUrl = formData.media_url.trim()
+    const title = formData.title.trim()
+
+    if (!mediaUrl) {
       setToast({ message: 'Informe ou envie a mídia de fundo.', type: 'error' })
       return
     }
-    if (!formData.title.trim()) {
+    if (!title) {
       setToast({ message: 'O título é obrigatório.', type: 'error' })
       return
     }
 
     setSaving(true)
     const payload = {
-      title: formData.title.trim(),
+      title,
       subtitle: formData.subtitle.trim() || null,
-      media_url: formData.media_url.trim(),
+      media_url: mediaUrl,
       media_type: formData.media_type,
       cta_text: formData.cta_text.trim() || null,
       cta_link: formData.cta_link.trim() || null,
@@ -268,7 +271,7 @@ export function HeroManager() {
               <Input
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                 placeholder="Ex: Expedições na Costa Norte"
               />
             </FormField>
@@ -276,7 +279,7 @@ export function HeroManager() {
             <FormField label="Subtítulo">
               <Input
                 value={formData.subtitle}
-                onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, subtitle: e.target.value }))}
                 placeholder="Ex: Sinta a força dos ventos alísios"
               />
             </FormField>
@@ -285,7 +288,7 @@ export function HeroManager() {
               <FormField label="Tipo de Mídia">
                 <Select
                   value={formData.media_type}
-                  onChange={(e) => setFormData({ ...formData, media_type: e.target.value as 'image' | 'video' })}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, media_type: e.target.value as 'image' | 'video' }))}
                 >
                   <option value="image">Imagem</option>
                   <option value="video">Vídeo</option>
@@ -296,7 +299,7 @@ export function HeroManager() {
                   type="number"
                   min="0"
                   value={formData.display_order}
-                  onChange={(e) => setFormData({ ...formData, display_order: e.target.value })}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, display_order: e.target.value }))}
                 />
               </FormField>
             </div>
@@ -306,7 +309,7 @@ export function HeroManager() {
               label="Fazer Upload do Arquivo"
               accept={formData.media_type === 'image' ? 'image/*' : 'video/mp4,video/webm'}
               value={formData.media_url}
-              onUpload={(url) => setFormData({ ...formData, media_url: url })}
+              onUpload={(url) => setFormData((prev) => ({ ...prev, media_url: url }))}
               bucket="hero"
             />
 
@@ -314,7 +317,7 @@ export function HeroManager() {
               <Input
                 type="url"
                 value={formData.media_url}
-                onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, media_url: e.target.value }))}
                 placeholder="https://exemplo.com/imagem.jpg"
               />
             </FormField>
@@ -323,14 +326,14 @@ export function HeroManager() {
               <FormField label="Texto do Botão (CTA)">
                 <Input
                   value={formData.cta_text}
-                  onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, cta_text: e.target.value }))}
                   placeholder="Explorar Roteiros"
                 />
               </FormField>
               <FormField label="Link do Botão">
                 <Input
                   value={formData.cta_link}
-                  onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, cta_link: e.target.value }))}
                   placeholder="#experiencias"
                 />
               </FormField>
