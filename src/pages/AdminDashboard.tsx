@@ -1,254 +1,89 @@
-import React, { useEffect, useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../services/supabase'
+import { supabase, type Tables } from '../services/supabase'
+import { useLanguage } from '../contexts/LanguageContext'
+import { useTheme } from '../contexts/ThemeContext'
+import ExperiencesManager from '../components/admin/ExperiencesManager'
+import ProductsManager from '../components/admin/ProductsManager'
+import ClassesManager from '../components/admin/ClassesManager'
+import BookingsManager from '../components/admin/BookingsManager'
+import CartCheckout from '../components/CartCheckout'
+import MetricCard, { StatusBadge, Toast } from '../components/admin/SharedUI'
+
+type Experience = Tables<'experiences'>
+type Booking = Tables<'bookings'>
+type Product = Tables<'products'>
+
+type AdminTab = 'dashboard' | 'experiences' | 'products' | 'classes' | 'bookings' | 'cart'
+
+const NAV_ITEMS: { key: AdminTab; icon: string }[] = [
+  { key: 'dashboard', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+  { key: 'experiences', icon: 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z' },
+  { key: 'products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
+  { key: 'classes', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
+  { key: 'bookings', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+  { key: 'cart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z' },
+]
 
 export function AdminDashboard() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
+  const { theme, toggleTheme } = useTheme()
+
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [activeTab, setActiveTab] = useState<'stats' | 'experiences' | 'bookings'>('stats')
+  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Estados para dados
-  const [experiences, setExperiences] = useState<any[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [bookings, setBookings] = useState<any[]>([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [uploading, setUploading] = useState(false)
-
-  // Estado do Formulário (Edição / Criação)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [title, setTitle] = useState('')
-  const [slug, setSlug] = useState('')
-  const [price, setPrice] = useState('')
-  const [description, setDescription] = useState('')
-  const [community, setCommunity] = useState('')
-  const [level, setLevel] = useState('Intermediário')
-  const [categoryId, setCategoryId] = useState('')
-
-  // Nova Categoria Modal State
-  const [isNewCategoryMode, setIsNewCategoryMode] = useState(false)
-  const [newCategoryName, setNewCategoryName] = useState('')
-
-  // URLs / Arquivos de Mídia
-  const [imageUrl, setImageUrl] = useState('')
-  const [videoUrl, setVideoUrl] = useState('')
-  const [galleryUrls, setGalleryUrls] = useState<string[]>([])
+  const [experiences, setExperiences] = useState<Experience[]>([])
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
-    checkAdminAccess()
-  }, [])
-
-  const checkAdminAccess = async () => {
-    try {
+    const checkAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-
-      if (!session) {
-        navigate('/login')
-        return
-      }
-
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single()
-
-      if (error || profile?.role !== 'admin') {
-        alert('Acesso restrito a administradores.')
-        navigate('/')
-        return
-      }
-
+      if (!session) { navigate('/login', { replace: true }); return }
+      const { data } = await supabase.from('profiles').select('role').eq('id', session.user.id).single()
+      if (!data || data.role !== 'admin') { await supabase.auth.signOut(); navigate('/login', { replace: true }); return }
       setIsAdmin(true)
-      loadDashboardData()
-    } catch (err) {
-      console.error('Erro ao verificar permissões:', err)
-      navigate('/login')
-    } finally {
       setLoading(false)
     }
-  }
+    checkAdmin()
+  }, [navigate])
 
-  const loadDashboardData = async () => {
-    try {
-      const { data: expData } = await supabase
-        .from('experiences')
-        .select('*, categories(name)')
-        .order('created_at', { ascending: false })
-
-      if (expData) setExperiences(expData)
-
-      const { data: catData } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name', { ascending: true })
-
-      if (catData) setCategories(catData)
-
-      const { data: bookData } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (bookData) setBookings(bookData)
-    } catch (err) {
-      console.error('Erro ao carregar dados do painel:', err)
+  useEffect(() => {
+    if (!isAdmin) return
+    async function load() {
+      const [eRes, bRes, pRes] = await Promise.all([
+        supabase.from('experiences').select('*').order('created_at', { ascending: false }),
+        supabase.from('bookings').select('*').order('created_at', { ascending: false }),
+        supabase.from('products').select('*').order('created_at', { ascending: false }),
+      ])
+      if (eRes.data) setExperiences(eRes.data)
+      if (bRes.data) setBookings(bRes.data)
+      if (pRes.data) setProducts(pRes.data)
     }
-  }
+    load()
+  }, [isAdmin])
 
-  // Função genérica de upload para o Supabase Storage (Corrigida)
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'gallery') => {
-    const files = e.target.files
-    if (!files || files.length === 0) return
+  const handleSignOut = useCallback(async () => {
+    await supabase.auth.signOut()
+    navigate('/login', { replace: true })
+  }, [navigate])
 
-    setUploading(true)
-    try {
-      const bucketName = 'experiences'
-
-      if (type === 'gallery') {
-        const uploadedUrls: string[] = [...galleryUrls]
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i]
-          const fileExt = file.name.split('.').pop()
-          const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-          const filePath = `gallery/${fileName}`
-
-          const { error: uploadError } = await supabase.storage.from(bucketName).upload(filePath, file)
-          if (uploadError) throw uploadError
-
-          const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath)
-          if (data?.publicUrl) uploadedUrls.push(data.publicUrl)
-        }
-        setGalleryUrls(uploadedUrls)
-      } else {
-        const file = files[0]
-        const fileExt = file.name.split('.').pop()
-        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
-        const filePath = `${fileName}`
-
-        const { error: uploadError } = await supabase.storage.from(bucketName).upload(filePath, file)
-        if (uploadError) throw uploadError
-
-        const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath)
-        if (data?.publicUrl) {
-          if (type === 'image') setImageUrl(data.publicUrl)
-          if (type === 'video') setVideoUrl(data.publicUrl)
-        }
-      }
-    } catch (err: any) {
-      alert('Erro ao enviar arquivo: ' + err.message)
-    } finally {
-      setUploading(false)
-    }
-  }
-
-  const openCreateModal = () => {
-    setEditingId(null)
-    setTitle('')
-    setSlug('')
-    setPrice('')
-    setDescription('')
-    setCommunity('')
-    setLevel('Intermediário')
-    setImageUrl('')
-    setVideoUrl('')
-    setGalleryUrls([])
-    setCategoryId(categories[0]?.id || '')
-    setIsNewCategoryMode(false)
-    setIsModalOpen(true)
-  }
-
-  const openEditModal = (exp: any) => {
-    setEditingId(exp.id)
-    setTitle(exp.title || '')
-    setSlug(exp.slug || '')
-    setPrice(exp.price?.toString() || '')
-    setDescription(exp.description || '')
-    setCommunity(exp.community || '')
-    setLevel(exp.level || 'Intermediário')
-    setImageUrl(exp.image_url || '')
-    setVideoUrl(exp.video_url || '')
-    setGalleryUrls(exp.gallery_urls || [])
-    setCategoryId(exp.category_id || '')
-    setIsNewCategoryMode(false)
-    setIsModalOpen(true)
-  }
-
-  const handleSaveExperience = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      let finalCategoryId = categoryId
-
-      if (isNewCategoryMode && newCategoryName.trim()) {
-        const newSlug = newCategoryName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
-        const { data: newCat, error: catError } = await supabase
-          .from('categories')
-          .insert({ name: newCategoryName.trim(), slug: newSlug, type: 'experience' })
-          .select()
-          .single()
-
-        if (catError) throw catError
-        if (newCat) {
-          finalCategoryId = newCat.id
-          await loadDashboardData()
-        }
-      }
-
-      if (!finalCategoryId) {
-        alert('Selecione ou crie uma categoria válida.')
-        return
-      }
-
-      const generatedSlug = slug || title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
-
-      const payload = {
-        title,
-        slug: generatedSlug,
-        price: parseFloat(price) || 0,
-        description,
-        community,
-        level,
-        category_id: finalCategoryId,
-        image_url: imageUrl,
-        video_url: videoUrl,
-        gallery_urls: galleryUrls,
-        featured: true
-      }
-
-      if (editingId) {
-        const { error } = await supabase.from('experiences').update(payload).eq('id', editingId)
-        if (error) throw error
-        alert('Experiência atualizada com sucesso!')
-      } else {
-        const { error } = await supabase.from('experiences').insert(payload)
-        if (error) throw error
-        alert('Experiência criada com sucesso!')
-      }
-
-      setIsModalOpen(false)
-      loadDashboardData()
-    } catch (err: any) {
-      alert('Erro ao salvar experiência: ' + err.message)
-    }
-  }
-
-  const handleDeleteExperience = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta experiência?')) return
-    try {
-      const { error } = await supabase.from('experiences').delete().eq('id', id)
-      if (error) throw error
-      alert('Experiência excluída com sucesso!')
-      loadDashboardData()
-    } catch (err: any) {
-      alert('Erro ao excluir: ' + err.message)
-    }
-  }
+  const pendingCount = bookings.filter((b) => b.status === 'pending').length
+  const revenue = bookings.filter((b) => b.status === 'confirmed').reduce((s, b) => {
+    const exp = experiences.find((e) => e.id === b.item_id)
+    return s + (exp?.price || 0)
+  }, 0)
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center">
-        <div className="text-amz-terra dark:text-amz-areia font-maybug text-xl animate-pulse">
-          Carregando Painel Administrativo...
+      <div className="min-h-screen bg-gray-50 dark:bg-[#0a0604] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-amz-dourado border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-400 dark:text-white/40 font-medium">Amazon Wind Admin</p>
         </div>
       </div>
     )
@@ -256,324 +91,195 @@ export function AdminDashboard() {
 
   if (!isAdmin) return null
 
+  const navLabel: Record<AdminTab, string> = {
+    dashboard: t.adminDashboard,
+    experiences: t.adminExperiences,
+    products: t.adminProducts,
+    classes: t.adminClasses,
+    bookings: t.adminBookings,
+    cart: t.cartTitle,
+  }
+
   return (
-    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark text-amz-terra-dark dark:text-amz-areia pb-20">
-      <header className="bg-white dark:bg-amz-terra/40 shadow-sm border-b border-amber-900/10 px-6 py-4 flex justify-between items-center">
-        <div>
-          <h1 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia">Amazon Wind — Admin</h1>
-          <p className="text-xs uppercase tracking-widest text-amz-terra-light dark:text-amz-areia/60">Gestão Operacional de Expedições</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0604] flex transition-colors duration-300">
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* ═══ SIDEBAR (Desktop) ═══ */}
+      <aside className="hidden lg:flex flex-col w-64 bg-white dark:bg-[#110b06] border-r border-gray-200 dark:border-white/[0.06]">
+        <div className="px-5 py-5 border-b border-gray-100 dark:border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amz-dourado flex items-center justify-center">
+              <span className="text-white font-bold text-sm">AW</span>
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-gray-900 dark:text-white">Amazon Wind</h1>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-white/30">Admin Panel</p>
+            </div>
+          </div>
         </div>
-        <button
-          onClick={() => navigate('/')}
-          className="text-sm font-semibold px-4 py-2 rounded-full border border-amz-terra/30 dark:border-amz-areia/30 hover:bg-amz-terra hover:text-white transition cursor-pointer"
-        >
-          Voltar ao Site
-        </button>
-      </header>
 
-      {/* Tabs */}
-      <div className="max-w-6xl mx-auto px-6 mt-6 flex gap-4 border-b border-amber-900/10 pb-4">
-        <button
-          onClick={() => setActiveTab('stats')}
-          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'stats' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
-        >
-          Visão Geral
-        </button>
-        <button
-          onClick={() => setActiveTab('experiences')}
-          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'experiences' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
-        >
-          Experiências & Downwinds ({experiences.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('bookings')}
-          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'bookings' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
-        >
-          Reservas ({bookings.length})
-        </button>
-      </div>
-
-      <main className="max-w-6xl mx-auto px-6 mt-8">
-        {activeTab === 'stats' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Total de Experiências</h3>
-              <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{experiences.length}</p>
-            </div>
-            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Reservas Registradas</h3>
-              <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{bookings.length}</p>
-            </div>
-            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
-              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Status do Banco</h3>
-              <p className="text-lg font-semibold mt-2 text-emerald-600 dark:text-emerald-400">● Conectado (Supabase)</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'experiences' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-maybug">Gerenciar Roteiros e Downwinds</h2>
-              <button
-                onClick={openCreateModal}
-                className="btn-primary text-sm py-2 px-4 cursor-pointer"
-              >
-                + Nova Experiência
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {experiences.map((exp) => (
-                <div key={exp.id} className="bg-white dark:bg-amz-terra/30 p-5 rounded-xl border border-amber-900/10 flex justify-between items-center">
-                  <div className="flex items-center gap-4">
-                    {exp.image_url && (
-                      <img src={exp.image_url} alt={exp.title} className="w-16 h-16 object-cover rounded-lg" />
-                    )}
-                    <div>
-                      <h3 className="font-bold text-lg">{exp.title}</h3>
-                      <p className="text-xs text-amz-terra-light dark:text-amz-areia/70">Local: {exp.community || 'Geral'}</p>
-                      <p className="text-sm font-semibold text-amz-terra dark:text-amz-dourado mt-1">R$ {exp.price}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEditModal(exp)}
-                      className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 cursor-pointer"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDeleteExperience(exp.id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 cursor-pointer"
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {experiences.length === 0 && (
-                <p className="text-amz-terra-light dark:text-amz-areia/60 italic">Nenhuma experiência cadastrada ainda.</p>
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                activeTab === item.key
+                  ? 'bg-amz-dourado/10 text-amz-dourado'
+                  : 'text-gray-500 dark:text-white/40 hover:bg-gray-50 dark:hover:bg-white/[0.03] hover:text-gray-900 dark:hover:text-white/60'
+              }`}
+            >
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+              </svg>
+              {navLabel[item.key]}
+              {item.key === 'bookings' && pendingCount > 0 && (
+                <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center">{pendingCount}</span>
               )}
-            </div>
-          </div>
-        )}
+              {item.key === 'cart' && (
+                <span className="ml-auto bg-amz-dourado text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">+</span>
+              )}
+            </button>
+          ))}
+        </nav>
 
-        {activeTab === 'bookings' && (
-          <div>
-            <h2 className="text-xl font-maybug mb-6">Gerenciamento de Reservas</h2>
-            {bookings.length === 0 ? (
-              <p className="text-amz-terra-light dark:text-amz-areia/60 italic">Nenhuma reserva registrada no momento.</p>
-            ) : (
-              <div className="space-y-3">
-                {bookings.map((booking) => (
-                  <div key={booking.id} className="bg-white dark:bg-amz-terra/30 p-4 rounded-xl border border-amber-900/10 flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold text-sm">Tipo: {booking.item_type}</p>
-                      <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">Data: {new Date(booking.booking_date).toLocaleDateString()}</p>
-                    </div>
-                    <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold uppercase">
-                      {booking.status}
-                    </span>
-                  </div>
-                ))}
+        <div className="px-3 py-4 border-t border-gray-100 dark:border-white/[0.06] space-y-1">
+          <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-white/40 hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-all">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {theme === 'dark'
+                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />}
+            </svg>
+            {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
+          <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-white/40 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            {t.adminLogout}
+          </button>
+        </div>
+      </aside>
+
+      {/* ═══ MAIN CONTENT ═══ */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile header */}
+        <header className="lg:hidden sticky top-0 z-30 bg-white/80 dark:bg-[#0a0604]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] px-4 py-3 flex items-center justify-between">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 -ml-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5">
+            <svg className="w-5 h-5 text-gray-700 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {sidebarOpen
+                ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
+            </svg>
+          </button>
+          <h1 className="font-bold text-gray-900 dark:text-white text-sm">{navLabel[activeTab]}</h1>
+          <button onClick={toggleTheme} className="p-2 -mr-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5">
+            {theme === 'dark'
+              ? <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              : <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>}
+          </button>
+        </header>
+
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="lg:hidden fixed inset-0 z-40 flex">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+            <div className="relative w-72 bg-white dark:bg-[#110b06] shadow-2xl">
+              <div className="px-5 py-5 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amz-dourado flex items-center justify-center"><span className="text-white font-bold text-sm">AW</span></div>
+                  <div><h1 className="text-sm font-bold text-gray-900 dark:text-white">Amazon Wind</h1><p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-white/30">Admin</p></div>
+                </div>
+                <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5"><svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
               </div>
-            )}
-          </div>
-        )}
-      </main>
-
-      {/* Modal de Criação / Edição */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white dark:bg-[#3D1D0F] max-w-2xl w-full p-6 rounded-2xl shadow-xl border border-amber-900/20 my-8 max-h-[90vh] overflow-y-auto">
-            <h3 className="font-maybug text-2xl mb-4 text-amz-terra dark:text-amz-dourado">
-              {editingId ? 'Editar Experiência / Roteiro' : 'Adicionar Nova Experiência'}
-            </h3>
-
-            <form onSubmit={handleSaveExperience} className="space-y-4">
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1">Título do Downwind / Roteiro</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                  placeholder="Ex: Ajuruteua > Salinas"
-                />
-              </div>
-
-              {/* Seletor de Categoria com opção de criar nova */}
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs uppercase font-semibold">Categoria</label>
-                  <button
-                    type="button"
-                    onClick={() => setIsNewCategoryMode(!isNewCategoryMode)}
-                    className="text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline cursor-pointer"
-                  >
-                    {isNewCategoryMode ? '← Selecionar existente' : '+ Criar nova categoria'}
+              <nav className="px-3 py-4 space-y-1">
+                {NAV_ITEMS.map((item) => (
+                  <button key={item.key} onClick={() => { setActiveTab(item.key); setSidebarOpen(false) }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === item.key ? 'bg-amz-dourado/10 text-amz-dourado' : 'text-gray-500 dark:text-white/40 hover:bg-gray-50 dark:hover:bg-white/[0.03]'}`}>
+                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} /></svg>
+                    {navLabel[item.key]}
                   </button>
-                </div>
+                ))}
+              </nav>
+              <div className="px-3 py-4 border-t border-gray-100 dark:border-white/[0.06] space-y-1">
+                <button onClick={handleSignOut} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-white/40 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500 transition-all">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  {t.adminLogout}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-                {isNewCategoryMode ? (
-                  <input
-                    type="text"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Nome da nova categoria..."
-                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                  />
+        {/* Page content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          {activeTab === 'dashboard' && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.adminOverview}</h1>
+                <p className="text-sm text-gray-500 dark:text-white/40 mt-1">{t.adminQuickActions}</p>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <MetricCard
+                  label={t.adminTotalExperiences}
+                  value={experiences.length}
+                  color="text-amz-dourado"
+                  icon={<svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>}
+                />
+                <MetricCard
+                  label={t.adminTotalProducts}
+                  value={products.length}
+                  color="text-amz-oceano"
+                  icon={<svg className="w-5 h-5 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>}
+                />
+                <MetricCard
+                  label={t.adminTotalBookings}
+                  value={bookings.length}
+                  color="text-amz-bio"
+                  icon={<svg className="w-5 h-5 text-amz-bio" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>}
+                />
+                <MetricCard
+                  label={t.adminRevenue}
+                  value={`R$ ${revenue.toLocaleString('pt-BR')}`}
+                  color="text-emerald-600"
+                  icon={<svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                />
+              </div>
+
+              {/* Recent bookings */}
+              <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100 dark:border-white/[0.06]">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t.adminRecentBookings}</h3>
+                </div>
+                {bookings.length === 0 ? (
+                  <p className="p-8 text-center text-sm text-gray-400 dark:text-white/30">{t.adminNoBookings}</p>
                 ) : (
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-white dark:bg-[#2d150b] text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  <div className="divide-y divide-gray-50 dark:divide-white/[0.03]">
+                    {bookings.slice(0, 8).map((b) => (
+                      <div key={b.id} className="px-5 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-amz-dourado/10 flex items-center justify-center text-sm">
+                            {b.item_type === 'experience' ? '🌊' : b.item_type === 'class' ? '🎓' : '📦'}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white">{b.item_type === 'experience' ? 'Experiência' : b.item_type === 'class' ? 'Aula' : 'Produto'}</p>
+                            <p className="text-xs text-gray-400 dark:text-white/30">{new Date(b.created_at).toLocaleDateString('pt-BR')}</p>
+                          </div>
+                        </div>
+                        <StatusBadge status={b.status} />
+                      </div>
                     ))}
-                  </select>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs uppercase font-semibold mb-1">Preço (R$)</label>
-                  <input
-                    type="number"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                    placeholder="450.00"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs uppercase font-semibold mb-1">Nível de Dificuldade</label>
-                  <input
-                    type="text"
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                    placeholder="Ex: Intermediário / Avançado"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1">Comunidade / Local Base</label>
-                <input
-                  type="text"
-                  value={community}
-                  onChange={(e) => setCommunity(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                  placeholder="Ex: Salinópolis - PA"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase font-semibold mb-1">Descrição</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
-                  placeholder="Detalhes da expedição..."
-                />
-              </div>
-
-              {/* Upload de Imagem de Capa */}
-              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
-                <label className="block text-xs uppercase font-semibold mb-2">Imagem de Capa (Principal)</label>
-                {imageUrl && (
-                  <div className="mb-2 flex items-center gap-2">
-                    <img src={imageUrl} alt="Capa" className="w-16 h-16 object-cover rounded-lg border" />
-                    <span className="text-xs truncate max-w-xs">{imageUrl}</span>
                   </div>
                 )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileUpload(e, 'image')}
-                  className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer"
-                />
               </div>
+            </div>
+          )}
 
-              {/* Upload de Vídeo */}
-              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
-                <label className="block text-xs uppercase font-semibold mb-2">Vídeo Promocional (Arquivo ou URL)</label>
-                {videoUrl && (
-                  <p className="text-xs truncate text-emerald-600 mb-2">Vídeo configurado: {videoUrl}</p>
-                )}
-                <div className="flex gap-2">
-                  <input
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => handleFileUpload(e, 'video')}
-                    className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer flex-1"
-                  />
-                </div>
-                <input
-                  type="url"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="Ou cole o link do YouTube / Vimeo aqui..."
-                  className="w-full mt-2 px-3 py-1.5 rounded-lg border border-amber-900/20 bg-transparent text-xs focus:outline-none"
-                />
-              </div>
-
-              {/* Galeria de Imagens */}
-              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
-                <label className="block text-xs uppercase font-semibold mb-2">Galeria de Imagens (Múltiplas Fotos)</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {galleryUrls.map((url, idx) => (
-                    <div key={idx} className="relative group">
-                      <img src={url} alt={`Galeria ${idx}`} className="w-14 h-14 object-cover rounded-lg border" />
-                      <button
-                        type="button"
-                        onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== idx))}
-                        className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center cursor-pointer"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => handleFileUpload(e, 'gallery')}
-                  className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer"
-                />
-              </div>
-
-              {uploading && (
-                <p className="text-xs text-amber-600 font-semibold animate-pulse text-center">Enviando arquivo para o Storage...</p>
-              )}
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-amber-900/10">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-full text-sm font-semibold border border-amber-900/20 cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={uploading}
-                  className="btn-primary text-sm py-2 px-6 cursor-pointer disabled:opacity-50"
-                >
-                  {editingId ? 'Salvar Alterações' : 'Criar Roteiro'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          {activeTab === 'experiences' && <ExperiencesManager />}
+          {activeTab === 'products' && <ProductsManager />}
+          {activeTab === 'classes' && <ClassesManager />}
+          {activeTab === 'bookings' && <BookingsManager />}
+          {activeTab === 'cart' && <CartCheckout />}
+        </main>
+      </div>
     </div>
   )
 }

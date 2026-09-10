@@ -78,6 +78,151 @@ export type TranslationKeys = {
   footerContact: string
   footerLocation: string
   footerRights: string
+
+  // ═══════════════════════════════════════════
+  // ADMIN PANEL
+  // ═══════════════════════════════════════════
+
+  // Sidebar / Navigation
+  adminDashboard: string
+  adminExperiences: string
+  adminProducts: string
+  adminClasses: string
+  adminBookings: string
+  adminSettings: string
+  adminLogout: string
+  adminBackToSite: string
+
+  // Dashboard Overview
+  adminOverview: string
+  adminTotalExperiences: string
+  adminTotalProducts: string
+  adminTotalBookings: string
+  adminPendingBookings: string
+  adminConfirmedBookings: string
+  adminRevenue: string
+  adminConnected: string
+  adminRecentBookings: string
+  adminNoBookings: string
+  adminQuickActions: string
+
+  // Experiences Manager
+  adminExpTitle: string
+  adminExpSubtitle: string
+  adminNewExperience: string
+  adminEditExperience: string
+  adminExpFormTitle: string
+  adminExpFormDescription: string
+  adminExpFormCategory: string
+  adminExpFormNewCategory: string
+  adminExpFormSelectCategory: string
+  adminExpFormPrice: string
+  adminExpFormDuration: string
+  adminExpFormLevel: string
+  adminExpFormCommunity: string
+  adminExpFormImageUrl: string
+  adminExpFormVideoUrl: string
+  adminExpFormFeatured: string
+  adminExpFormCreate: string
+  adminExpFormUpdate: string
+  adminExpDeleteConfirm: string
+  adminExpCreated: string
+  adminExpUpdated: string
+  adminExpDeleted: string
+  adminExpNoData: string
+  adminLevels: string[]
+
+  // Products Manager
+  adminProdTitle: string
+  adminProdSubtitle: string
+  adminNewProduct: string
+  adminEditProduct: string
+  adminProdFormTitle: string
+  adminProdFormDescription: string
+  adminProdFormPrice: string
+  adminProdFormStock: string
+  adminProdFormCategory: string
+  adminProdFormImage: string
+  adminProdFormCreate: string
+  adminProdFormUpdate: string
+  adminProdDeleteConfirm: string
+  adminProdCreated: string
+  adminProdUpdated: string
+  adminProdDeleted: string
+  adminProdNoData: string
+  adminProdCategories: string[]
+
+  // Classes Manager
+  adminClassTitle: string
+  adminClassSubtitle: string
+  adminNewClass: string
+  adminEditClass: string
+  adminClassFormTitle: string
+  adminClassFormDescription: string
+  adminClassFormPrice: string
+  adminClassFormDuration: string
+  adminClassFormLevel: string
+  adminClassFormInstructor: string
+  adminClassFormCreate: string
+  adminClassFormUpdate: string
+  adminClassDeleteConfirm: string
+  adminClassCreated: string
+  adminClassUpdated: string
+  adminClassDeleted: string
+  adminClassNoData: string
+
+  // Bookings Manager
+  adminBookTitle: string
+  adminBookSubtitle: string
+  adminBookFilterAll: string
+  adminBookFilterPending: string
+  adminBookFilterConfirmed: string
+  adminBookFilterCancelled: string
+  adminBookConfirm: string
+  adminBookCancel: string
+  adminBookConfirmed: string
+  adminBookCancelled: string
+  adminBookNoData: string
+  adminBookClient: string
+  adminBookDate: string
+  adminBookType: string
+  adminBookStatus: string
+  adminBookActions: string
+
+  // Cart / Checkout
+  cartTitle: string
+  cartEmpty: string
+  cartAddExperience: string
+  cartAddProduct: string
+  cartAddClass: string
+  cartTripDates: string
+  cartCheckIn: string
+  cartCheckOut: string
+  cartNights: string
+  cartBasePrice: string
+  cartSubtotal: string
+  cartTotal: string
+  cartCheckout: string
+  cartRemove: string
+  cartDays: string
+  cartPerNight: string
+  cartSelectDates: string
+
+  // Common
+  adminSave: string
+  adminCancel: string
+  adminDelete: string
+  adminEdit: string
+  adminCreate: string
+  adminLoading: string
+  adminError: string
+  adminSuccess: string
+  adminSearch: string
+  adminNoResults: string
+  adminConfirm: string
+  adminBack: string
+  adminNext: string
+  adminOf: string
 }
 
 const pt: TranslationKeys = {
@@ -145,6 +290,140 @@ const pt: TranslationKeys = {
   footerContact: 'Contato',
   footerLocation: 'Localização',
   footerRights: 'Todos os direitos reservados.',
+
+  // ═══ ADMIN ═══
+  adminDashboard: 'Painel',
+  adminExperiences: 'Experiências',
+  adminProducts: 'Produtos',
+  adminClasses: 'Aulas',
+  adminBookings: 'Reservas',
+  adminSettings: 'Configurações',
+  adminLogout: 'Sair',
+  adminBackToSite: 'Voltar ao Site',
+
+  adminOverview: 'Visão Geral',
+  adminTotalExperiences: 'Total de Experiências',
+  adminTotalProducts: 'Total de Produtos',
+  adminTotalBookings: 'Total de Reservas',
+  adminPendingBookings: 'Pendentes',
+  adminConfirmedBookings: 'Confirmadas',
+  adminRevenue: 'Receita',
+  adminConnected: 'Conectado',
+  adminRecentBookings: 'Reservas Recentes',
+  adminNoBookings: 'Nenhuma reserva ainda',
+  adminQuickActions: 'Ações Rápidas',
+
+  adminExpTitle: 'Experiências & Downwinds',
+  adminExpSubtitle: 'Gerencie roteiros, expedições e vivências culturais',
+  adminNewExperience: 'Nova Experiência',
+  adminEditExperience: 'Editar Experiência',
+  adminExpFormTitle: 'Título',
+  adminExpFormDescription: 'Descrição',
+  adminExpFormCategory: 'Categoria',
+  adminExpFormNewCategory: 'Nova Categoria',
+  adminExpFormSelectCategory: 'Selecione uma categoria',
+  adminExpFormPrice: 'Preço (R$)',
+  adminExpFormDuration: 'Duração',
+  adminExpFormLevel: 'Nível',
+  adminExpFormCommunity: 'Comunidade',
+  adminExpFormImageUrl: 'URL da Imagem',
+  adminExpFormVideoUrl: 'URL do Vídeo',
+  adminExpFormFeatured: 'Destaque na página inicial',
+  adminExpFormCreate: 'Criar Experiência',
+  adminExpFormUpdate: 'Atualizar',
+  adminExpDeleteConfirm: 'Tem certeza que deseja excluir esta experiência?',
+  adminExpCreated: 'Experiência criada com sucesso!',
+  adminExpUpdated: 'Experiência atualizada!',
+  adminExpDeleted: 'Experiência excluída.',
+  adminExpNoData: 'Nenhuma experiência cadastrada',
+  adminLevels: ['Iniciante', 'Intermediário', 'Avançado', 'Todos os níveis'],
+
+  adminProdTitle: 'Produtos & E-commerce',
+  adminProdSubtitle: 'Gerencie estoque, preços e categorias de produtos',
+  adminNewProduct: 'Novo Produto',
+  adminEditProduct: 'Editar Produto',
+  adminProdFormTitle: 'Nome do Produto',
+  adminProdFormDescription: 'Descrição',
+  adminProdFormPrice: 'Preço (R$)',
+  adminProdFormStock: 'Estoque',
+  adminProdFormCategory: 'Categoria',
+  adminProdFormImage: 'URL da Imagem',
+  adminProdFormCreate: 'Criar Produto',
+  adminProdFormUpdate: 'Atualizar',
+  adminProdDeleteConfirm: 'Tem certeza que deseja excluir este produto?',
+  adminProdCreated: 'Produto criado com sucesso!',
+  adminProdUpdated: 'Produto atualizado!',
+  adminProdDeleted: 'Produto excluído.',
+  adminProdNoData: 'Nenhum produto cadastrado',
+  adminProdCategories: ['Vestuário', 'Equipamento', 'Acessório', 'Consumível'],
+
+  adminClassTitle: 'Aulas & KiteSchool',
+  adminClassSubtitle: 'Gerencie pacotes de aulas, instrutores e horários',
+  adminNewClass: 'Nova Aula',
+  adminEditClass: 'Editar Aula',
+  adminClassFormTitle: 'Nome da Aula',
+  adminClassFormDescription: 'Descrição',
+  adminClassFormPrice: 'Preço (R$)',
+  adminClassFormDuration: 'Duração',
+  adminClassFormLevel: 'Nível',
+  adminClassFormInstructor: 'Instrutor',
+  adminClassFormCreate: 'Criar Aula',
+  adminClassFormUpdate: 'Atualizar',
+  adminClassDeleteConfirm: 'Tem certeza que deseja excluir esta aula?',
+  adminClassCreated: 'Aula criada com sucesso!',
+  adminClassUpdated: 'Aula atualizada!',
+  adminClassDeleted: 'Aula excluída.',
+  adminClassNoData: 'Nenhuma aula cadastrada',
+
+  adminBookTitle: 'Reservas & Agenda',
+  adminBookSubtitle: 'Visualize e gerencie todas as reservas',
+  adminBookFilterAll: 'Todas',
+  adminBookFilterPending: 'Pendentes',
+  adminBookFilterConfirmed: 'Confirmadas',
+  adminBookFilterCancelled: 'Canceladas',
+  adminBookConfirm: 'Confirmar',
+  adminBookCancel: 'Cancelar',
+  adminBookConfirmed: 'Reserva confirmada!',
+  adminBookCancelled: 'Reserva cancelada.',
+  adminBookNoData: 'Nenhuma reserva encontrada',
+  adminBookClient: 'Cliente',
+  adminBookDate: 'Data',
+  adminBookType: 'Tipo',
+  adminBookStatus: 'Status',
+  adminBookActions: 'Ações',
+
+  cartTitle: 'Carrinho & Checkout',
+  cartEmpty: 'Seu carrinho está vazio',
+  cartAddExperience: 'Adicionar Experiência',
+  cartAddProduct: 'Adicionar Produto',
+  cartAddClass: 'Adicionar Aula',
+  cartTripDates: 'Datas da Viagem',
+  cartCheckIn: 'Check-in',
+  cartCheckOut: 'Check-out',
+  cartNights: 'Noites',
+  cartBasePrice: 'Preço Base / Noite',
+  cartSubtotal: 'Subtotal',
+  cartTotal: 'Total',
+  cartCheckout: 'Finalizar Reserva',
+  cartRemove: 'Remover',
+  cartDays: 'dias',
+  cartPerNight: 'por noite',
+  cartSelectDates: 'Selecione as datas da viagem',
+
+  adminSave: 'Salvar',
+  adminCancel: 'Cancelar',
+  adminDelete: 'Excluir',
+  adminEdit: 'Editar',
+  adminCreate: 'Criar',
+  adminLoading: 'Carregando...',
+  adminError: 'Erro',
+  adminSuccess: 'Sucesso',
+  adminSearch: 'Buscar...',
+  adminNoResults: 'Nenhum resultado encontrado',
+  adminConfirm: 'Confirmar',
+  adminBack: 'Voltar',
+  adminNext: 'Próximo',
+  adminOf: 'de',
 }
 
 const en: TranslationKeys = {
@@ -212,6 +491,140 @@ const en: TranslationKeys = {
   footerContact: 'Contact',
   footerLocation: 'Location',
   footerRights: 'All rights reserved.',
+
+  // ═══ ADMIN ═══
+  adminDashboard: 'Dashboard',
+  adminExperiences: 'Experiences',
+  adminProducts: 'Products',
+  adminClasses: 'Classes',
+  adminBookings: 'Bookings',
+  adminSettings: 'Settings',
+  adminLogout: 'Logout',
+  adminBackToSite: 'Back to Site',
+
+  adminOverview: 'Overview',
+  adminTotalExperiences: 'Total Experiences',
+  adminTotalProducts: 'Total Products',
+  adminTotalBookings: 'Total Bookings',
+  adminPendingBookings: 'Pending',
+  adminConfirmedBookings: 'Confirmed',
+  adminRevenue: 'Revenue',
+  adminConnected: 'Connected',
+  adminRecentBookings: 'Recent Bookings',
+  adminNoBookings: 'No bookings yet',
+  adminQuickActions: 'Quick Actions',
+
+  adminExpTitle: 'Experiences & Downwinds',
+  adminExpSubtitle: 'Manage routes, expeditions and cultural experiences',
+  adminNewExperience: 'New Experience',
+  adminEditExperience: 'Edit Experience',
+  adminExpFormTitle: 'Title',
+  adminExpFormDescription: 'Description',
+  adminExpFormCategory: 'Category',
+  adminExpFormNewCategory: 'New Category',
+  adminExpFormSelectCategory: 'Select a category',
+  adminExpFormPrice: 'Price (R$)',
+  adminExpFormDuration: 'Duration',
+  adminExpFormLevel: 'Level',
+  adminExpFormCommunity: 'Community',
+  adminExpFormImageUrl: 'Image URL',
+  adminExpFormVideoUrl: 'Video URL',
+  adminExpFormFeatured: 'Featured on homepage',
+  adminExpFormCreate: 'Create Experience',
+  adminExpFormUpdate: 'Update',
+  adminExpDeleteConfirm: 'Are you sure you want to delete this experience?',
+  adminExpCreated: 'Experience created successfully!',
+  adminExpUpdated: 'Experience updated!',
+  adminExpDeleted: 'Experience deleted.',
+  adminExpNoData: 'No experiences registered',
+  adminLevels: ['Beginner', 'Intermediate', 'Advanced', 'All levels'],
+
+  adminProdTitle: 'Products & E-commerce',
+  adminProdSubtitle: 'Manage stock, prices and product categories',
+  adminNewProduct: 'New Product',
+  adminEditProduct: 'Edit Product',
+  adminProdFormTitle: 'Product Name',
+  adminProdFormDescription: 'Description',
+  adminProdFormPrice: 'Price (R$)',
+  adminProdFormStock: 'Stock',
+  adminProdFormCategory: 'Category',
+  adminProdFormImage: 'Image URL',
+  adminProdFormCreate: 'Create Product',
+  adminProdFormUpdate: 'Update',
+  adminProdDeleteConfirm: 'Are you sure you want to delete this product?',
+  adminProdCreated: 'Product created successfully!',
+  adminProdUpdated: 'Product updated!',
+  adminProdDeleted: 'Product deleted.',
+  adminProdNoData: 'No products registered',
+  adminProdCategories: ['Clothing', 'Equipment', 'Accessory', 'Consumable'],
+
+  adminClassTitle: 'Classes & KiteSchool',
+  adminClassSubtitle: 'Manage class packages, instructors and schedules',
+  adminNewClass: 'New Class',
+  adminEditClass: 'Edit Class',
+  adminClassFormTitle: 'Class Name',
+  adminClassFormDescription: 'Description',
+  adminClassFormPrice: 'Price (R$)',
+  adminClassFormDuration: 'Duration',
+  adminClassFormLevel: 'Level',
+  adminClassFormInstructor: 'Instructor',
+  adminClassFormCreate: 'Create Class',
+  adminClassFormUpdate: 'Update',
+  adminClassDeleteConfirm: 'Are you sure you want to delete this class?',
+  adminClassCreated: 'Class created successfully!',
+  adminClassUpdated: 'Class updated!',
+  adminClassDeleted: 'Class deleted.',
+  adminClassNoData: 'No classes registered',
+
+  adminBookTitle: 'Bookings & Schedule',
+  adminBookSubtitle: 'View and manage all bookings',
+  adminBookFilterAll: 'All',
+  adminBookFilterPending: 'Pending',
+  adminBookFilterConfirmed: 'Confirmed',
+  adminBookFilterCancelled: 'Cancelled',
+  adminBookConfirm: 'Confirm',
+  adminBookCancel: 'Cancel',
+  adminBookConfirmed: 'Booking confirmed!',
+  adminBookCancelled: 'Booking cancelled.',
+  adminBookNoData: 'No bookings found',
+  adminBookClient: 'Client',
+  adminBookDate: 'Date',
+  adminBookType: 'Type',
+  adminBookStatus: 'Status',
+  adminBookActions: 'Actions',
+
+  cartTitle: 'Cart & Checkout',
+  cartEmpty: 'Your cart is empty',
+  cartAddExperience: 'Add Experience',
+  cartAddProduct: 'Add Product',
+  cartAddClass: 'Add Class',
+  cartTripDates: 'Trip Dates',
+  cartCheckIn: 'Check-in',
+  cartCheckOut: 'Check-out',
+  cartNights: 'Nights',
+  cartBasePrice: 'Base Price / Night',
+  cartSubtotal: 'Subtotal',
+  cartTotal: 'Total',
+  cartCheckout: 'Complete Booking',
+  cartRemove: 'Remove',
+  cartDays: 'days',
+  cartPerNight: 'per night',
+  cartSelectDates: 'Select trip dates',
+
+  adminSave: 'Save',
+  adminCancel: 'Cancel',
+  adminDelete: 'Delete',
+  adminEdit: 'Edit',
+  adminCreate: 'Create',
+  adminLoading: 'Loading...',
+  adminError: 'Error',
+  adminSuccess: 'Success',
+  adminSearch: 'Search...',
+  adminNoResults: 'No results found',
+  adminConfirm: 'Confirm',
+  adminBack: 'Back',
+  adminNext: 'Next',
+  adminOf: 'of',
 }
 
 const es: TranslationKeys = {
@@ -279,6 +692,140 @@ const es: TranslationKeys = {
   footerContact: 'Contacto',
   footerLocation: 'Ubicación',
   footerRights: 'Todos los derechos reservados.',
+
+  // ═══ ADMIN ═══
+  adminDashboard: 'Panel',
+  adminExperiences: 'Experiencias',
+  adminProducts: 'Productos',
+  adminClasses: 'Clases',
+  adminBookings: 'Reservas',
+  adminSettings: 'Configuración',
+  adminLogout: 'Salir',
+  adminBackToSite: 'Volver al Sitio',
+
+  adminOverview: 'Resumen',
+  adminTotalExperiences: 'Total de Experiencias',
+  adminTotalProducts: 'Total de Productos',
+  adminTotalBookings: 'Total de Reservas',
+  adminPendingBookings: 'Pendientes',
+  adminConfirmedBookings: 'Confirmadas',
+  adminRevenue: 'Ingresos',
+  adminConnected: 'Conectado',
+  adminRecentBookings: 'Reservas Recientes',
+  adminNoBookings: 'Sin reservas aún',
+  adminQuickActions: 'Acciones Rápidas',
+
+  adminExpTitle: 'Experiencias & Downwinds',
+  adminExpSubtitle: 'Gestiona rutas, expediciones y experiencias culturales',
+  adminNewExperience: 'Nueva Experiencia',
+  adminEditExperience: 'Editar Experiencia',
+  adminExpFormTitle: 'Título',
+  adminExpFormDescription: 'Descripción',
+  adminExpFormCategory: 'Categoría',
+  adminExpFormNewCategory: 'Nueva Categoría',
+  adminExpFormSelectCategory: 'Selecciona una categoría',
+  adminExpFormPrice: 'Precio (R$)',
+  adminExpFormDuration: 'Duración',
+  adminExpFormLevel: 'Nivel',
+  adminExpFormCommunity: 'Comunidad',
+  adminExpFormImageUrl: 'URL de Imagen',
+  adminExpFormVideoUrl: 'URL de Video',
+  adminExpFormFeatured: 'Destacado en página principal',
+  adminExpFormCreate: 'Crear Experiencia',
+  adminExpFormUpdate: 'Actualizar',
+  adminExpDeleteConfirm: '¿Estás seguro de que quieres eliminar esta experiencia?',
+  adminExpCreated: '¡Experiencia creada con éxito!',
+  adminExpUpdated: '¡Experiencia actualizada!',
+  adminExpDeleted: 'Experiencia eliminada.',
+  adminExpNoData: 'Sin experiencias registradas',
+  adminLevels: ['Principiante', 'Intermedio', 'Avanzado', 'Todos los niveles'],
+
+  adminProdTitle: 'Productos & E-commerce',
+  adminProdSubtitle: 'Gestiona inventario, precios y categorías de productos',
+  adminNewProduct: 'Nuevo Producto',
+  adminEditProduct: 'Editar Producto',
+  adminProdFormTitle: 'Nombre del Producto',
+  adminProdFormDescription: 'Descripción',
+  adminProdFormPrice: 'Precio (R$)',
+  adminProdFormStock: 'Inventario',
+  adminProdFormCategory: 'Categoría',
+  adminProdFormImage: 'URL de Imagen',
+  adminProdFormCreate: 'Crear Producto',
+  adminProdFormUpdate: 'Actualizar',
+  adminProdDeleteConfirm: '¿Estás seguro de que quieres eliminar este producto?',
+  adminProdCreated: '¡Producto creado con éxito!',
+  adminProdUpdated: '¡Producto actualizado!',
+  adminProdDeleted: 'Producto eliminado.',
+  adminProdNoData: 'Sin productos registrados',
+  adminProdCategories: ['Ropa', 'Equipamiento', 'Accesorio', 'Consumible'],
+
+  adminClassTitle: 'Clases & KiteSchool',
+  adminClassSubtitle: 'Gestiona paquetes de clases, instructores y horarios',
+  adminNewClass: 'Nueva Clase',
+  adminEditClass: 'Editar Clase',
+  adminClassFormTitle: 'Nombre de la Clase',
+  adminClassFormDescription: 'Descripción',
+  adminClassFormPrice: 'Precio (R$)',
+  adminClassFormDuration: 'Duración',
+  adminClassFormLevel: 'Nivel',
+  adminClassFormInstructor: 'Instructor',
+  adminClassFormCreate: 'Crear Clase',
+  adminClassFormUpdate: 'Actualizar',
+  adminClassDeleteConfirm: '¿Estás seguro de que quieres eliminar esta clase?',
+  adminClassCreated: '¡Clase creada con éxito!',
+  adminClassUpdated: '¡Clase actualizada!',
+  adminClassDeleted: 'Clase eliminada.',
+  adminClassNoData: 'Sin clases registradas',
+
+  adminBookTitle: 'Reservas & Agenda',
+  adminBookSubtitle: 'Visualiza y gestiona todas las reservas',
+  adminBookFilterAll: 'Todas',
+  adminBookFilterPending: 'Pendientes',
+  adminBookFilterConfirmed: 'Confirmadas',
+  adminBookFilterCancelled: 'Canceladas',
+  adminBookConfirm: 'Confirmar',
+  adminBookCancel: 'Cancelar',
+  adminBookConfirmed: '¡Reserva confirmada!',
+  adminBookCancelled: 'Reserva cancelada.',
+  adminBookNoData: 'No se encontraron reservas',
+  adminBookClient: 'Cliente',
+  adminBookDate: 'Fecha',
+  adminBookType: 'Tipo',
+  adminBookStatus: 'Estado',
+  adminBookActions: 'Acciones',
+
+  cartTitle: 'Carrito & Checkout',
+  cartEmpty: 'Tu carrito está vacío',
+  cartAddExperience: 'Agregar Experiencia',
+  cartAddProduct: 'Agregar Producto',
+  cartAddClass: 'Agregar Clase',
+  cartTripDates: 'Fechas del Viaje',
+  cartCheckIn: 'Check-in',
+  cartCheckOut: 'Check-out',
+  cartNights: 'Noches',
+  cartBasePrice: 'Precio Base / Noche',
+  cartSubtotal: 'Subtotal',
+  cartTotal: 'Total',
+  cartCheckout: 'Completar Reserva',
+  cartRemove: 'Eliminar',
+  cartDays: 'días',
+  cartPerNight: 'por noche',
+  cartSelectDates: 'Selecciona las fechas del viaje',
+
+  adminSave: 'Guardar',
+  adminCancel: 'Cancelar',
+  adminDelete: 'Eliminar',
+  adminEdit: 'Editar',
+  adminCreate: 'Crear',
+  adminLoading: 'Cargando...',
+  adminError: 'Error',
+  adminSuccess: 'Éxito',
+  adminSearch: 'Buscar...',
+  adminNoResults: 'Sin resultados',
+  adminConfirm: 'Confirmar',
+  adminBack: 'Volver',
+  adminNext: 'Siguiente',
+  adminOf: 'de',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }
