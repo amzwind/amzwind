@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { locales } from '../i18n/translations'
+import { supabase } from '../services/supabase'
+import type { Session } from '@supabase/supabase-js'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const { theme, toggleTheme } = useTheme()
+  const [session, setSession] = useState<Session | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session: s } }) => setSession(s))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-amz-terra-dark/90 backdrop-blur-xl border-b border-amz-areia-dark/50 dark:border-white/5 transition-colors duration-500">
@@ -95,9 +104,15 @@ export default function Header() {
             </div>
           </button>
 
-          <a href="#contato" className="btn-primary text-sm !px-4 !py-2">
-            {t.navContato}
-          </a>
+          {session ? (
+            <a href="/admin" className="btn-primary text-sm !px-4 !py-2">
+              {t.navAdmin || 'Admin'}
+            </a>
+          ) : (
+            <a href="/login" className="btn-primary text-sm !px-4 !py-2">
+              {t.navLogin || 'Entrar'}
+            </a>
+          )}
         </nav>
       </div>
 
@@ -146,9 +161,15 @@ export default function Header() {
               </button>
             </div>
 
-            <a href="#contato" onClick={() => setMenuOpen(false)} className="btn-primary text-sm text-center mt-2">
-              {t.navContato}
-            </a>
+            {session ? (
+              <a href="/admin" onClick={() => setMenuOpen(false)} className="btn-primary text-sm text-center mt-2">
+                {t.navAdmin || 'Admin'}
+              </a>
+            ) : (
+              <a href="/login" onClick={() => setMenuOpen(false)} className="btn-primary text-sm text-center mt-2">
+                {t.navLogin || 'Entrar'}
+              </a>
+            )}
           </nav>
         </div>
       )}

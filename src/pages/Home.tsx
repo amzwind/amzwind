@@ -6,6 +6,7 @@ import Hero from '../components/Hero'
 import ExperienciasCarousel from '../components/ExperienciasCarousel'
 import KiteSchool from '../components/KiteSchool'
 import Servicos from '../components/Servicos'
+import ContactNewsletter from '../components/ContactNewsletter'
 import Footer from '../components/Footer'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -44,6 +45,7 @@ export default function Home() {
       <ExperienciasCarousel />
       <KiteSchool />
       <Servicos />
+      <ContactNewsletter />
       <Footer />
     </div>
   )

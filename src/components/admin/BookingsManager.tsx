@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase, type Tables } from '../../services/supabase'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { StatusBadge, EmptyState, Toast } from './SharedUI'
+import { StatusBadge, EmptyState, Toast, ConfirmModal } from './SharedUI'
 
 type Booking = Tables<'bookings'>
 
@@ -12,6 +12,7 @@ export default function BookingsManager() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [filter, setFilter] = useState<Filter>('all')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ id: string; status: 'confirmed' | 'cancelled' } | null>(null)
 
   useEffect(() => { loadData() }, [])
 
@@ -24,6 +25,7 @@ export default function BookingsManager() {
     const { error } = await supabase.from('bookings').update({ status }).eq('id', id)
     if (error) setToast({ message: error.message, type: 'error' })
     else { setToast({ message: status === 'confirmed' ? t.adminBookConfirmed : t.adminBookCancelled, type: 'success' }); await loadData() }
+    setConfirmAction(null)
   }
 
   const filtered = bookings.filter((b) => filter === 'all' || b.status === filter)
@@ -38,13 +40,21 @@ export default function BookingsManager() {
   return (
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {confirmAction && (
+        <ConfirmModal
+          title={confirmAction.status === 'confirmed' ? t.adminBookConfirm : t.adminBookCancel}
+          message={`Deseja ${confirmAction.status === 'confirmed' ? 'confirmar' : 'cancelar'} esta reserva?`}
+          onConfirm={() => updateStatus(confirmAction.id, confirmAction.status)}
+          onCancel={() => setConfirmAction(null)}
+          danger={confirmAction.status === 'cancelled'}
+        />
+      )}
 
       <div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.adminBookTitle}</h2>
         <p className="text-sm text-gray-500 dark:text-white/40 mt-0.5">{t.adminBookSubtitle}</p>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
         {filters.map((f) => (
           <button
@@ -57,16 +67,13 @@ export default function BookingsManager() {
             }`}
           >
             {f.label}
-            <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${
-              filter === f.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/5'
-            }`}>
+            <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] ${filter === f.key ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/5'}`}>
               {f.count}
             </span>
           </button>
         ))}
       </div>
 
-      {/* Table */}
       {filtered.length === 0 ? (
         <EmptyState icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>} message={t.adminBookNoData} />
       ) : (
@@ -98,8 +105,8 @@ export default function BookingsManager() {
                     <td className="px-4 py-3 text-right">
                       {b.status === 'pending' && (
                         <div className="flex gap-1 justify-end">
-                          <button onClick={() => updateStatus(b.id, 'confirmed')} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">{t.adminBookConfirm}</button>
-                          <button onClick={() => updateStatus(b.id, 'cancelled')} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminBookCancel}</button>
+                          <button onClick={() => setConfirmAction({ id: b.id, status: 'confirmed' })} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">{t.adminBookConfirm}</button>
+                          <button onClick={() => setConfirmAction({ id: b.id, status: 'cancelled' })} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminBookCancel}</button>
                         </div>
                       )}
                     </td>

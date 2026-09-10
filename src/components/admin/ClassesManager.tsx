@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { supabase, type Tables } from '../../services/supabase'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast } from './SharedUI'
+import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast, ConfirmModal } from './SharedUI'
 
 type ClassItem = Tables<'experiences'>
 
@@ -13,6 +13,7 @@ export default function ClassesManager() {
   const [formLoading, setFormLoading] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [search, setSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<ClassItem | null>(null)
 
   const emptyForm = { title: '', description: '', price: '', duration: '', level: t.adminLevels[0], community: '' }
   const [form, setForm] = useState(emptyForm)
@@ -20,7 +21,6 @@ export default function ClassesManager() {
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
-    // Aulas são experiências com category_id de tipo 'class'
     const { data } = await supabase.from('experiences').select('*').order('created_at', { ascending: false })
     if (data) setClasses(data)
   }
@@ -40,10 +40,22 @@ export default function ClassesManager() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setFormLoading(true)
+
+    const slug = form.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+
+    let categoryId = ''
+    const { data: existingCat } = await supabase.from('categories').select('id').eq('slug', 'aula-kitesurf').eq('type', 'class').single()
+    if (existingCat) {
+      categoryId = existingCat.id
+    } else {
+      const { data: newCat } = await supabase.from('categories').insert({ name: 'Aula de Kitesurf', slug: 'aula-kitesurf', type: 'class' }).select('id').single()
+      categoryId = newCat?.id || ''
+    }
+
     const payload = {
-      title: form.title, slug: form.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+      title: form.title, slug,
       description: form.description || null, price: Number(form.price) || 0, duration: form.duration || null,
-      level: form.level || null, community: form.community || null, category_id: '',
+      level: form.level || null, community: form.community || null, category_id: categoryId,
     }
     const { error } = editing
       ? await supabase.from('experiences').update(payload).eq('id', editing.id)
@@ -53,11 +65,12 @@ export default function ClassesManager() {
     setFormLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t.adminClassDeleteConfirm)) return
-    const { error } = await supabase.from('experiences').delete().eq('id', id)
+  async function handleDelete() {
+    if (!deleteTarget) return
+    const { error } = await supabase.from('experiences').delete().eq('id', deleteTarget.id)
     if (error) setToast({ message: error.message, type: 'error' })
     else { setToast({ message: t.adminClassDeleted, type: 'success' }); await loadData() }
+    setDeleteTarget(null)
   }
 
   const filtered = classes.filter((c) => !search || c.title.toLowerCase().includes(search.toLowerCase()))
@@ -65,6 +78,7 @@ export default function ClassesManager() {
   return (
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {deleteTarget && <ConfirmModal title={t.adminClassDeleteConfirm} message={`"${deleteTarget.title}" será excluída permanentemente.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} danger />}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -94,7 +108,7 @@ export default function ClassesManager() {
               {c.description && <p className="text-xs text-gray-500 dark:text-white/40 mt-2 line-clamp-2">{c.description}</p>}
               <div className="flex gap-2 mt-4">
                 <button onClick={() => openEdit(c)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">{t.adminEdit}</button>
-                <button onClick={() => handleDelete(c.id)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
+                <button onClick={() => setDeleteTarget(c)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
               </div>
             </div>
           ))}

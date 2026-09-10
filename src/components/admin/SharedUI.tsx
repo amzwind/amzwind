@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { supabase } from '../../services/supabase'
+import { useLanguage } from '../../contexts/LanguageContext'
+
 interface MetricCardProps {
   label: string
   value: string | number
@@ -142,9 +146,64 @@ export function GhostButton({ children, ...props }: React.ButtonHTMLAttributes<H
   )
 }
 
+export function ConfirmModal({ title, message, onConfirm, onCancel, danger }: { title: string; message: string; onConfirm: () => void; onCancel: () => void; danger?: boolean }) {
+  const { t } = useLanguage()
+  return (
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
+      <div className="relative w-full sm:max-w-sm bg-white dark:bg-[#1a0f08] rounded-t-2xl sm:rounded-2xl p-6 shadow-2xl border border-gray-100 dark:border-white/[0.06]">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 dark:text-white/40 mb-6">{message}</p>
+        <div className="flex gap-3">
+          <GhostButton onClick={onCancel} className="flex-1">{t.adminCancel}</GhostButton>
+          <button
+            onClick={onConfirm}
+            className={`flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all text-white ${
+              danger ? 'bg-red-600 hover:bg-red-700' : 'bg-amz-dourado hover:bg-amber-700'
+            }`}
+          >
+            {t.adminConfirm}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function FileUpload({ label, value, onUpload, bucket = 'experiences', accept = 'image/*' }: { label: string; value: string; onUpload: (url: string) => void; bucket?: string; accept?: string }) {
+  const [uploading, setUploading] = useState(false)
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const ext = file.name.split('.').pop() || 'jpg'
+    const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type })
+    if (!error) {
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path)
+      if (urlData?.publicUrl) onUpload(urlData.publicUrl)
+    }
+    setUploading(false)
+  }
+
+  return (
+    <FormField label={label}>
+      <div className="space-y-2">
+        {value && <img src={value} alt="" className="w-full h-32 rounded-xl object-cover" />}
+        <label className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-dashed border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-500 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-white/[0.05] cursor-pointer transition-colors">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          {uploading ? 'Enviando...' : 'Escolher imagem'}
+          <input type="file" accept={accept} onChange={handleFile} className="hidden" />
+        </label>
+      </div>
+    </FormField>
+  )
+}
+
 export function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
   return (
-    <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-[60] p-3.5 rounded-xl shadow-2xl text-sm font-medium flex items-center gap-2.5 animate-[slideDown_0.3s_ease-out] ${
+    <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-[70] p-3.5 rounded-xl shadow-2xl text-sm font-medium flex items-center gap-2.5 animate-[slideDown_0.3s_ease-out] ${
       type === 'success'
         ? 'bg-emerald-600 text-white'
         : 'bg-red-600 text-white'

@@ -12,6 +12,9 @@ export type TranslationKeys = {
   navEscola: string
   navServicos: string
   navContato: string
+  navLogin: string
+  navAdmin: string
+  navMinhaConta: string
 
   // Hero
   heroTagline: string
@@ -223,6 +226,70 @@ export type TranslationKeys = {
   adminBack: string
   adminNext: string
   adminOf: string
+
+  // Contact & Newsletter
+  contactTitle: string
+  contactSubtitle: string
+  contactName: string
+  contactEmail: string
+  contactMessage: string
+  contactSend: string
+  contactSuccess: string
+  newsletterTitle: string
+  newsletterSubtitle: string
+  newsletterPlaceholder: string
+  newsletterButton: string
+  newsletterSuccess: string
+  newsletterAlready: string
+
+  // Experience Detail
+  expDetailBook: string
+  expDetailDuration: string
+  expDetailLevel: string
+  expDetailCommunity: string
+  expDetailIncludes: string
+  expDetailRelated: string
+  expDetailReviews: string
+  expDetailNoReviews: string
+  expDetailAddReview: string
+  expDetailReviewName: string
+  expDetailReviewText: string
+  expDetailReviewSubmit: string
+
+  // Product Pages
+  prodCategoryTitle: string
+  prodCategoryAll: string
+  prodDetailAddToCart: string
+  prodDetailInStock: string
+  prodDetailOutOfStock: string
+  prodDetailRelated: string
+  prodDetailDescription: string
+
+  // Customer Dashboard
+  customerTitle: string
+  customerSubtitle: string
+  customerBookings: string
+  customerNoBookings: string
+  customerProfile: string
+  customerName: string
+  customerPhone: string
+  customerSave: string
+  customerSaved: string
+
+  // Admin - Manual Booking & Calendar
+  adminManualBooking: string
+  adminManualBookingTitle: string
+  adminManualBookingClient: string
+  adminManualBookingEmail: string
+  adminManualBookingPhone: string
+  adminManualBookingItem: string
+  adminManualBookingDate: string
+  adminManualBookingNotes: string
+  adminManualBookingCreate: string
+  adminManualBookingCreated: string
+  adminCalendar: string
+  adminCalendarTitle: string
+  adminCalendarToday: string
 }
 
 const pt: TranslationKeys = {
@@ -424,6 +491,69 @@ const pt: TranslationKeys = {
   adminBack: 'Voltar',
   adminNext: 'Próximo',
   adminOf: 'de',
+
+  navLogin: 'Entrar',
+  navAdmin: 'Admin',
+  navMinhaConta: 'Minha Conta',
+
+  contactTitle: 'Fale Conosco',
+  contactSubtitle: 'Tem dúvidas? Envie uma mensagem.',
+  contactName: 'Nome',
+  contactEmail: 'E-mail',
+  contactMessage: 'Mensagem',
+  contactSend: 'Enviar Mensagem',
+  contactSuccess: 'Mensagem enviada com sucesso!',
+  newsletterTitle: 'Fique por dentro',
+  newsletterSubtitle: 'Receba novidades, promoções e dicas de kitesurf.',
+  newsletterPlaceholder: 'Seu melhor e-mail',
+  newsletterButton: 'Inscrever',
+  newsletterSuccess: 'Inscrição realizada com sucesso!',
+  newsletterAlready: 'Este e-mail já está cadastrado.',
+
+  expDetailBook: 'Reservar Agora',
+  expDetailDuration: 'Duração',
+  expDetailLevel: 'Nível',
+  expDetailCommunity: 'Comunidade',
+  expDetailIncludes: 'O que está incluso',
+  expDetailRelated: 'Experiências Relacionadas',
+  expDetailReviews: 'Avaliações',
+  expDetailNoReviews: 'Nenhuma avaliação ainda. Seja o primeiro!',
+  expDetailAddReview: 'Deixar Avaliação',
+  expDetailReviewName: 'Seu nome',
+  expDetailReviewText: 'Sua avaliação',
+  expDetailReviewSubmit: 'Enviar Avaliação',
+
+  prodCategoryTitle: 'Produtos',
+  prodCategoryAll: 'Todos',
+  prodDetailAddToCart: 'Adicionar ao Carrinho',
+  prodDetailInStock: 'Em estoque',
+  prodDetailOutOfStock: 'Esgotado',
+  prodDetailRelated: 'Produtos Relacionados',
+  prodDetailDescription: 'Descrição',
+
+  customerTitle: 'Minha Conta',
+  customerSubtitle: 'Gerencie suas reservas e dados pessoais',
+  customerBookings: 'Minhas Reservas',
+  customerNoBookings: 'Você ainda não tem reservas.',
+  customerProfile: 'Perfil',
+  customerName: 'Nome Completo',
+  customerPhone: 'Telefone',
+  customerSave: 'Salvar Alterações',
+  customerSaved: 'Perfil atualizado!',
+
+  adminManualBooking: 'Reserva Manual',
+  adminManualBookingTitle: 'Criar Reserva Manual',
+  adminManualBookingClient: 'Nome do Cliente',
+  adminManualBookingEmail: 'E-mail do Cliente',
+  adminManualBookingPhone: 'Telefone',
+  adminManualBookingItem: 'Item',
+  adminManualBookingDate: 'Data',
+  adminManualBookingNotes: 'Observações',
+  adminManualBookingCreate: 'Criar Reserva',
+  adminManualBookingCreated: 'Reserva manual criada!',
+  adminCalendar: 'Calendário',
+  adminCalendarTitle: 'Calendário de Operações',
+  adminCalendarToday: 'Hoje',
 }
 
 const en: TranslationKeys = {
@@ -625,6 +755,69 @@ const en: TranslationKeys = {
   adminBack: 'Back',
   adminNext: 'Next',
   adminOf: 'of',
+
+  navLogin: 'Login',
+  navAdmin: 'Admin',
+  navMinhaConta: 'My Account',
+
+  contactTitle: 'Contact Us',
+  contactSubtitle: 'Questions? Send us a message.',
+  contactName: 'Name',
+  contactEmail: 'Email',
+  contactMessage: 'Message',
+  contactSend: 'Send Message',
+  contactSuccess: 'Message sent successfully!',
+  newsletterTitle: 'Stay Updated',
+  newsletterSubtitle: 'Get news, promotions and kitesurf tips.',
+  newsletterPlaceholder: 'Your best email',
+  newsletterButton: 'Subscribe',
+  newsletterSuccess: 'Successfully subscribed!',
+  newsletterAlready: 'This email is already registered.',
+
+  expDetailBook: 'Book Now',
+  expDetailDuration: 'Duration',
+  expDetailLevel: 'Level',
+  expDetailCommunity: 'Community',
+  expDetailIncludes: 'What\'s included',
+  expDetailRelated: 'Related Experiences',
+  expDetailReviews: 'Reviews',
+  expDetailNoReviews: 'No reviews yet. Be the first!',
+  expDetailAddReview: 'Leave a Review',
+  expDetailReviewName: 'Your name',
+  expDetailReviewText: 'Your review',
+  expDetailReviewSubmit: 'Submit Review',
+
+  prodCategoryTitle: 'Products',
+  prodCategoryAll: 'All',
+  prodDetailAddToCart: 'Add to Cart',
+  prodDetailInStock: 'In stock',
+  prodDetailOutOfStock: 'Out of stock',
+  prodDetailRelated: 'Related Products',
+  prodDetailDescription: 'Description',
+
+  customerTitle: 'My Account',
+  customerSubtitle: 'Manage your bookings and personal info',
+  customerBookings: 'My Bookings',
+  customerNoBookings: 'You have no bookings yet.',
+  customerProfile: 'Profile',
+  customerName: 'Full Name',
+  customerPhone: 'Phone',
+  customerSave: 'Save Changes',
+  customerSaved: 'Profile updated!',
+
+  adminManualBooking: 'Manual Booking',
+  adminManualBookingTitle: 'Create Manual Booking',
+  adminManualBookingClient: 'Client Name',
+  adminManualBookingEmail: 'Client Email',
+  adminManualBookingPhone: 'Phone',
+  adminManualBookingItem: 'Item',
+  adminManualBookingDate: 'Date',
+  adminManualBookingNotes: 'Notes',
+  adminManualBookingCreate: 'Create Booking',
+  adminManualBookingCreated: 'Manual booking created!',
+  adminCalendar: 'Calendar',
+  adminCalendarTitle: 'Operations Calendar',
+  adminCalendarToday: 'Today',
 }
 
 const es: TranslationKeys = {
@@ -826,6 +1019,69 @@ const es: TranslationKeys = {
   adminBack: 'Volver',
   adminNext: 'Siguiente',
   adminOf: 'de',
+
+  navLogin: 'Iniciar',
+  navAdmin: 'Admin',
+  navMinhaConta: 'Mi Cuenta',
+
+  contactTitle: 'Contáctanos',
+  contactSubtitle: '¿Dudas? Envíanos un mensaje.',
+  contactName: 'Nombre',
+  contactEmail: 'Correo',
+  contactMessage: 'Mensaje',
+  contactSend: 'Enviar Mensaje',
+  contactSuccess: '¡Mensaje enviado con éxito!',
+  newsletterTitle: 'Mantente al día',
+  newsletterSubtitle: 'Recibe novedades, promociones y consejos de kitesurf.',
+  newsletterPlaceholder: 'Tu mejor correo',
+  newsletterButton: 'Suscribir',
+  newsletterSuccess: '¡Suscripción exitosa!',
+  newsletterAlready: 'Este correo ya está registrado.',
+
+  expDetailBook: 'Reservar Ahora',
+  expDetailDuration: 'Duración',
+  expDetailLevel: 'Nivel',
+  expDetailCommunity: 'Comunidad',
+  expDetailIncludes: 'Qué incluye',
+  expDetailRelated: 'Experiencias Relacionadas',
+  expDetailReviews: 'Reseñas',
+  expDetailNoReviews: 'Sin reseñas aún. ¡Sé el primero!',
+  expDetailAddReview: 'Dejar Reseña',
+  expDetailReviewName: 'Tu nombre',
+  expDetailReviewText: 'Tu reseña',
+  expDetailReviewSubmit: 'Enviar Reseña',
+
+  prodCategoryTitle: 'Productos',
+  prodCategoryAll: 'Todos',
+  prodDetailAddToCart: 'Agregar al Carrito',
+  prodDetailInStock: 'En stock',
+  prodDetailOutOfStock: 'Agotado',
+  prodDetailRelated: 'Productos Relacionados',
+  prodDetailDescription: 'Descripción',
+
+  customerTitle: 'Mi Cuenta',
+  customerSubtitle: 'Gestiona tus reservas e información personal',
+  customerBookings: 'Mis Reservas',
+  customerNoBookings: 'Aún no tienes reservas.',
+  customerProfile: 'Perfil',
+  customerName: 'Nombre Completo',
+  customerPhone: 'Teléfono',
+  customerSave: 'Guardar Cambios',
+  customerSaved: '¡Perfil actualizado!',
+
+  adminManualBooking: 'Reserva Manual',
+  adminManualBookingTitle: 'Crear Reserva Manual',
+  adminManualBookingClient: 'Nombre del Cliente',
+  adminManualBookingEmail: 'Correo del Cliente',
+  adminManualBookingPhone: 'Teléfono',
+  adminManualBookingItem: 'Artículo',
+  adminManualBookingDate: 'Fecha',
+  adminManualBookingNotes: 'Notas',
+  adminManualBookingCreate: 'Crear Reserva',
+  adminManualBookingCreated: '¡Reserva manual creada!',
+  adminCalendar: 'Calendario',
+  adminCalendarTitle: 'Calendario de Operaciones',
+  adminCalendarToday: 'Hoy',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

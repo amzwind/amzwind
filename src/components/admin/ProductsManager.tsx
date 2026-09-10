@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { supabase, type Tables } from '../../services/supabase'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast } from './SharedUI'
+import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast, ConfirmModal, FileUpload } from './SharedUI'
 
 type Product = Tables<'products'>
 type Category = Tables<'categories'>
@@ -15,6 +15,9 @@ export default function ProductsManager() {
   const [formLoading, setFormLoading] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [search, setSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
+  const [newCatName, setNewCatName] = useState('')
+  const [showNewCat, setShowNewCat] = useState(false)
 
   const emptyForm = { title: '', description: '', price: '', stock: '', category_id: '', image_url: '' }
   const [form, setForm] = useState(emptyForm)
@@ -45,23 +48,37 @@ export default function ProductsManager() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setFormLoading(true)
+
+    let categoryId = form.category_id
+    if (showNewCat && newCatName.trim()) {
+      const slug = newCatName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      const { data: existing } = await supabase.from('categories').select('id').eq('slug', slug).eq('type', 'product').single()
+      if (existing) {
+        categoryId = existing.id
+      } else {
+        const { data: newCat } = await supabase.from('categories').insert({ name: newCatName.trim(), slug, type: 'product' }).select('id').single()
+        categoryId = newCat?.id || categoryId
+      }
+    }
+
     const payload = {
       title: form.title, description: form.description || null, price: Number(form.price) || 0,
-      stock: Number(form.stock) || 0, category_id: form.category_id, image_url: form.image_url || null,
+      stock: Number(form.stock) || 0, category_id: categoryId, image_url: form.image_url || null,
     }
     const { error } = editing
       ? await supabase.from('products').update(payload).eq('id', editing.id)
       : await supabase.from('products').insert(payload)
     if (error) setToast({ message: error.message, type: 'error' })
-    else { setToast({ message: editing ? t.adminProdUpdated : t.adminProdCreated, type: 'success' }); setShowModal(false); await loadData() }
+    else { setToast({ message: editing ? t.adminProdUpdated : t.adminProdCreated, type: 'success' }); setShowModal(false); setShowNewCat(false); setNewCatName(''); await loadData() }
     setFormLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t.adminProdDeleteConfirm)) return
-    const { error } = await supabase.from('products').delete().eq('id', id)
+  async function handleDelete() {
+    if (!deleteTarget) return
+    const { error } = await supabase.from('products').delete().eq('id', deleteTarget.id)
     if (error) setToast({ message: error.message, type: 'error' })
     else { setToast({ message: t.adminProdDeleted, type: 'success' }); await loadData() }
+    setDeleteTarget(null)
   }
 
   const filtered = products.filter((p) => !search || p.title.toLowerCase().includes(search.toLowerCase()))
@@ -69,6 +86,7 @@ export default function ProductsManager() {
   return (
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {deleteTarget && <ConfirmModal title={t.adminProdDeleteConfirm} message={`"${deleteTarget.title}" será excluído permanentemente.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} danger />}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -121,7 +139,7 @@ export default function ProductsManager() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex gap-1 justify-end">
                         <button onClick={() => openEdit(p)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-gray-600 dark:hover:text-white/60 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></button>
-                        <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-500 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                        <button onClick={() => setDeleteTarget(p)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-500 transition-colors"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                       </div>
                     </td>
                   </tr>
@@ -142,12 +160,22 @@ export default function ProductsManager() {
               <FormField label={t.adminProdFormStock}><Input type="number" required min="0" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} /></FormField>
             </div>
             <FormField label={t.adminProdFormCategory}>
-              <Select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
-                <option value="">{t.adminExpFormSelectCategory}</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </Select>
+              {showNewCat ? (
+                <div className="flex gap-2">
+                  <Input required value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Nome da nova categoria" className="flex-1" />
+                  <button type="button" onClick={() => { setShowNewCat(false); setNewCatName('') }} className="px-3 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40">Cancelar</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="flex-1">
+                    <option value="">{t.adminExpFormSelectCategory}</option>
+                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </Select>
+                  <button type="button" onClick={() => setShowNewCat(true)} className="px-3 rounded-xl text-xs font-semibold bg-amz-dourado/10 text-amz-dourado hover:bg-amz-dourado/20 transition-colors whitespace-nowrap">+ Nova</button>
+                </div>
+              )}
             </FormField>
-            <FormField label={t.adminProdFormImage}><Input type="url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." /></FormField>
+            <FileUpload label={t.adminProdFormImage} value={form.image_url} onUpload={(url) => setForm({ ...form, image_url: url })} bucket="products" />
             <div className="flex gap-3 pt-3 border-t border-gray-100 dark:border-white/[0.06]">
               <GhostButton type="button" onClick={() => setShowModal(false)} className="flex-1">{t.adminCancel}</GhostButton>
               <PrimaryButton type="submit" disabled={formLoading} className="flex-1">{formLoading ? '...' : editing ? t.adminProdFormUpdate : t.adminProdFormCreate}</PrimaryButton>

@@ -7,6 +7,10 @@ import SplashScreen from './components/SplashScreen'
 import Home from './pages/Home'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Login from './pages/Login'
+import ExperienceDetail from './pages/ExperienceDetail'
+import ProductCategory from './pages/ProductCategory'
+import ProductDetail from './pages/ProductDetail'
+import CustomerDashboard from './pages/CustomerDashboard'
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -47,6 +51,11 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/minha-conta" element={<CustomerDashboard />} />
+              <Route path="/experiencia/:slug" element={<ExperienceDetail />} />
+              <Route path="/produtos" element={<ProductCategory />} />
+              <Route path="/produtos/:slug" element={<ProductCategory />} />
+              <Route path="/produto/:id" element={<ProductDetail />} />
               <Route path="*" element={<Home />} />
             </Routes>
           </BrowserRouter>

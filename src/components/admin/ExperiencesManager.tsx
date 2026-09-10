@@ -1,7 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { supabase, type Tables } from '../../services/supabase'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast } from './SharedUI'
+import { ModalShell, FormField, Input, Select, Textarea, PrimaryButton, GhostButton, EmptyState, Toast, ConfirmModal, FileUpload } from './SharedUI'
 
 type Experience = Tables<'experiences'>
 type Category = Tables<'categories'>
@@ -19,6 +19,9 @@ export default function ExperiencesManager() {
   const [formLoading, setFormLoading] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [search, setSearch] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<Experience | null>(null)
+  const [newCatName, setNewCatName] = useState('')
+  const [showNewCat, setShowNewCat] = useState(false)
 
   const emptyForm = { title: '', description: '', category_id: '', price: '', duration: '', level: t.adminLevels[1], community: '', image_url: '', video_url: '', featured: false }
   const [form, setForm] = useState(emptyForm)
@@ -53,9 +56,22 @@ export default function ExperiencesManager() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setFormLoading(true)
+
+    let categoryId = form.category_id
+    if (showNewCat && newCatName.trim()) {
+      const slug = slugify(newCatName)
+      const { data: existing } = await supabase.from('categories').select('id').eq('slug', slug).eq('type', 'experience').single()
+      if (existing) {
+        categoryId = existing.id
+      } else {
+        const { data: newCat } = await supabase.from('categories').insert({ name: newCatName.trim(), slug, type: 'experience' }).select('id').single()
+        categoryId = newCat?.id || categoryId
+      }
+    }
+
     const payload = {
       title: form.title, slug: slugify(form.title), description: form.description || null,
-      category_id: form.category_id, price: Number(form.price) || 0, duration: form.duration || null,
+      category_id: categoryId, price: Number(form.price) || 0, duration: form.duration || null,
       level: form.level || null, community: form.community || null, image_url: form.image_url || null,
       video_url: form.video_url || null, featured: form.featured,
     }
@@ -63,15 +79,16 @@ export default function ExperiencesManager() {
       ? await supabase.from('experiences').update(payload).eq('id', editingExp.id)
       : await supabase.from('experiences').insert(payload)
     if (error) { setToast({ message: error.message, type: 'error' }) }
-    else { setToast({ message: editingExp ? t.adminExpUpdated : t.adminExpCreated, type: 'success' }); setShowModal(false); await loadData() }
+    else { setToast({ message: editingExp ? t.adminExpUpdated : t.adminExpCreated, type: 'success' }); setShowModal(false); setShowNewCat(false); setNewCatName(''); await loadData() }
     setFormLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm(t.adminExpDeleteConfirm)) return
-    const { error } = await supabase.from('experiences').delete().eq('id', id)
+  async function handleDelete() {
+    if (!deleteTarget) return
+    const { error } = await supabase.from('experiences').delete().eq('id', deleteTarget.id)
     if (error) setToast({ message: error.message, type: 'error' })
     else { setToast({ message: t.adminExpDeleted, type: 'success' }); await loadData() }
+    setDeleteTarget(null)
   }
 
   const filtered = experiences.filter((e) => !search || e.title.toLowerCase().includes(search.toLowerCase()))
@@ -79,6 +96,7 @@ export default function ExperiencesManager() {
   return (
     <div className="space-y-6">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {deleteTarget && <ConfirmModal title={t.adminExpDeleteConfirm} message={`"${deleteTarget.title}" será excluída permanentemente.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} danger />}
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -91,16 +109,11 @@ export default function ExperiencesManager() {
         </PrimaryButton>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-        <input
-          type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.adminSearch}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 transition-all"
-        />
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t.adminSearch} className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 transition-all" />
       </div>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
         <EmptyState icon={<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>} message={t.adminExpNoData} />
       ) : (
@@ -119,7 +132,7 @@ export default function ExperiencesManager() {
                 <p className="text-lg font-bold text-amz-dourado mt-2">R$ {exp.price}</p>
                 <div className="flex gap-2 mt-3">
                   <button onClick={() => openEdit(exp)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">{t.adminEdit}</button>
-                  <button onClick={() => handleDelete(exp.id)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
+                  <button onClick={() => setDeleteTarget(exp)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
                 </div>
               </div>
             </div>
@@ -127,18 +140,29 @@ export default function ExperiencesManager() {
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
         <ModalShell onClose={() => setShowModal(false)} title={editingExp ? t.adminEditExperience : t.adminNewExperience}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField label={t.adminExpFormTitle}><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ex: Downwind Ajuruteua → Salinas" /></FormField>
             <FormField label={t.adminExpFormDescription}><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="..." /></FormField>
+
             <FormField label={t.adminExpFormCategory}>
-              <Select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })}>
-                <option value="">{t.adminExpFormSelectCategory}</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </Select>
+              {showNewCat ? (
+                <div className="flex gap-2">
+                  <Input required value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Nome da nova categoria" className="flex-1" />
+                  <button type="button" onClick={() => { setShowNewCat(false); setNewCatName('') }} className="px-3 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40">Cancelar</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.category_id} onChange={(e) => setForm({ ...form, category_id: e.target.value })} className="flex-1">
+                    <option value="">{t.adminExpFormSelectCategory}</option>
+                    {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </Select>
+                  <button type="button" onClick={() => setShowNewCat(true)} className="px-3 rounded-xl text-xs font-semibold bg-amz-dourado/10 text-amz-dourado hover:bg-amz-dourado/20 transition-colors whitespace-nowrap">+ Nova</button>
+                </div>
+              )}
             </FormField>
+
             <div className="grid grid-cols-2 gap-3">
               <FormField label={t.adminExpFormPrice}><Input type="number" required min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="450.00" /></FormField>
               <FormField label={t.adminExpFormDuration}><Input value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="2h30" /></FormField>
@@ -151,8 +175,10 @@ export default function ExperiencesManager() {
               </FormField>
               <FormField label={t.adminExpFormCommunity}><Input value={form.community} onChange={(e) => setForm({ ...form, community: e.target.value })} placeholder="Ajuruteua" /></FormField>
             </div>
-            <FormField label={t.adminExpFormImageUrl}><Input type="url" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." /></FormField>
+
+            <FileUpload label={t.adminExpFormImageUrl} value={form.image_url} onUpload={(url) => setForm({ ...form, image_url: url })} bucket="experiences" />
             <FormField label={t.adminExpFormVideoUrl}><Input type="url" value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://youtube.com/..." /></FormField>
+
             <label className="flex items-center gap-3 cursor-pointer select-none">
               <div className={`relative w-10 h-[22px] rounded-full transition-colors ${form.featured ? 'bg-amz-dourado' : 'bg-gray-200 dark:bg-white/10'}`} onClick={() => setForm({ ...form, featured: !form.featured })}>
                 <div className={`absolute top-[2px] left-[2px] w-[18px] h-[18px] rounded-full bg-white shadow transition-transform ${form.featured ? 'translate-x-[18px]' : ''}`} />
