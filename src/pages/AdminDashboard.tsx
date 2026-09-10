@@ -1,256 +1,254 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase, type Tables } from '../services/supabase'
-
-type Experience = Tables<'experiences'>
-type Category = Tables<'categories'>
-type Booking = Tables<'bookings'>
-
-type Tab = 'dashboard' | 'experiences' | 'bookings'
-
-// Gera slug a partir do título
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
-}
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-  confirmed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pendente',
-  confirmed: 'Confirmada',
-  cancelled: 'Cancelada',
-}
-
-// Toast simples
-function Toast({ message, type, onClose }: { message: string; type: 'success' | 'error'; onClose: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onClose, 3500)
-    return () => clearTimeout(t)
-  }, [onClose])
-
-  return (
-    <div className={`fixed top-4 left-4 right-4 z-[60] p-3 rounded-xl shadow-xl text-sm font-medium flex items-center gap-2 animate-[slideDown_0.3s_ease-out] ${
-      type === 'success'
-        ? 'bg-green-600 text-white'
-        : 'bg-red-600 text-white'
-    }`}>
-      {type === 'success' ? (
-        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-      ) : (
-        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      )}
-      <span className="flex-1">{message}</span>
-      <button onClick={onClose} className="p-1 hover:opacity-70">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-  )
-}
+import { supabase } from '../services/supabase'
 
 export function AdminDashboard() {
   const navigate = useNavigate()
-
-  // Auth
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [activeTab, setActiveTab] = useState<'stats' | 'experiences' | 'bookings'>('stats')
 
-  // Tab
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard')
+  // Estados para dados
+  const [experiences, setExperiences] = useState<any[]>([])
+  const [categories, setCategories] = useState<any[]>([])
+  const [bookings, setBookings] = useState<any[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
-  // Dados
-  const [experiences, setExperiences] = useState<Experience[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [bookings, setBookings] = useState<Booking[]>([])
-  const [pendingCount, setPendingCount] = useState(0)
+  // Estado do Formulário (Edição / Criação)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [title, setTitle] = useState('')
+  const [slug, setSlug] = useState('')
+  const [price, setPrice] = useState('')
+  const [description, setDescription] = useState('')
+  const [community, setCommunity] = useState('')
+  const [level, setLevel] = useState('Intermediário')
+  const [categoryId, setCategoryId] = useState('')
 
-  // Modal
-  const [showModal, setShowModal] = useState(false)
-  const [editingExp, setEditingExp] = useState<Experience | null>(null)
-  const [formLoading, setFormLoading] = useState(false)
+  // Nova Categoria Modal State
+  const [isNewCategoryMode, setIsNewCategoryMode] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
 
-  // Toast
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  // URLs / Arquivos de Mídia
+  const [imageUrl, setImageUrl] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([])
 
-  // Form
-  const emptyForm = {
-    title: '', description: '', category_id: '', price: '',
-    duration: '', level: '', community: '', image_url: '',
-    video_url: '', featured: false,
-  }
-  const [form, setForm] = useState(emptyForm)
-
-  const showToast = useCallback((message: string, type: 'success' | 'error') => {
-    setToast({ message, type })
+  useEffect(() => {
+    checkAdminAccess()
   }, [])
 
-  // ─── AUTH CHECK ────────────────────────────────────────
-  useEffect(() => {
-    const checkAdmin = async () => {
+  const checkAdminAccess = async () => {
+    try {
       const { data: { session } } = await supabase.auth.getSession()
+
       if (!session) {
-        navigate('/login', { replace: true })
+        navigate('/login')
         return
       }
 
-      const { data } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', session.user.id)
         .single()
 
-      if (!data || data.role !== 'admin') {
-        await supabase.auth.signOut()
-        navigate('/login', { replace: true })
+      if (error || profile?.role !== 'admin') {
+        alert('Acesso restrito a administradores.')
+        navigate('/')
         return
       }
 
       setIsAdmin(true)
+      loadDashboardData()
+    } catch (err) {
+      console.error('Erro ao verificar permissões:', err)
+      navigate('/login')
+    } finally {
       setLoading(false)
     }
+  }
 
-    checkAdmin()
-  }, [navigate])
+  const loadDashboardData = async () => {
+    try {
+      const { data: expData } = await supabase
+        .from('experiences')
+        .select('*, categories(name)')
+        .order('created_at', { ascending: false })
 
-  // ─── LOAD DATA ────────────────────────────────────────
-  useEffect(() => {
-    if (!isAdmin) return
-    loadData()
-  }, [isAdmin])
+      if (expData) setExperiences(expData)
 
-  async function loadData() {
-    const [expRes, catRes, bookRes] = await Promise.all([
-      supabase.from('experiences').select('*').order('created_at', { ascending: false }),
-      supabase.from('categories').select('*').order('name'),
-      supabase.from('bookings').select('*').order('created_at', { ascending: false }),
-    ])
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true })
 
-    if (expRes.data) setExperiences(expRes.data)
-    if (catRes.data) setCategories(catRes.data)
-    if (bookRes.data) {
-      setBookings(bookRes.data)
-      setPendingCount(bookRes.data.filter(b => b.status === 'pending').length)
+      if (catData) setCategories(catData)
+
+      const { data: bookData } = await supabase
+        .from('bookings')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (bookData) setBookings(bookData)
+    } catch (err) {
+      console.error('Erro ao carregar dados do painel:', err)
     }
   }
 
-  // ─── MODAL CONTROLS ───────────────────────────────────
-  function openCreateModal() {
-    setEditingExp(null)
-    setForm({ ...emptyForm, category_id: categories[0]?.id || '' })
-    setShowModal(true)
+  // Função genérica de upload para o Supabase Storage (Corrigida)
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'video' | 'gallery') => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    setUploading(true)
+    try {
+      const bucketName = 'experiences'
+
+      if (type === 'gallery') {
+        const uploadedUrls: string[] = [...galleryUrls]
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          const fileExt = file.name.split('.').pop()
+          const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+          const filePath = `gallery/${fileName}`
+
+          const { error: uploadError } = await supabase.storage.from(bucketName).upload(filePath, file)
+          if (uploadError) throw uploadError
+
+          const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath)
+          if (data?.publicUrl) uploadedUrls.push(data.publicUrl)
+        }
+        setGalleryUrls(uploadedUrls)
+      } else {
+        const file = files[0]
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+        const filePath = `${fileName}`
+
+        const { error: uploadError } = await supabase.storage.from(bucketName).upload(filePath, file)
+        if (uploadError) throw uploadError
+
+        const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath)
+        if (data?.publicUrl) {
+          if (type === 'image') setImageUrl(data.publicUrl)
+          if (type === 'video') setVideoUrl(data.publicUrl)
+        }
+      }
+    } catch (err: any) {
+      alert('Erro ao enviar arquivo: ' + err.message)
+    } finally {
+      setUploading(false)
+    }
   }
 
-  function openEditModal(exp: Experience) {
-    setEditingExp(exp)
-    setForm({
-      title: exp.title,
-      description: exp.description || '',
-      category_id: exp.category_id,
-      price: String(exp.price),
-      duration: exp.duration || '',
-      level: exp.level || '',
-      community: exp.community || '',
-      image_url: exp.image_url || '',
-      video_url: exp.video_url || '',
-      featured: exp.featured,
-    })
-    setShowModal(true)
+  const openCreateModal = () => {
+    setEditingId(null)
+    setTitle('')
+    setSlug('')
+    setPrice('')
+    setDescription('')
+    setCommunity('')
+    setLevel('Intermediário')
+    setImageUrl('')
+    setVideoUrl('')
+    setGalleryUrls([])
+    setCategoryId(categories[0]?.id || '')
+    setIsNewCategoryMode(false)
+    setIsModalOpen(true)
   }
 
-  // ─── CRUD: CREATE / UPDATE ────────────────────────────
-  async function handleSubmit(e: FormEvent) {
+  const openEditModal = (exp: any) => {
+    setEditingId(exp.id)
+    setTitle(exp.title || '')
+    setSlug(exp.slug || '')
+    setPrice(exp.price?.toString() || '')
+    setDescription(exp.description || '')
+    setCommunity(exp.community || '')
+    setLevel(exp.level || 'Intermediário')
+    setImageUrl(exp.image_url || '')
+    setVideoUrl(exp.video_url || '')
+    setGalleryUrls(exp.gallery_urls || [])
+    setCategoryId(exp.category_id || '')
+    setIsNewCategoryMode(false)
+    setIsModalOpen(true)
+  }
+
+  const handleSaveExperience = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormLoading(true)
+    try {
+      let finalCategoryId = categoryId
 
-    const payload = {
-      title: form.title,
-      slug: slugify(form.title),
-      description: form.description || null,
-      category_id: form.category_id,
-      price: Number(form.price) || 0,
-      duration: form.duration || null,
-      level: form.level || null,
-      community: form.community || null,
-      image_url: form.image_url || null,
-      video_url: form.video_url || null,
-      featured: form.featured,
+      if (isNewCategoryMode && newCategoryName.trim()) {
+        const newSlug = newCategoryName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+        const { data: newCat, error: catError } = await supabase
+          .from('categories')
+          .insert({ name: newCategoryName.trim(), slug: newSlug, type: 'experience' })
+          .select()
+          .single()
+
+        if (catError) throw catError
+        if (newCat) {
+          finalCategoryId = newCat.id
+          await loadDashboardData()
+        }
+      }
+
+      if (!finalCategoryId) {
+        alert('Selecione ou crie uma categoria válida.')
+        return
+      }
+
+      const generatedSlug = slug || title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+
+      const payload = {
+        title,
+        slug: generatedSlug,
+        price: parseFloat(price) || 0,
+        description,
+        community,
+        level,
+        category_id: finalCategoryId,
+        image_url: imageUrl,
+        video_url: videoUrl,
+        gallery_urls: galleryUrls,
+        featured: true
+      }
+
+      if (editingId) {
+        const { error } = await supabase.from('experiences').update(payload).eq('id', editingId)
+        if (error) throw error
+        alert('Experiência atualizada com sucesso!')
+      } else {
+        const { error } = await supabase.from('experiences').insert(payload)
+        if (error) throw error
+        alert('Experiência criada com sucesso!')
+      }
+
+      setIsModalOpen(false)
+      loadDashboardData()
+    } catch (err: any) {
+      alert('Erro ao salvar experiência: ' + err.message)
     }
-
-    let error
-    if (editingExp) {
-      const res = await supabase.from('experiences').update(payload).eq('id', editingExp.id)
-      error = res.error
-    } else {
-      const res = await supabase.from('experiences').insert(payload)
-      error = res.error
-    }
-
-    if (error) {
-      showToast(`Erro: ${error.message}`, 'error')
-    } else {
-      showToast(editingExp ? 'Experiência atualizada!' : 'Experiência criada!', 'success')
-      setShowModal(false)
-      await loadData()
-    }
-
-    setFormLoading(false)
   }
 
-  // ─── CRUD: DELETE ─────────────────────────────────────
-  async function handleDelete(id: string) {
+  const handleDeleteExperience = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir esta experiência?')) return
-
-    const { error } = await supabase.from('experiences').delete().eq('id', id)
-    if (error) {
-      showToast(`Erro ao excluir: ${error.message}`, 'error')
-    } else {
-      showToast('Experiência excluída.', 'success')
-      await loadData()
+    try {
+      const { error } = await supabase.from('experiences').delete().eq('id', id)
+      if (error) throw error
+      alert('Experiência excluída com sucesso!')
+      loadDashboardData()
+    } catch (err: any) {
+      alert('Erro ao excluir: ' + err.message)
     }
   }
 
-  // ─── BOOKING STATUS ──────────────────────────────────
-  async function updateBookingStatus(id: string, status: 'confirmed' | 'cancelled') {
-    const { error } = await supabase.from('bookings').update({ status }).eq('id', id)
-    if (error) {
-      showToast(`Erro: ${error.message}`, 'error')
-    } else {
-      showToast(`Reserva ${status === 'confirmed' ? 'confirmada' : 'cancelada'}.`, 'success')
-      await loadData()
-    }
-  }
-
-  // ─── SIGN OUT ─────────────────────────────────────────
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    navigate('/login', { replace: true })
-  }
-
-  // ─── LOADING ──────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-amz-areia dark:bg-amz-terra-dark">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-amz-dourado border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 font-maybug">Carregando painel...</p>
+      <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center">
+        <div className="text-amz-terra dark:text-amz-areia font-maybug text-xl animate-pulse">
+          Carregando Painel Administrativo...
         </div>
       </div>
     )
@@ -258,235 +256,125 @@ export function AdminDashboard() {
 
   if (!isAdmin) return null
 
-  // ─── RENDER ───────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark pb-24 transition-colors duration-300">
-      {/* Toast */}
-      {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
-      )}
-
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-amz-terra/90 backdrop-blur-xl border-b border-amber-900/10 px-4 py-3">
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
-          <div>
-            <h1 className="font-maybug text-lg text-amz-terra dark:text-amz-areia">Amazon Wind</h1>
-            <p className="text-[10px] uppercase tracking-widest text-amz-terra-light dark:text-amz-areia/50">Painel Administrativo</p>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-1.5 text-xs font-medium text-amz-terra-light dark:text-amz-areia/60 hover:text-red-500 dark:hover:text-red-400 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Sair
-          </button>
+    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark text-amz-terra-dark dark:text-amz-areia pb-20">
+      <header className="bg-white dark:bg-amz-terra/40 shadow-sm border-b border-amber-900/10 px-6 py-4 flex justify-between items-center">
+        <div>
+          <h1 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia">Amazon Wind — Admin</h1>
+          <p className="text-xs uppercase tracking-widest text-amz-terra-light dark:text-amz-areia/60">Gestão Operacional de Expedições</p>
         </div>
+        <button
+          onClick={() => navigate('/')}
+          className="text-sm font-semibold px-4 py-2 rounded-full border border-amz-terra/30 dark:border-amz-areia/30 hover:bg-amz-terra hover:text-white transition cursor-pointer"
+        >
+          Voltar ao Site
+        </button>
       </header>
 
-      {/* Desktop Tabs */}
-      <div className="hidden md:flex items-center gap-2 max-w-5xl mx-auto px-4 pt-4">
-        {([
-          { key: 'dashboard' as Tab, label: 'Painel' },
-          { key: 'experiences' as Tab, label: 'Experiências' },
-          { key: 'bookings' as Tab, label: 'Reservas' },
-        ]).map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-              activeTab === tab.key
-                ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark shadow-md'
-                : 'text-amz-terra-light dark:text-amz-areia/60 hover:bg-white dark:hover:bg-white/5'
-            }`}
-          >
-            {tab.label}
-            {tab.key === 'bookings' && pendingCount > 0 && (
-              <span className="ml-1.5 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">{pendingCount}</span>
-            )}
-          </button>
-        ))}
+      {/* Tabs */}
+      <div className="max-w-6xl mx-auto px-6 mt-6 flex gap-4 border-b border-amber-900/10 pb-4">
+        <button
+          onClick={() => setActiveTab('stats')}
+          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'stats' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
+        >
+          Visão Geral
+        </button>
+        <button
+          onClick={() => setActiveTab('experiences')}
+          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'experiences' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
+        >
+          Experiências & Downwinds ({experiences.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('bookings')}
+          className={`px-4 py-2 rounded-full font-semibold text-sm transition cursor-pointer ${activeTab === 'bookings' ? 'bg-amz-terra text-white dark:bg-amz-dourado dark:text-amz-terra-dark' : 'bg-white/50 dark:bg-white/5 hover:bg-white'}`}
+        >
+          Reservas ({bookings.length})
+        </button>
       </div>
 
-      {/* Content */}
-      <main className="max-w-5xl mx-auto px-4 pt-4">
+      <main className="max-w-6xl mx-auto px-6 mt-8">
+        {activeTab === 'stats' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
+              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Total de Experiências</h3>
+              <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{experiences.length}</p>
+            </div>
+            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
+              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Reservas Registradas</h3>
+              <p className="text-4xl font-maybug mt-2 text-amz-terra dark:text-amz-areia">{bookings.length}</p>
+            </div>
+            <div className="bg-white dark:bg-amz-terra/30 p-6 rounded-2xl shadow-sm border border-amber-900/10">
+              <h3 className="text-sm uppercase text-amz-terra-light dark:text-amz-areia/60">Status do Banco</h3>
+              <p className="text-lg font-semibold mt-2 text-emerald-600 dark:text-emerald-400">● Conectado (Supabase)</p>
+            </div>
+          </div>
+        )}
 
-        {/* ═══ DASHBOARD TAB ═══ */}
-        {activeTab === 'dashboard' && (
-          <div className="space-y-4">
-            <h2 className="font-maybug text-xl text-amz-terra dark:text-amz-areia">Visão Geral</h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white dark:bg-white/5 rounded-xl p-4 shadow-sm border border-amber-900/5">
-                <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50">Experiências</p>
-                <p className="text-3xl font-maybug text-amz-terra dark:text-amz-areia mt-1">{experiences.length}</p>
-              </div>
-              <div className="bg-white dark:bg-white/5 rounded-xl p-4 shadow-sm border border-amber-900/5">
-                <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50">Reservas</p>
-                <p className="text-3xl font-maybug text-amz-terra dark:text-amz-areia mt-1">{bookings.length}</p>
-              </div>
-              <div className="bg-white dark:bg-white/5 rounded-xl p-4 shadow-sm border-l-4 border-yellow-400">
-                <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50">Pendentes</p>
-                <p className="text-3xl font-maybug text-yellow-600 dark:text-yellow-400 mt-1">{pendingCount}</p>
-              </div>
-              <div className="bg-white dark:bg-white/5 rounded-xl p-4 shadow-sm border-l-4 border-green-400">
-                <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50">Confirmadas</p>
-                <p className="text-3xl font-maybug text-green-600 dark:text-green-400 mt-1">
-                  {bookings.filter(b => b.status === 'confirmed').length}
-                </p>
-              </div>
+        {activeTab === 'experiences' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-maybug">Gerenciar Roteiros e Downwinds</h2>
+              <button
+                onClick={openCreateModal}
+                className="btn-primary text-sm py-2 px-4 cursor-pointer"
+              >
+                + Nova Experiência
+              </button>
             </div>
 
-            {/* Reservas recentes */}
-            <div className="bg-white dark:bg-white/5 rounded-xl shadow-sm overflow-hidden border border-amber-900/5">
-              <div className="px-4 py-3 border-b border-amber-900/5">
-                <h3 className="font-semibold text-amz-terra dark:text-amz-areia text-sm">Reservas Recentes</h3>
-              </div>
-              {bookings.length === 0 ? (
-                <p className="p-6 text-sm text-amz-terra-light dark:text-amz-areia/40 text-center italic">Nenhuma reserva ainda</p>
-              ) : (
-                <div className="divide-y divide-amber-900/5">
-                  {bookings.slice(0, 5).map((b) => (
-                    <div key={b.id} className="px-4 py-3 flex items-center justify-between">
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-amz-terra dark:text-amz-areia truncate">
-                          {b.item_type === 'experience' ? 'Experiência' : b.item_type === 'class' ? 'Aula' : 'Produto'}
-                        </p>
-                        <p className="text-xs text-amz-terra-light dark:text-amz-areia/40">
-                          {new Date(b.booking_date).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
-                      <span className={`text-[10px] px-2 py-1 rounded-full font-semibold uppercase ${STATUS_COLORS[b.status]}`}>
-                        {STATUS_LABELS[b.status]}
-                      </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {experiences.map((exp) => (
+                <div key={exp.id} className="bg-white dark:bg-amz-terra/30 p-5 rounded-xl border border-amber-900/10 flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    {exp.image_url && (
+                      <img src={exp.image_url} alt={exp.title} className="w-16 h-16 object-cover rounded-lg" />
+                    )}
+                    <div>
+                      <h3 className="font-bold text-lg">{exp.title}</h3>
+                      <p className="text-xs text-amz-terra-light dark:text-amz-areia/70">Local: {exp.community || 'Geral'}</p>
+                      <p className="text-sm font-semibold text-amz-terra dark:text-amz-dourado mt-1">R$ {exp.price}</p>
                     </div>
-                  ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEditModal(exp)}
+                      className="px-3 py-1 bg-amber-600 text-white rounded-lg text-xs font-semibold hover:bg-amber-700 cursor-pointer"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExperience(exp.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 cursor-pointer"
+                    >
+                      Excluir
+                    </button>
+                  </div>
                 </div>
+              ))}
+              {experiences.length === 0 && (
+                <p className="text-amz-terra-light dark:text-amz-areia/60 italic">Nenhuma experiência cadastrada ainda.</p>
               )}
             </div>
           </div>
         )}
 
-        {/* ═══ EXPERIENCES TAB ═══ */}
-        {activeTab === 'experiences' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-maybug text-xl text-amz-terra dark:text-amz-areia">Experiências</h2>
-              <button onClick={openCreateModal} className="btn-primary !px-4 !py-2 !text-sm !rounded-xl">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Nova
-              </button>
-            </div>
-
-            {experiences.length === 0 ? (
-              <div className="bg-white dark:bg-white/5 rounded-xl p-8 text-center shadow-sm border border-amber-900/5">
-                <p className="text-amz-terra-light dark:text-amz-areia/40 text-sm">Nenhuma experiência cadastrada</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {experiences.map((exp) => {
-                  const cat = categories.find(c => c.id === exp.category_id)
-                  return (
-                    <div key={exp.id} className="bg-white dark:bg-white/5 rounded-xl shadow-sm overflow-hidden border border-amber-900/5">
-                      <div className="p-4">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0 flex-1">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-amz-oceano bg-amz-oceano/10 px-2 py-0.5 rounded-full">
-                              {cat?.name || 'Sem categoria'}
-                            </span>
-                            <h3 className="text-base font-semibold text-amz-terra dark:text-amz-areia mt-1.5 truncate">
-                              {exp.title}
-                            </h3>
-                            <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mt-0.5">
-                              {formatCurrency(exp.price)}
-                              {exp.duration && ` · ${exp.duration}`}
-                              {exp.level && ` · ${exp.level}`}
-                            </p>
-                            {exp.community && (
-                              <p className="text-xs text-amz-terra-light/50 dark:text-amz-areia/30 mt-0.5">
-                                Comunidade: {exp.community}
-                              </p>
-                            )}
-                          </div>
-                          {exp.featured && (
-                            <span className="text-[10px] font-semibold text-amz-dourado bg-amz-dourado/10 px-2 py-0.5 rounded-full shrink-0">
-                              Destaque
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 mt-3">
-                          <button
-                            onClick={() => openEditModal(exp)}
-                            className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg bg-amz-areia dark:bg-white/5 text-amz-terra dark:text-amz-areia hover:bg-amz-areia-dark dark:hover:bg-white/10 transition-colors"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            onClick={() => handleDelete(exp.id)}
-                            className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ═══ BOOKINGS TAB ═══ */}
         {activeTab === 'bookings' && (
-          <div className="space-y-4">
-            <h2 className="font-maybug text-xl text-amz-terra dark:text-amz-areia">Reservas</h2>
-
+          <div>
+            <h2 className="text-xl font-maybug mb-6">Gerenciamento de Reservas</h2>
             {bookings.length === 0 ? (
-              <div className="bg-white dark:bg-white/5 rounded-xl p-8 text-center shadow-sm border border-amber-900/5">
-                <p className="text-amz-terra-light dark:text-amz-areia/40 text-sm">Nenhuma reserva encontrada</p>
-              </div>
+              <p className="text-amz-terra-light dark:text-amz-areia/60 italic">Nenhuma reserva registrada no momento.</p>
             ) : (
               <div className="space-y-3">
                 {bookings.map((booking) => (
-                  <div key={booking.id} className="bg-white dark:bg-white/5 rounded-xl shadow-sm p-4 border border-amber-900/5">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia">
-                          {booking.item_type === 'experience' ? 'Experiência' : booking.item_type === 'class' ? 'Aula' : 'Produto'}
-                        </p>
-                        <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-0.5">
-                          {new Date(booking.booking_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </p>
-                        {booking.notes && (
-                          <p className="text-xs text-amz-terra-light/50 dark:text-amz-areia/30 mt-1 italic">{booking.notes}</p>
-                        )}
-                      </div>
-                      <span className={`text-[10px] px-2 py-1 rounded-full font-semibold uppercase shrink-0 ${STATUS_COLORS[booking.status]}`}>
-                        {STATUS_LABELS[booking.status]}
-                      </span>
+                  <div key={booking.id} className="bg-white dark:bg-amz-terra/30 p-4 rounded-xl border border-amber-900/10 flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-sm">Tipo: {booking.item_type}</p>
+                      <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">Data: {new Date(booking.booking_date).toLocaleDateString()}</p>
                     </div>
-
-                    {booking.status === 'pending' && (
-                      <div className="flex gap-2 mt-3">
-                        <button
-                          onClick={() => updateBookingStatus(booking.id, 'confirmed')}
-                          className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-                        >
-                          Confirmar
-                        </button>
-                        <button
-                          onClick={() => updateBookingStatus(booking.id, 'cancelled')}
-                          className="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                    )}
+                    <span className="text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold uppercase">
+                      {booking.status}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -495,203 +383,191 @@ export function AdminDashboard() {
         )}
       </main>
 
-      {/* ═══ BOTTOM NAV (Mobile) ═══ */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-amz-terra-dark/95 backdrop-blur-xl border-t border-amber-900/10 z-40 safe-area-pb">
-        <div className="flex items-center justify-around h-16">
-          {([
-            { key: 'dashboard' as Tab, label: 'Painel', icon: (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            )},
-            { key: 'experiences' as Tab, label: 'Experiências', icon: (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-              </svg>
-            )},
-            { key: 'bookings' as Tab, label: 'Reservas', icon: (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            ), badge: pendingCount },
-          ]).map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`relative flex flex-col items-center gap-0.5 px-4 py-2 transition-colors ${
-                activeTab === tab.key ? 'text-amz-dourado' : 'text-amz-terra-light dark:text-amz-areia/40'
-              }`}
-            >
-              {tab.icon}
-              <span className="text-[10px] font-medium">{tab.label}</span>
-              {'badge' in tab && tab.badge && tab.badge > 0 && (
-                <span className="absolute -mt-5 ml-3 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  {tab.badge > 9 ? '9+' : tab.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* Modal de Criação / Edição */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white dark:bg-[#3D1D0F] max-w-2xl w-full p-6 rounded-2xl shadow-xl border border-amber-900/20 my-8 max-h-[90vh] overflow-y-auto">
+            <h3 className="font-maybug text-2xl mb-4 text-amz-terra dark:text-amz-dourado">
+              {editingId ? 'Editar Experiência / Roteiro' : 'Adicionar Nova Experiência'}
+            </h3>
 
-      {/* ═══ MODAL: CREATE / EDIT EXPERIENCE ═══ */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-
-          <div className="relative w-full sm:max-w-lg bg-white dark:bg-[#3D1D0F] rounded-t-2xl sm:rounded-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Mobile handle */}
-            <div className="flex justify-center pt-3 sm:hidden">
-              <div className="w-10 h-1 rounded-full bg-gray-300" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-maybug text-lg text-amz-terra dark:text-amz-areia">
-                  {editingExp ? 'Editar Experiência' : 'Nova Experiência'}
-                </h2>
-                <button type="button" onClick={() => setShowModal(false)} className="text-amz-terra-light hover:text-amz-terra p-1">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Título */}
+            <form onSubmit={handleSaveExperience} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Título *</label>
+                <label className="block text-xs uppercase font-semibold mb-1">Título do Downwind / Roteiro</label>
                 <input
-                  type="text" required value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="Ex: Downwind Ajuruteua → Salinas"
-                  className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                  placeholder="Ex: Ajuruteua > Salinas"
                 />
               </div>
 
-              {/* Descrição */}
+              {/* Seletor de Categoria com opção de criar nova */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Descrição</label>
-                <textarea
-                  value={form.description} rows={3}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  placeholder="Descreva a experiência..."
-                  className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 resize-none transition-all"
-                />
-              </div>
-
-              {/* Categoria */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Categoria *</label>
-                <select
-                  required value={form.category_id}
-                  onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
-                >
-                  <option value="">Selecione...</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Preço + Duração */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Preço (R$) *</label>
-                  <input
-                    type="number" required min="0" step="0.01" value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
-                    placeholder="0.00"
-                    className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Duração</label>
-                  <input
-                    type="text" value={form.duration}
-                    onChange={(e) => setForm({ ...form, duration: e.target.value })}
-                    placeholder="Ex: 2h30"
-                    className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Nível + Comunidade */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Nível</label>
-                  <select
-                    value={form.level}
-                    onChange={(e) => setForm({ ...form, level: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-xs uppercase font-semibold">Categoria</label>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewCategoryMode(!isNewCategoryMode)}
+                    className="text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline cursor-pointer"
                   >
-                    <option value="">Todos</option>
-                    <option value="Iniciante">Iniciante</option>
-                    <option value="Intermediário">Intermediário</option>
-                    <option value="Avançado">Avançado</option>
-                    <option value="Todos os níveis">Todos os níveis</option>
+                    {isNewCategoryMode ? '← Selecionar existente' : '+ Criar nova categoria'}
+                  </button>
+                </div>
+
+                {isNewCategoryMode ? (
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="Nome da nova categoria..."
+                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                  />
+                ) : (
+                  <select
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-white dark:bg-[#2d150b] text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
                   </select>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs uppercase font-semibold mb-1">Preço (R$)</label>
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                    placeholder="450.00"
+                  />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">Comunidade</label>
+                  <label className="block text-xs uppercase font-semibold mb-1">Nível de Dificuldade</label>
                   <input
-                    type="text" value={form.community}
-                    onChange={(e) => setForm({ ...form, community: e.target.value })}
-                    placeholder="Ex: Ajuruteua"
-                    className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
+                    type="text"
+                    value={level}
+                    onChange={(e) => setLevel(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                    placeholder="Ex: Intermediário / Avançado"
                   />
                 </div>
               </div>
 
-              {/* URLs */}
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">URL da Imagem</label>
+                <label className="block text-xs uppercase font-semibold mb-1">Comunidade / Local Base</label>
                 <input
-                  type="url" value={form.image_url}
-                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/50 mb-1">URL do Vídeo</label>
-                <input
-                  type="url" value={form.video_url}
-                  onChange={(e) => setForm({ ...form, video_url: e.target.value })}
-                  placeholder="https://youtube.com/..."
-                  className="w-full px-3 py-2.5 rounded-lg border border-amber-900/20 bg-transparent text-sm text-amz-terra dark:text-amz-areia focus:outline-none focus:ring-2 focus:ring-amz-dourado/40 transition-all"
+                  type="text"
+                  value={community}
+                  onChange={(e) => setCommunity(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                  placeholder="Ex: Salinópolis - PA"
                 />
               </div>
 
-              {/* Featured toggle */}
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <div
-                  className={`relative w-11 h-6 rounded-full transition-colors ${form.featured ? 'bg-amz-dourado' : 'bg-gray-200 dark:bg-white/10'}`}
-                  onClick={() => setForm({ ...form, featured: !form.featured })}
-                >
-                  <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${form.featured ? 'translate-x-5' : ''}`} />
+              <div>
+                <label className="block text-xs uppercase font-semibold mb-1">Descrição</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-2 rounded-lg border border-amber-900/20 bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-amz-terra"
+                  placeholder="Detalhes da expedição..."
+                />
+              </div>
+
+              {/* Upload de Imagem de Capa */}
+              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
+                <label className="block text-xs uppercase font-semibold mb-2">Imagem de Capa (Principal)</label>
+                {imageUrl && (
+                  <div className="mb-2 flex items-center gap-2">
+                    <img src={imageUrl} alt="Capa" className="w-16 h-16 object-cover rounded-lg border" />
+                    <span className="text-xs truncate max-w-xs">{imageUrl}</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e, 'image')}
+                  className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer"
+                />
+              </div>
+
+              {/* Upload de Vídeo */}
+              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
+                <label className="block text-xs uppercase font-semibold mb-2">Vídeo Promocional (Arquivo ou URL)</label>
+                {videoUrl && (
+                  <p className="text-xs truncate text-emerald-600 mb-2">Vídeo configurado: {videoUrl}</p>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => handleFileUpload(e, 'video')}
+                    className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer flex-1"
+                  />
                 </div>
-                <span className="text-sm text-amz-terra dark:text-amz-areia">Destaque na página inicial</span>
-              </label>
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="Ou cole o link do YouTube / Vimeo aqui..."
+                  className="w-full mt-2 px-3 py-1.5 rounded-lg border border-amber-900/20 bg-transparent text-xs focus:outline-none"
+                />
+              </div>
 
-              {/* Ações */}
-              <div className="flex gap-3 pt-2">
+              {/* Galeria de Imagens */}
+              <div className="p-4 rounded-xl border border-amber-900/10 bg-amber-500/5">
+                <label className="block text-xs uppercase font-semibold mb-2">Galeria de Imagens (Múltiplas Fotos)</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {galleryUrls.map((url, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={url} alt={`Galeria ${idx}`} className="w-14 h-14 object-cover rounded-lg border" />
+                      <button
+                        type="button"
+                        onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== idx))}
+                        className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => handleFileUpload(e, 'gallery')}
+                  className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amz-terra file:text-white hover:file:bg-amz-terra-dark cursor-pointer"
+                />
+              </div>
+
+              {uploading && (
+                <p className="text-xs text-amber-600 font-semibold animate-pulse text-center">Enviando arquivo para o Storage...</p>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-amber-900/10">
                 <button
-                  type="button" onClick={() => setShowModal(false)}
-                  className="flex-1 py-2.5 rounded-lg border border-amber-900/20 text-sm font-semibold text-amz-terra-light dark:text-amz-areia/60 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 rounded-full text-sm font-semibold border border-amber-900/20 cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
-                  type="submit" disabled={formLoading}
-                  className="flex-1 py-2.5 rounded-lg bg-amz-dourado text-white text-sm font-semibold hover:bg-amber-700 transition-colors disabled:opacity-50"
+                  type="submit"
+                  disabled={uploading}
+                  className="btn-primary text-sm py-2 px-6 cursor-pointer disabled:opacity-50"
                 >
-                  {formLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Salvando...
-                    </span>
-                  ) : editingExp ? 'Atualizar' : 'Criar'}
+                  {editingId ? 'Salvar Alterações' : 'Criar Roteiro'}
                 </button>
               </div>
             </form>
