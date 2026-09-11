@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { supabase } from '../services/supabase'
+import { useLanguage } from '../contexts/LanguageContext'
+import { heroVideo, heroDesktopFallback, portraitImages } from '../data/media'
 
 interface HeroSlide {
   id: string
@@ -25,14 +27,32 @@ function getYouTubeEmbedUrl(url: string): string {
 
 const fallbackSlides: HeroSlide[] = [
   {
-    id: 'default-1',
-    title: 'Amazônia Atlântica & Kitesurf',
-    subtitle: 'Explore a rota dos ventos alísios e downwinds épicos na costa norte do Brasil.',
-    media_url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&q=80&w=1920',
-    media_type: 'image',
+    id: 'default-video',
+    title: 'Expedições. Downwinds. Experiências na Amazônia Atlântica.',
+    subtitle: 'A Amazônia é o nosso ponto de partida. Não queremos apenas organizar viagens. Queremos revelar um território.',
+    media_url: heroVideo,
+    media_type: 'video',
     cta_text: 'Explorar Roteiros',
-    cta_link: '#experiencias'
-  }
+    cta_link: '#experiencias',
+  },
+  {
+    id: 'default-img-1',
+    title: 'Kitesurf na Amazônia Atlântica',
+    subtitle: 'Ventos alísios constantes, águas cristalinas e praias selvagens. O cenário perfeito para sua aventura.',
+    media_url: portraitImages[5]?.src || heroDesktopFallback.src,
+    media_type: 'image',
+    cta_text: 'Agendar Aula',
+    cta_link: '#escola',
+  },
+  {
+    id: 'default-img-2',
+    title: 'Downwinds Épicos',
+    subtitle: 'Navegue entre ilhas paradisíacas, praias de águas-transparentes e restingas intocadas.',
+    media_url: portraitImages[30]?.src || heroDesktopFallback.src,
+    media_type: 'image',
+    cta_text: 'Ver Roteiros',
+    cta_link: '#experiencias',
+  },
 ]
 
 function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.RefObject<HTMLDivElement> }) {
@@ -67,6 +87,8 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
           key={slide.id}
           src={slide.media_url}
           alt={slide.title}
+          loading="eager"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
         />
       )}
@@ -75,6 +97,7 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
 }
 
 export default function Hero() {
+  useLanguage()
   const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [prevSlide, setPrevSlide] = useState<number | null>(null)
@@ -103,7 +126,6 @@ export default function Hero() {
     fetchHeroSlides()
   }, [])
 
-  // 5-second auto-advance
   useEffect(() => {
     if (slides.length <= 1) return
     const timer = setInterval(() => {
@@ -115,12 +137,10 @@ export default function Hero() {
     return () => clearInterval(timer)
   }, [slides.length])
 
-  // GSAP crossfade + Ken Burns
   useEffect(() => {
     if (!currentLayerRef.current) return
 
     const ctx = gsap.context(() => {
-      // Crossfade: fade out prev, fade in current
       if (prevLayerRef.current) {
         gsap.fromTo(
           prevLayerRef.current,
@@ -130,24 +150,17 @@ export default function Hero() {
       }
 
       gsap.fromTo(
-        currentLayerRef.current,
+        currentLayerRef.current!,
         { opacity: 0 },
         { opacity: 1, duration: 0.8, ease: 'power2.inOut' }
       )
 
-      // Ken Burns zoom on current
       gsap.fromTo(
-        currentLayerRef.current,
+        currentLayerRef.current!,
         { scale: 1 },
-        {
-          scale: 1.08,
-          duration: 5,
-          ease: 'power1.out',
-          repeat: 0,
-        }
+        { scale: 1.08, duration: 5, ease: 'power1.out', repeat: 0 }
       )
 
-      // Content fade in
       if (contentRef.current) {
         gsap.fromTo(
           contentRef.current,
@@ -164,16 +177,13 @@ export default function Hero() {
 
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* Media layers for crossfade */}
       {prevSlide !== null && slides[prevSlide] && (
         <MediaLayer slide={slides[prevSlide]} layerRef={prevLayerRef} />
       )}
       <MediaLayer slide={slide} layerRef={currentLayerRef} />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40 z-[1]" />
 
-      {/* Content */}
       <div ref={contentRef} className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white mt-12">
         <span className="inline-block text-xs uppercase tracking-[0.3em] font-bold px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md mb-4 border border-white/20">
           Amazon Wind Expeditions

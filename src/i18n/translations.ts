@@ -376,6 +376,34 @@ export type TranslationKeys = {
   installChromeStep1: string
   installChromeStep2: string
   installGotIt: string
+
+  // Gallery
+  galleryLabel: string
+  galleryTitle: string
+  gallerySubtitle: string
+  galleryAll: string
+
+  // About Page - Values
+  aboutValues: string
+  aboutValue1Title: string
+  aboutValue1Desc: string
+  aboutValue2Title: string
+  aboutValue2Desc: string
+  aboutValue3Title: string
+  aboutValue3Desc: string
+
+  // About Page - Leadership
+  aboutLeadership: string
+  aboutLeader1Name: string
+  aboutLeader1Role: string
+  aboutLeader2Name: string
+  aboutLeader2Role: string
+  aboutLeader3Name: string
+  aboutLeader3Role: string
+
+  // About Page - Regions & Products
+  aboutRegions: string
+  aboutProducts: string
 }
 
 const pt: TranslationKeys = {
@@ -384,10 +412,10 @@ const pt: TranslationKeys = {
   navServicos: 'Serviços',
   navContato: 'Contato',
 
-  heroTagline: 'Salinópolis · Ilha do Marajó · Ajuruteua',
+  heroTagline: 'Expedições · Downwinds · Experiências na Amazônia Atlântica',
   heroTitle1: 'A Amazônia é o nosso',
   heroTitleHighlight: 'ponto de partida',
-  heroSubtitle: 'A aventura é do cliente, a responsabilidade é nossa. Kitesurf, downwinds e expedições na Amazônia Atlântica.',
+  heroSubtitle: 'Não queremos apenas organizar viagens. Queremos revelar um território.',
   heroCTA1: 'Ver Experiências',
   heroCTA2: 'Agendar Aula',
 
@@ -725,6 +753,30 @@ const pt: TranslationKeys = {
   installChromeStep1: 'Toque no menu (três pontinhos) na barra de endereço',
   installChromeStep2: 'Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"',
   installGotIt: 'Entendi!',
+
+  galleryLabel: 'Acervo',
+  galleryTitle: 'Galeria',
+  gallerySubtitle: 'As melhores imagens das nossas expedições, aulas e vivências na Amazônia Atlântica.',
+  galleryAll: 'Todas',
+
+  aboutValues: 'Valores Fundamentais',
+  aboutValue1Title: 'Segurança',
+  aboutValue1Desc: 'Instrutores certificados, equipamentos de última geração e protocolos rigorosos para garantir uma experiência segura em cada atividade.',
+  aboutValue2Title: 'Respeito à Natureza',
+  aboutValue2Desc: 'Turismo de impacto positivo, preservação ambiental e valorização do ecossistema amazônico em cada experiência que criamos.',
+  aboutValue3Title: 'Hospitalidade Amazônica',
+  aboutValue3Desc: 'Autenticidade, acolhimento caloroso e conexão genuína com as comunidades locais e a cultura paraense.',
+
+  aboutLeadership: 'Liderança',
+  aboutLeader1Name: 'Pingo',
+  aboutLeader1Role: 'Diretor Técnico',
+  aboutLeader2Name: 'Pablo',
+  aboutLeader2Role: 'Diretor de Operações',
+  aboutLeader3Name: 'Rafael Conceição',
+  aboutLeader3Role: 'Diretor de Experiência e Marca',
+
+  aboutRegions: 'Áreas de Atuação',
+  aboutProducts: 'Nossos Produtos',
 }
 
 const en: TranslationKeys = {
@@ -733,10 +785,10 @@ const en: TranslationKeys = {
   navServicos: 'Services',
   navContato: 'Contact',
 
-  heroTagline: 'Salinópolis · Marajó Island · Ajuruteua',
+  heroTagline: 'Expeditions · Downwinds · Experiences in the Atlantic Amazon',
   heroTitle1: 'The Amazon is our',
   heroTitleHighlight: 'starting point',
-  heroSubtitle: 'The adventure belongs to the customer, the responsibility is ours. Kitesurf, downwinds and expeditions in the Atlantic Amazon.',
+  heroSubtitle: 'We don\'t just want to organize trips. We want to reveal a territory.',
   heroCTA1: 'See Experiences',
   heroCTA2: 'Book a Lesson',
 
@@ -1074,6 +1126,30 @@ const en: TranslationKeys = {
   installChromeStep1: 'Tap the menu (three dots) in the address bar',
   installChromeStep2: 'Select "Install app" or "Add to home screen"',
   installGotIt: 'Got it!',
+
+  galleryLabel: 'Portfolio',
+  galleryTitle: 'Gallery',
+  gallerySubtitle: 'The best images from our expeditions, lessons and experiences in the Atlantic Amazon.',
+  galleryAll: 'All',
+
+  aboutValues: 'Core Values',
+  aboutValue1Title: 'Safety',
+  aboutValue1Desc: 'Certified instructors, state-of-the-art equipment and rigorous protocols to ensure a safe experience in every activity.',
+  aboutValue2Title: 'Respect for Nature',
+  aboutValue2Desc: 'Positive impact tourism, environmental preservation and appreciation of the Amazonian ecosystem in every experience we create.',
+  aboutValue3Title: 'Amazonian Hospitality',
+  aboutValue3Desc: 'Authenticity, warm welcome and genuine connection with local communities and Pará culture.',
+
+  aboutLeadership: 'Leadership',
+  aboutLeader1Name: 'Pingo',
+  aboutLeader1Role: 'Technical Director',
+  aboutLeader2Name: 'Pablo',
+  aboutLeader2Role: 'Operations Director',
+  aboutLeader3Name: 'Rafael Conceição',
+  aboutLeader3Role: 'Experience & Brand Director',
+
+  aboutRegions: 'Areas of Operation',
+  aboutProducts: 'Our Products',
 }
 
 const es: TranslationKeys = {
@@ -1082,10 +1158,10 @@ const es: TranslationKeys = {
   navServicos: 'Servicios',
   navContato: 'Contacto',
 
-  heroTagline: 'Salinópolis · Isla de Marajó · Ajuruteua',
+  heroTagline: 'Expediciones · Downwinds · Experiencias en la Amazonía Atlántica',
   heroTitle1: 'La Amazonía es nuestro',
   heroTitleHighlight: 'punto de partida',
-  heroSubtitle: 'La aventura es del cliente, la responsabilidad es nuestra. Kitesurf, downwinds y expediciones en la Amazonia Atlántica.',
+  heroSubtitle: 'No queremos solo organizar viajes. Queremos revelar un territorio.',
   heroCTA1: 'Ver Experiencias',
   heroCTA2: 'Agendar Clase',
 
@@ -1423,6 +1499,30 @@ const es: TranslationKeys = {
   installChromeStep1: 'Toca el menú (tres puntos) en la barra de direcciones',
   installChromeStep2: 'Selecciona "Instalar aplicación" o "Añadir a pantalla de inicio"',
   installGotIt: '¡Entendido!',
+
+  galleryLabel: 'Portafolio',
+  galleryTitle: 'Galería',
+  gallerySubtitle: 'Las mejores imágenes de nuestras expediciones, clases y experiencias en la Amazonía Atlántica.',
+  galleryAll: 'Todas',
+
+  aboutValues: 'Valores Fundamentales',
+  aboutValue1Title: 'Seguridad',
+  aboutValue1Desc: 'Instructores certificados, equipos de última generación y protocolos rigurosos para garantizar una experiencia segura en cada actividad.',
+  aboutValue2Title: 'Respeto por la Naturaleza',
+  aboutValue2Desc: 'Turismo de impacto positivo, preservación ambiental y valorización del ecosistema amazónico en cada experiencia que creamos.',
+  aboutValue3Title: 'Hospitalidad Amazónica',
+  aboutValue3Desc: 'Autenticidad, cálida bienvenida y conexión genuina con las comunidades locales y la cultura paraense.',
+
+  aboutLeadership: 'Liderazgo',
+  aboutLeader1Name: 'Pingo',
+  aboutLeader1Role: 'Director Técnico',
+  aboutLeader2Name: 'Pablo',
+  aboutLeader2Role: 'Director de Operaciones',
+  aboutLeader3Name: 'Rafael Conceição',
+  aboutLeader3Role: 'Director de Experiencia y Marca',
+
+  aboutRegions: 'Áreas de Operación',
+  aboutProducts: 'Nuestros Productos',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

@@ -6,6 +6,7 @@ import Hero from '../components/Hero'
 import ExperienciasCarousel from '../components/ExperienciasCarousel'
 import KiteSchool from '../components/KiteSchool'
 import Servicos from '../components/Servicos'
+import Gallery from '../components/Gallery'
 import ContactNewsletter from '../components/ContactNewsletter'
 import Footer from '../components/Footer'
 
@@ -45,6 +46,7 @@ export default function Home() {
       <ExperienciasCarousel />
       <KiteSchool />
       <Servicos />
+      <Gallery />
       <ContactNewsletter />
       <Footer />
     </div>

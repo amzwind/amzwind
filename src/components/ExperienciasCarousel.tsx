@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { supabase } from '../services/supabase'
+import { portraitImages } from '../data/media'
 
 const staticExperiences = [
-  { id: '1', titleKey: 'exp1Title', descKey: 'exp1Desc', gradient: 'from-amz-oceano to-amz-oceano-dark', icon: '🌊', badge: 'Downwind', levelKey: 'levelIntermediate', duration: '2h30' },
-  { id: '2', titleKey: 'exp2Title', descKey: 'exp2Desc', gradient: 'from-amz-bio to-amz-bio-dark', icon: '🏝️', badge: 'Expedition', levelKey: 'levelIntermediateAdv', duration: '3h' },
-  { id: '3', titleKey: 'exp3Title', descKey: 'exp3Desc', gradient: 'from-amz-terra to-amz-terra-dark', icon: '🦜', badge: 'Cultural Experience', levelKey: 'levelAll', duration: '4h' },
-  { id: '4', titleKey: 'exp4Title', descKey: 'exp4Desc', gradient: 'from-amz-dourado to-amber-700', icon: '🥁', badge: 'Cultural Experience', levelKey: 'levelAll', duration: '2h' },
+  { id: '1', titleKey: 'exp1Title', descKey: 'exp1Desc', badge: 'Downwind', levelKey: 'levelIntermediate', duration: '2h30', image: portraitImages[15]?.src || portraitImages[0]?.src },
+  { id: '2', titleKey: 'exp2Title', descKey: 'exp2Desc', badge: 'Expedition', levelKey: 'levelIntermediateAdv', duration: '3h', image: portraitImages[40]?.src || portraitImages[5]?.src },
+  { id: '3', titleKey: 'exp3Title', descKey: 'exp3Desc', badge: 'Vivência Cultural', levelKey: 'levelAll', duration: '4h', image: portraitImages[50]?.src || portraitImages[10]?.src },
+  { id: '4', titleKey: 'exp4Title', descKey: 'exp4Desc', badge: 'Vivência Cultural', levelKey: 'levelAll', duration: '2h', image: portraitImages[55]?.src || portraitImages[20]?.src },
 ]
 
 const badgeColors: Record<string, string> = {
@@ -48,7 +49,6 @@ export default function ExperienciasCarousel() {
     }
   }
 
-  // Se houver itens no banco, usamos eles. Caso contrário, usamos os estáticos.
   const hasDbItems = dbExperiences.length > 0
   const totalItems = hasDbItems ? dbExperiences.length : staticExperiences.length
 
@@ -92,7 +92,6 @@ export default function ExperienciasCarousel() {
           </p>
         </div>
 
-        {/* Carousel Container */}
         <div className="relative fade-up">
           {canScrollLeft && (
             <button
@@ -117,13 +116,11 @@ export default function ExperienciasCarousel() {
             </button>
           )}
 
-          {/* Cards Track */}
           <div
             ref={scrollRef}
             className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory scroll-smooth px-1 py-2"
           >
             {hasDbItems ? (
-              // Renderiza os dados vindos do Supabase (Painel Admin)
               dbExperiences.map((exp) => (
                 <Link
                   to={`/experiencia/${exp.id}`}
@@ -131,9 +128,9 @@ export default function ExperienciasCarousel() {
                   className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer block"
                 >
                   <div className="bg-white dark:bg-amz-terra/40 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amz-areia-dark/30 dark:border-white/5 backdrop-blur-sm flex flex-col h-full">
-                    <div className="relative h-48 bg-gradient-to-br from-amz-oceano to-amz-oceano-dark overflow-hidden">
+                    <div className="relative h-48 overflow-hidden">
                       {exp.image_url ? (
-                        <img src={exp.image_url} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={exp.image_url} alt={exp.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center text-4xl">🏄‍♂️</div>
                       )}
@@ -174,7 +171,6 @@ export default function ExperienciasCarousel() {
                 </Link>
               ))
             ) : (
-              // Renderiza os dados estáticos caso o banco esteja vazio
               staticExperiences.map((exp, i) => {
                 const titleMap: Record<string, string> = { exp1: t.exp1Title, exp2: t.exp2Title, exp3: t.exp3Title, exp4: t.exp4Title }
                 const descMap: Record<string, string> = { exp1: t.exp1Desc, exp2: t.exp2Desc, exp3: t.exp3Desc, exp4: t.exp4Desc }
@@ -189,18 +185,22 @@ export default function ExperienciasCarousel() {
                     className="flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-[420px] snap-center group cursor-pointer block"
                   >
                     <div className="bg-white dark:bg-amz-terra/40 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amz-areia-dark/30 dark:border-white/5 backdrop-blur-sm">
-                      <div className={`relative h-48 bg-gradient-to-br ${exp.gradient} overflow-hidden`}>
-                        <div className="absolute inset-0 bg-black/10" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-7xl opacity-80 group-hover:scale-110 transition-transform duration-500">{exp.icon}</span>
-                        </div>
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={exp.image}
+                          alt={titleMap[exp.titleKey]}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                         <div className="absolute top-4 left-4">
                           <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm ${badgeColors[badges[i]] || badgeColors['Downwind']}`}>
                             {badges[i]}
                           </span>
                         </div>
                         <div className="absolute bottom-4 right-4">
-                          <span className="text-xs font-medium text-white/90 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                          <span className="text-xs font-medium text-white/90 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">
                             {levels[i]}
                           </span>
                         </div>
@@ -240,7 +240,6 @@ export default function ExperienciasCarousel() {
             )}
           </div>
 
-          {/* Dots Indicator */}
           <div className="flex justify-center gap-2 mt-8">
             {Array.from({ length: totalItems }).map((_, i) => (
               <button

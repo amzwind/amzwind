@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
+import Gallery from '../components/Gallery'
+import { portraitImages } from '../data/media'
 
 
 interface AboutData {
@@ -17,55 +19,80 @@ interface AboutData {
 
 const FALLBACK_DATA: Record<string, AboutData> = {
   pt: {
-    cover_url: null,
+    cover_url: '/paisagem.jpeg',
     title: 'Sobre a Amazon Wind',
-    subtitle: 'Escola de Kitesurf & Expedições na Amazônia Atlântica',
-    description: `Fundada por Pingo, Pablo e Rafael, a Amazon Wind nasceu da paixão pelo vento, pela água e pela cultura paraense. Localizada em Salinópolis, no litoral do Pará, somos referência em aulas de kitesurf, downwinds épicos e expedições que conectam o viajante à essência da Amazônia Atlântica.
+    subtitle: 'Expedições, Downwinds & Experiências na Amazônia Atlântica',
+    description: `A Amazônia é o nosso ponto de partida. Não queremos apenas organizar viagens. Queremos revelar um território.
+
+Fundada por Pingo, Pablo e Rafael Conceição, a Amazon Wind nasceu da paixão pelo vento, pela água e pela cultura paraense. Localizada em Salinópolis, no litoral do Pará, somos referência em aulas de kitesurf, downwinds épicos e expedições que conectam o viajante à essência da Amazônia Atlântica.
 
 Nossa história começou nas praias de Ajuruteua e Algodoal, onde os ventos constantes e as águas cristalinas criam o cenário perfeito para o kitesurf. Ao longo dos anos, expandimos nossas operações para incluir vivências culturais na Ilha do Marajó, trilhas pela restinga e mergulhos em águas-transparentes.
 
 Acreditamos no turismo de impacto positivo. Cada experiência que criamos respeita o meio ambiente, valoriza as comunidades locais e preserva a cultura amazônica. Nosso time de instrutores certificados garante segurança e diversão para todos os níveis, desde o primeiro contato com a barra até manobras avançadas.`,
     video_url: null,
-    gallery_urls: [],
-    mission: 'Democratizar o kitesurf e o ecoturismo na Amazônia, oferecendo experiências seguras, sustentáveis e transformadoras que conectam pessoas à natureza e à cultura paraense.',
+    gallery_urls: portraitImages.slice(0, 20).map((m) => m.src),
+    mission: 'Proporcionar experiências esportivas e culturais na Amazônia Atlântica com excelência operacional, segurança, autenticidade e respeito ao território e às comunidades locais.',
     vision: 'Ser a principal referência em kitesurf e turismo de aventura no Norte do Brasil, reconhecida pela excelência, sustentabilidade e pelo impacto positivo nas comunidades locais.',
   },
   en: {
-    cover_url: null,
+    cover_url: '/paisagem.jpeg',
     title: 'About Amazon Wind',
-    subtitle: 'Kitesurf School & Expeditions in the Amazon',
-    description: `Founded by Pingo, Pablo and Rafael, Amazon Wind was born from a passion for wind, water, and Pará culture. Based in Salinópolis on the coast of Pará, we are a reference in kitesurf lessons, epic downwinds, and expeditions that connect travelers to the essence of the Atlantic Amazon.
+    subtitle: 'Expeditions, Downwinds & Experiences in the Atlantic Amazon',
+    description: `The Amazon is our starting point. We don't just want to organize trips. We want to reveal a territory.
+
+Founded by Pingo, Pablo and Rafael Conceição, Amazon Wind was born from a passion for wind, water, and Pará culture. Based in Salinópolis on the coast of Pará, we are a reference in kitesurf lessons, epic downwinds, and expeditions that connect travelers to the essence of the Atlantic Amazon.
 
 Our story began on the beaches of Ajuruteua and Algodoal, where constant winds and crystal-clear waters create the perfect setting for kitesurfing. Over the years, we expanded our operations to include cultural experiences on Marajó Island, restinga trails, and dives in transparent waters.
 
 We believe in positive impact tourism. Every experience we create respects the environment, values local communities, and preserves Amazonian culture. Our team of certified instructors ensures safety and fun for all levels, from first contact with the bar to advanced maneuvers.`,
     video_url: null,
-    gallery_urls: [],
-    mission: 'Democratize kitesurfing and ecotourism in the Amazon, offering safe, sustainable, and transformative experiences that connect people to nature and Pará culture.',
+    gallery_urls: portraitImages.slice(0, 20).map((m) => m.src),
+    mission: 'Provide sports and cultural experiences in the Atlantic Amazon with operational excellence, safety, authenticity, and respect for the territory and local communities.',
     vision: 'To be the leading reference in kitesurfing and adventure tourism in Northern Brazil, recognized for excellence, sustainability, and positive impact on local communities.',
   },
   es: {
-    cover_url: null,
+    cover_url: '/paisagem.jpeg',
     title: 'Sobre Amazon Wind',
-    subtitle: 'Escuela de Kitesurf y Expediciones en la Amazonía',
-    description: `Fundada por Pingo, Pablo y Rafael, Amazon Wind nació de la pasión por el viento, el agua y la cultura de Pará. Ubicada en Salinópolis, en la costa de Pará, somos referencia en clases de kitesurf, downwinds épicos y expediciones que conectan al viajante con la esencia de la Amazonía Atlántica.
+    subtitle: 'Expediciones, Downwinds & Experiencias en la Amazonía Atlántica',
+    description: `La Amazonía es nuestro punto de partida. No queremos solo organizar viajes. Queremos revelar un territorio.
+
+Fundada por Pingo, Pablo y Rafael Conceição, Amazon Wind nació de la pasión por el viento, el agua y la cultura de Pará. Ubicada en Salinópolis, en la costa de Pará, somos referencia en clases de kitesurf, downwinds épicos y expediciones que conectan al viajante con la esencia de la Amazonía Atlántica.
 
 Nuestra historia comenzó en las playas de Ajuruteua y Algodoal, donde los vientos constantes y las aguas cristalinas crean el escenario perfecto para el kitesurf. A lo largo de los años, expandimos nuestras operaciones para incluir experiencias culturales en la Isla de Marajó, senderos por la restinga y buceo en aguas transparentes.
 
 Creemos en el turismo de impacto positivo. Cada experiencia que creamos respeta el medio ambiente, valoriza las comunidades locales y preserva la cultura amazónica. Nuestro equipo de instructores certificados garantiza seguridad y diversión para todos los niveles.`,
     video_url: null,
-    gallery_urls: [],
-    mission: 'Democratizar el kitesurf y el ecoturismo en la Amazonía, ofreciendo experiencias seguras, sostenibles y transformadoras que conectan a las personas con la naturaleza y la cultura paraense.',
+    gallery_urls: portraitImages.slice(0, 20).map((m) => m.src),
+    mission: 'Proporcionar experiencias deportivas y culturales en la Amazonía Atlántica con excelencia operativa, seguridad, autenticidad y respeto al territorio y a las comunidades locales.',
     vision: 'Ser la principal referencia en kitesurf y turismo de aventura en el Norte de Brasil, reconocida por la excelencia, sostenibilidad y el impacto positivo en las comunidades locales.',
   },
 }
+
+const regions = [
+  { name: 'Salinópolis', image: '/paisagem.jpeg' },
+  { name: 'Ilha do Marajó', image: '/experiencia-por-do-sol.jpeg' },
+  { name: 'Algodoal', image: '/por-do-sol.jpeg' },
+  { name: 'Ajuruteua', image: '/kite17.jpeg' },
+  { name: 'Crispim', image: '/por-do-sol2.jpeg' },
+  { name: 'Fortalezinha', image: '/por-do-sol8.jpeg' },
+  { name: 'Pirabas', image: '/por-do-sol89.jpeg' },
+]
+
+const products = [
+  { pt: 'Escola de Kitesurf', en: 'Kitesurf School', es: 'Escuela de Kitesurf', icon: '🏄' },
+  { pt: 'Downwinds', en: 'Downwinds', es: 'Downwinds', icon: '🌊' },
+  { pt: 'Expedições', en: 'Expeditions', es: 'Expediciones', icon: '🗺️' },
+  { pt: 'Kite Camps', en: 'Kite Camps', es: 'Kite Camps', icon: '⛺' },
+  { pt: 'Wingfoil', en: 'Wingfoil', es: 'Wingfoil', icon: '🦅' },
+  { pt: 'Surf Trips', en: 'Surf Trips', es: 'Surf Trips', icon: '🏖️' },
+  { pt: 'Canoagem', en: 'Canoeing', es: 'Canoa', icon: '🛶' },
+]
 
 export default function Sobre() {
   const { t, locale } = useLanguage()
 
   const [aboutData, setAboutData] = useState<AboutData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [activeImage, setActiveImage] = useState(0)
 
   useEffect(() => {
     loadAboutData()
@@ -106,7 +133,7 @@ export default function Sobre() {
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500">
       {/* Hero / Cover */}
-      <section className="relative h-[50vh] min-h-[400px] overflow-hidden">
+      <section className="relative h-[60vh] min-h-[400px] overflow-hidden">
         {aboutData.cover_url ? (
           <img src={aboutData.cover_url} alt={aboutData.title} className="w-full h-full object-cover" />
         ) : (
@@ -118,7 +145,7 @@ export default function Sobre() {
             <p className="text-amz-dourado text-sm font-semibold uppercase tracking-widest mb-2">{aboutData.subtitle}</p>
             <h1 className="font-maybug text-4xl md:text-5xl lg:text-6xl text-white mb-4">{aboutData.title}</h1>
             <div className="flex items-center gap-4">
-              <Link to="/" className="text-white/60 hover:text-white text-sm transition-colors">← {t.navExperiencias ? 'Voltar' : 'Back'}</Link>
+              <Link to="/" className="text-white/60 hover:text-white text-sm transition-colors">← {t.navHome || 'Voltar'}</Link>
               <span className="text-white/20">|</span>
               <Link to="/#contato" className="text-white/60 hover:text-white text-sm transition-colors">{t.footerContact || 'Contato'}</Link>
             </div>
@@ -130,9 +157,9 @@ export default function Sobre() {
       <section className="max-w-7xl mx-auto px-4 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-12">
             {/* Description */}
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none fade-up">
               {paragraphs.map((p, i) => (
                 <p key={i} className="text-amz-terra dark:text-amz-areia/80 leading-relaxed text-base">
                   {p}
@@ -142,7 +169,7 @@ export default function Sobre() {
 
             {/* Video */}
             {aboutData.video_url && (
-              <div className="rounded-3xl overflow-hidden shadow-xl border border-amz-areia-dark/20 dark:border-white/5">
+              <div className="rounded-3xl overflow-hidden shadow-xl border border-amz-areia-dark/20 dark:border-white/5 fade-up">
                 <div className="relative pb-[56.25%] h-0">
                   <iframe
                     src={aboutData.video_url}
@@ -154,62 +181,109 @@ export default function Sobre() {
               </div>
             )}
 
-            {/* Gallery */}
-            {aboutData.gallery_urls.length > 0 && (
-              <div className="space-y-4">
-                <h2 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia">Galeria</h2>
-                <div className="rounded-3xl overflow-hidden shadow-xl border border-amz-areia-dark/20 dark:border-white/5">
-                  <img
-                    src={aboutData.gallery_urls[activeImage]}
-                    alt={`Galeria ${activeImage + 1}`}
-                    className="w-full h-80 object-cover"
-                  />
+            {/* Mission & Vision Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 fade-up">
+              <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5">
+                <div className="w-12 h-12 rounded-2xl bg-amz-dourado/10 flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {aboutData.gallery_urls.map((url, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImage(i)}
-                      className={`shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${
-                        i === activeImage
-                          ? 'border-amz-dourado scale-105'
-                          : 'border-transparent opacity-60 hover:opacity-100'
-                      }`}
-                    >
-                      <img src={url} alt="" className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
+                <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-3">{t.aboutMission}</h3>
+                <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed">{aboutData.mission}</p>
               </div>
-            )}
+
+              <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5">
+                <div className="w-12 h-12 rounded-2xl bg-amz-oceano/10 flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </div>
+                <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-3">{t.aboutVision}</h3>
+                <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed">{aboutData.vision}</p>
+              </div>
+            </div>
+
+            {/* Values */}
+            <div className="fade-up">
+              <h2 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia mb-6">{t.aboutValues}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {[
+                  { title: t.aboutValue1Title, desc: t.aboutValue1Desc, icon: '🛡️', color: 'bg-amz-oceano/10' },
+                  { title: t.aboutValue2Title, desc: t.aboutValue2Desc, icon: '🌿', color: 'bg-amz-bio/10' },
+                  { title: t.aboutValue3Title, desc: t.aboutValue3Desc, icon: '🤝', color: 'bg-amz-dourado/10' },
+                ].map((val) => (
+                  <div key={val.title} className="bg-white dark:bg-white/5 rounded-3xl p-6 shadow-md border border-amz-areia-dark/20 dark:border-white/5 hover:-translate-y-1 transition-transform duration-300">
+                    <div className={`w-12 h-12 rounded-2xl ${val.color} flex items-center justify-center mb-4 text-2xl`}>
+                      {val.icon}
+                    </div>
+                    <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-2">{val.title}</h3>
+                    <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed">{val.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Leadership */}
+            <div className="fade-up">
+              <h2 className="font-maybug text-2xl text-amz-terra dark:text-amz-areia mb-6">{t.aboutLeadership}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {[
+                  { name: t.aboutLeader1Name, role: t.aboutLeader1Role, image: portraitImages[8]?.src, initials: 'PI' },
+                  { name: t.aboutLeader2Name, role: t.aboutLeader2Role, image: portraitImages[12]?.src, initials: 'PA' },
+                  { name: t.aboutLeader3Name, role: t.aboutLeader3Role, image: portraitImages[16]?.src, initials: 'RC' },
+                ].map((leader) => (
+                  <div key={leader.name} className="bg-white dark:bg-white/5 rounded-3xl p-6 shadow-md border border-amz-areia-dark/20 dark:border-white/5 text-center hover:-translate-y-1 transition-transform duration-300">
+                    <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-4 ring-4 ring-amz-dourado/20">
+                      {leader.image ? (
+                        <img src={leader.image} alt={leader.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-amz-terra flex items-center justify-center text-white font-maybug text-xl">
+                          {leader.initials}
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia">{leader.name}</h3>
+                    <p className="text-sm text-amz-dourado font-medium">{leader.role}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Mission & Vision */}
-            <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5">
-              <div className="w-12 h-12 rounded-2xl bg-amz-dourado/10 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+            {/* Regions */}
+            <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5 fade-up">
+              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.aboutRegions}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {regions.map((region) => (
+                  <div key={region.name} className="relative rounded-xl overflow-hidden h-20 group">
+                    <img src={region.image} alt={region.name} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <span className="text-white text-xs font-semibold">{region.name}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-3">Missão</h3>
-              <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed">{aboutData.mission}</p>
             </div>
 
-            <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5">
-              <div className="w-12 h-12 rounded-2xl bg-amz-oceano/10 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
+            {/* Products */}
+            <div className="bg-white dark:bg-white/5 rounded-3xl p-8 shadow-md border border-amz-areia-dark/20 dark:border-white/5 fade-up">
+              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.aboutProducts}</h3>
+              <div className="space-y-2">
+                {products.map((prod) => (
+                  <div key={prod.pt} className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-amz-areia/50 dark:hover:bg-white/5 transition-colors">
+                    <span className="text-lg">{prod.icon}</span>
+                    <span className="text-sm text-amz-terra dark:text-amz-areia">{prod[locale]}</span>
+                  </div>
+                ))}
               </div>
-              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-3">Visão</h3>
-              <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed">{aboutData.vision}</p>
             </div>
 
             {/* Contact Info */}
-            <div className="bg-amz-terra-dark dark:bg-white/5 rounded-3xl p-8 text-white">
+            <div className="bg-amz-terra-dark dark:bg-white/5 rounded-3xl p-8 text-white fade-up">
               <h3 className="font-maybug text-lg mb-4">{t.footerContact || 'Contato'}</h3>
               <ul className="space-y-3 text-sm text-white/60">
                 <li className="flex items-center gap-3">
@@ -238,13 +312,16 @@ export default function Sobre() {
                   Salinópolis, Pará<br />
                   Ilha do Marajó<br />
                   Ajuruteua &middot; Algodoal<br />
-                  Fortalezinha
+                  Crispim &middot; Fortalezinha &middot; Pirabas
                 </p>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      <Gallery />
 
       {/* Footer minimal */}
       <footer className="border-t border-amz-areia-dark/20 dark:border-white/5 py-8 px-4">

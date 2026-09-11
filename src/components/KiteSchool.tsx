@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useCart } from '../contexts/CartContext'
+import { schoolImages } from '../data/media'
 
 export default function KiteSchool() {
   const { t } = useLanguage()
@@ -54,6 +55,21 @@ export default function KiteSchool() {
           </p>
         </div>
 
+        {/* Section Image */}
+        <div className="relative rounded-3xl overflow-hidden mb-12 fade-up h-48 md:h-64">
+          <img
+            src={schoolImages[0]?.src || '/kite-surfing.jpeg'}
+            alt="Aula de kitesurf"
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+            <p className="text-white/90 text-sm font-medium">{t.ksSubtitle}</p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {aulas.map((aula) => (
             <div
@@ -63,7 +79,6 @@ export default function KiteSchool() {
                   : 'bg-amz-areia/50 dark:bg-white/5 shadow-md hover:shadow-xl backdrop-blur-sm border border-amz-areia-dark/30 dark:border-white/5'
                 }`}
             >
-              {/* Glassmorphism decorative element */}
               <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl transition-opacity duration-500 ${aula.destaque ? 'bg-amz-dourado/20 opacity-100' : 'bg-amz-oceano/10 opacity-0 group-hover:opacity-100'
                 }`} />
 

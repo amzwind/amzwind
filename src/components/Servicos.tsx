@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
+import { sailingImages, lifestyleImages } from '../data/media'
 
 const PLACEHOLDER_ID = '00000000-0000-0000-0000-000000000000'
 
@@ -16,6 +17,7 @@ interface ServiceItem {
   color: string
   bookable: boolean
   linkTo?: string
+  image?: string
 }
 
 export default function Servicos() {
@@ -47,6 +49,7 @@ export default function Servicos() {
       color: 'from-amz-oceano to-amz-oceano-dark',
       bookable: false,
       linkTo: '/produtos',
+      image: lifestyleImages[0]?.src,
     },
     {
       key: 'bones',
@@ -61,6 +64,7 @@ export default function Servicos() {
       color: 'from-amz-dourado to-amber-700',
       bookable: false,
       linkTo: '/produtos',
+      image: lifestyleImages[1]?.src,
     },
     {
       key: 'transfer',
@@ -74,6 +78,7 @@ export default function Servicos() {
       ),
       color: 'from-amz-bio to-amz-bio-dark',
       bookable: true,
+      image: sailingImages[0]?.src,
     },
     {
       key: 'hospedagem',
@@ -87,6 +92,7 @@ export default function Servicos() {
       ),
       color: 'from-amz-terra to-amz-terra-dark',
       bookable: true,
+      image: lifestyleImages[2]?.src || '/cabana.jpeg',
     },
   ]
 
@@ -187,13 +193,21 @@ export default function Servicos() {
             const card = (
               <div
                 key={svc.key}
-                className="group bg-white dark:bg-white/5 rounded-3xl p-6 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 fade-up backdrop-blur-sm border border-amz-areia-dark/20 dark:border-white/5 relative overflow-hidden h-full"
+                className="group bg-white dark:bg-white/5 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 fade-up backdrop-blur-sm border border-amz-areia-dark/20 dark:border-white/5 relative h-full"
               >
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${svc.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                {svc.image && (
+                  <div className="relative h-32 overflow-hidden">
+                    <img src={svc.image} alt={t[svc.titleKey]} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
+                )}
 
-                <div className="w-14 h-14 rounded-2xl bg-amz-terra/5 dark:bg-white/5 text-amz-terra dark:text-amz-dourado flex items-center justify-center mb-5 group-hover:bg-amz-terra dark:group-hover:bg-amz-dourado group-hover:text-white dark:group-hover:text-amz-terra-dark transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg">
-                  {svc.icon}
-                </div>
+                <div className={`p-6 ${svc.image ? '' : ''}`}>
+                  <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${svc.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${svc.image ? 'hidden' : ''}`} />
+
+                  <div className={`w-14 h-14 rounded-2xl bg-amz-terra/5 dark:bg-white/5 text-amz-terra dark:text-amz-dourado flex items-center justify-center mb-5 group-hover:bg-amz-terra dark:group-hover:bg-amz-dourado group-hover:text-white dark:group-hover:text-amz-terra-dark transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg ${svc.image ? '-mt-10 relative z-10 ring-4 ring-white dark:ring-amz-terra-dark' : ''}`}>
+                    {svc.icon}
+                  </div>
 
                 <h3 className="text-lg font-maybug text-amz-terra dark:text-amz-areia mb-2 group-hover:text-amz-oceano dark:group-hover:text-amz-dourado transition-colors">
                   {t[svc.titleKey]}
@@ -222,6 +236,7 @@ export default function Servicos() {
                     {t.prodCategoryTitle}
                   </Link>
                 ) : null}
+                </div>
               </div>
             )
 
