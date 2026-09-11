@@ -134,13 +134,15 @@ export default function CartCheckout() {
       total: getTotal(),
     })
 
+    const bookingDate = checkIn || new Date().toISOString().slice(0, 10)
+
     const bookingPromises = items.map((item) =>
       supabase.from('bookings').insert({
         user_id: userId,
         item_type: item.type,
         item_id: item.id,
         status: 'pending',
-        booking_date: checkIn || new Date().toISOString().slice(0, 10),
+        booking_date: bookingDate,
         notes,
       }).select('id')
     )
@@ -152,6 +154,18 @@ export default function CartCheckout() {
     if (errors.length > 0) {
       setToast({ message: `${t.checkoutError} (${errors.length})`, type: 'error' })
     } else {
+      // Auto-create financial_accounts entry for each booking
+      const financialPromises = items.map((item) =>
+        supabase.from('financial_accounts' as any).insert({
+          account_type: 'receivable',
+          description: `Reserva - ${item.title}`,
+          amount: item.price * item.quantity,
+          due_date: bookingDate,
+          status: 'pending',
+        })
+      )
+      await Promise.all(financialPromises)
+
       setSuccessIds(ids)
       clearCart()
       localStorage.removeItem(CART_STORAGE_KEY)

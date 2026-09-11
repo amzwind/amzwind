@@ -108,10 +108,8 @@ export default function InstallAppBanner() {
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amz-oceano to-amz-dourado flex items-center justify-center shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                      </svg>
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amz-oceano to-amz-dourado flex items-center justify-center shrink-0 overflow-hidden">
+                      <img src="/logo/favicon.svg" alt="AW" className="w-7 h-7" />
                     </div>
                     <div>
                       <h3 className="font-maybug text-base sm:text-lg text-amz-terra dark:text-amz-areia leading-tight">

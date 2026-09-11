@@ -277,22 +277,22 @@ export function FinancialManager() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">A Receber (Pendente)</p>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totals.receivable)}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-white/[0.06]">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">A Receber</p>
+          <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totals.receivable)}</p>
         </div>
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">A Pagar (Pendente)</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.payable)}</p>
+        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-white/[0.06]">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">A Pagar</p>
+          <p className="text-lg sm:text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.payable)}</p>
         </div>
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">Recebido (Pago)</p>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totals.paidReceivable)}</p>
+        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-white/[0.06]">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">Recebido</p>
+          <p className="text-lg sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totals.paidReceivable)}</p>
         </div>
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">Pago</p>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.paidPayable)}</p>
+        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-white/[0.06]">
+          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">Pago</p>
+          <p className="text-lg sm:text-2xl font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.paidPayable)}</p>
         </div>
       </div>
 
@@ -340,23 +340,23 @@ export function FinancialManager() {
             message="Nenhum lançamento encontrado"
           />
         ) : (
-          <div className="overflow-x-auto -mx-6 px-6">
+          <div className="w-full overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-white/[0.06]">
-                  <th className="text-left px-6 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Descrição</th>
+                  <th className="text-left px-4 sm:px-6 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Descrição</th>
                   <th className="text-left px-4 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Tipo</th>
                   <th className="text-left px-4 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Categoria</th>
                   <th className="text-right px-4 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Valor</th>
                   <th className="text-left px-4 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Vencimento</th>
                   <th className="text-center px-4 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Status</th>
-                  <th className="text-right px-6 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Ações</th>
+                  <th className="text-right px-4 sm:px-6 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-white/[0.03]">
                 {filtered.map((acc) => (
                   <tr key={acc.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-3.5 font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{acc.description}</td>
+                    <td className="px-4 sm:px-6 py-3.5 font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{acc.description}</td>
                     <td className="px-4 py-3.5">
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${acc.account_type === 'receivable' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400'}`}>
                         {TYPE_LABELS[acc.account_type]}
@@ -375,7 +375,7 @@ export function FinancialManager() {
                         {STATUS_LABELS[acc.status]}
                       </button>
                     </td>
-                    <td className="px-6 py-3.5 text-right">
+                    <td className="px-4 sm:px-6 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button onClick={() => openEdit(acc)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-gray-600 dark:hover:text-white/60 transition-colors">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

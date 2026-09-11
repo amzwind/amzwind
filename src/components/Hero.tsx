@@ -43,8 +43,8 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
           <iframe
             key={slide.id}
             src={getYouTubeEmbedUrl(slide.media_url)}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
-            style={{ minWidth: '110%', minHeight: '110%' }}
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ border: 'none' }}
             allow="autoplay; encrypted-media"
             title={slide.title}
           />
@@ -57,14 +57,14 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
           muted
           loop
           playsInline
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
       ) : (
         <img
           key={slide.id}
           src={slide.media_url}
           alt={slide.title}
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
       )}
     </div>
