@@ -46,6 +46,7 @@ export default function CartCheckout() {
   const [submitting, setSubmitting] = useState(false)
   const [activePicker, setActivePicker] = useState<'none' | 'experience' | 'product'>('none')
   const [loaded, setLoaded] = useState(false)
+  const [catalogLoading, setCatalogLoading] = useState(true)
 
   const [sessionUserId, setSessionUserId] = useState<string | null>(null)
 
@@ -63,8 +64,20 @@ export default function CartCheckout() {
         supabase.from('products').select('*').order('title'),
       ])
       if (session) setSessionUserId(session.user.id)
-      if (eRes.data) setExperiences(eRes.data)
-      if (pRes.data) setProducts(pRes.data)
+
+      if (eRes.error) {
+        console.error('[CartCheckout] Error loading experiences:', eRes.error)
+      } else if (eRes.data) {
+        setExperiences(eRes.data)
+      }
+
+      if (pRes.error) {
+        console.error('[CartCheckout] Error loading products:', pRes.error)
+      } else if (pRes.data) {
+        setProducts(pRes.data)
+      }
+
+      setCatalogLoading(false)
 
       const stored = loadCart()
       if (stored && items.length === 0) {
@@ -103,7 +116,7 @@ export default function CartCheckout() {
 
     setSubmitting(true)
 
-    const userId = sessionUserId || '00000000-0000-0000-0000-000000000000'
+    const userId = sessionUserId || null
 
     const accommodation = nights > 0 ? {
       check_in: checkIn,
@@ -148,13 +161,34 @@ export default function CartCheckout() {
     )
 
     const results = await Promise.all(bookingPromises)
-    const errors = results.filter((r) => r.error)
-    const ids = results.filter((r) => r.data).map((r) => r.data![0].id)
+
+    const errors: { item: CartItem; error: { message: string; code?: string; details?: string; hint?: string } }[] = []
+    const ids: string[] = []
+
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i]
+      if (r.error) {
+        console.error(`[CartCheckout] Booking insert error for "${items[i].title}" (${items[i].type}):`, {
+          message: r.error.message,
+          code: r.error.code,
+          details: r.error.details,
+          hint: r.error.hint,
+          fullError: r.error,
+        })
+        errors.push({ item: items[i], error: r.error })
+      } else if (r.data && r.data.length > 0) {
+        ids.push(r.data[0].id)
+      }
+    }
 
     if (errors.length > 0) {
-      setToast({ message: `${t.checkoutError} (${errors.length})`, type: 'error' })
+      const firstErr = errors[0]
+      const detail = firstErr.error.code ? ` [${firstErr.error.code}]` : ''
+      setToast({
+        message: `${t.checkoutError} (${errors.length})${detail}: ${firstErr.error.message}`,
+        type: 'error',
+      })
     } else {
-      // Auto-create financial_accounts entry for each booking
       const financialPromises = items.map((item) =>
         supabase.from('financial_accounts' as any).insert({
           account_type: 'receivable',
@@ -164,7 +198,11 @@ export default function CartCheckout() {
           status: 'pending',
         })
       )
-      await Promise.all(financialPromises)
+      const finResults = await Promise.all(financialPromises)
+      const finErrors = finResults.filter((r) => r.error)
+      if (finErrors.length > 0) {
+        console.error('[CartCheckout] Financial account insert errors:', finErrors)
+      }
 
       setSuccessIds(ids)
       clearCart()
@@ -233,8 +271,9 @@ export default function CartCheckout() {
 
           {activePicker === 'experience' && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-2 max-h-64 overflow-y-auto">
-              {experiences.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">{t.cartEmpty}</p>}
-              {experiences.map((exp) => (
+              {catalogLoading && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4 animate-pulse">Carregando...</p>}
+              {!catalogLoading && experiences.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">Nenhuma experiencia disponivel</p>}
+              {!catalogLoading && experiences.map((exp) => (
                 <button key={exp.id} onClick={() => { addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url }); setActivePicker('none') }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors text-left">
                   {exp.image_url && <img src={exp.image_url} alt="" className="w-10 h-10 rounded-lg object-cover" />}
@@ -250,8 +289,9 @@ export default function CartCheckout() {
 
           {activePicker === 'product' && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-2 max-h-64 overflow-y-auto">
-              {products.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">{t.cartEmpty}</p>}
-              {products.map((prod) => (
+              {catalogLoading && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4 animate-pulse">Carregando...</p>}
+              {!catalogLoading && products.length === 0 && <p className="text-sm text-gray-400 dark:text-white/30 text-center py-4">Nenhum produto disponivel</p>}
+              {!catalogLoading && products.map((prod) => (
                 <button key={prod.id} onClick={() => { addItem({ id: prod.id, type: 'product', title: prod.title, price: prod.price, image_url: prod.image_url }); setActivePicker('none') }}
                   className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors text-left">
                   {prod.image_url && <img src={prod.image_url} alt="" className="w-10 h-10 rounded-lg object-cover" />}

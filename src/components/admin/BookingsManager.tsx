@@ -97,7 +97,7 @@ export function BookingsManager() {
                         {b.item_type === 'experience' ? '🌊 Experiência' : b.item_type === 'class' ? '🎓 Aula' : '📦 Produto'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700 dark:text-white/60 font-mono text-xs">{b.user_id.slice(0, 8)}...</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-white/60 font-mono text-xs">{b.user_id ? `${b.user_id.slice(0, 8)}...` : 'Guest'}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-white/40 text-xs">
                       {new Date(b.booking_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>

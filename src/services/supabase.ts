@@ -175,7 +175,7 @@ export type Database = {
       bookings: {
         Row: {
           id: string
-          user_id: string
+          user_id: string | null
           item_type: 'experience' | 'class' | 'product'
           item_id: string
           status: 'pending' | 'confirmed' | 'cancelled'
@@ -186,7 +186,7 @@ export type Database = {
         }
         Insert: {
           id?: string
-          user_id: string
+          user_id?: string | null
           item_type: 'experience' | 'class' | 'product'
           item_id: string
           status?: 'pending' | 'confirmed' | 'cancelled'
@@ -197,7 +197,7 @@ export type Database = {
         }
         Update: {
           id?: string
-          user_id?: string
+          user_id?: string | null
           item_type?: 'experience' | 'class' | 'product'
           item_id?: string
           status?: 'pending' | 'confirmed' | 'cancelled'

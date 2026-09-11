@@ -158,7 +158,7 @@ export default function Servicos() {
     const notes = JSON.stringify(notesData)
 
     const { error: insertError } = await supabase.from('bookings').insert({
-      user_id: PLACEHOLDER_ID,
+      user_id: null,
       item_type: 'experience',
       item_id: PLACEHOLDER_ID,
       status: 'pending',
