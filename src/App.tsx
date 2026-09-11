@@ -15,6 +15,7 @@ import ProductDetail from './pages/ProductDetail'
 import CustomerDashboard from './pages/CustomerDashboard'
 import UserProfile from './pages/UserProfile'
 import CartCheckout from './components/CartCheckout'
+import GaleriaPage from './pages/GaleriaPage'
 import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sobre" element={<Sobre />} />
+              <Route path="/galeria" element={<GaleriaPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />

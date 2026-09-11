@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
-import Gallery from '../components/Gallery'
+import GalleryPreview from '../components/GalleryPreview'
 import { portraitImages } from '../data/media'
 
 
@@ -321,7 +321,7 @@ export default function Sobre() {
       </section>
 
       {/* Gallery Section */}
-      <Gallery />
+      <GalleryPreview />
 
       {/* Footer minimal */}
       <footer className="border-t border-amz-areia-dark/20 dark:border-white/5 py-8 px-4">

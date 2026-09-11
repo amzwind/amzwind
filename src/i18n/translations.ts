@@ -382,6 +382,7 @@ export type TranslationKeys = {
   galleryTitle: string
   gallerySubtitle: string
   galleryAll: string
+  galleryViewFull: string
 
   // About Page - Values
   aboutValues: string
@@ -758,6 +759,7 @@ const pt: TranslationKeys = {
   galleryTitle: 'Galeria',
   gallerySubtitle: 'As melhores imagens das nossas expedições, aulas e vivências na Amazônia Atlântica.',
   galleryAll: 'Todas',
+  galleryViewFull: 'Ver Galeria Completa',
 
   aboutValues: 'Valores Fundamentais',
   aboutValue1Title: 'Segurança',
@@ -1131,6 +1133,7 @@ const en: TranslationKeys = {
   galleryTitle: 'Gallery',
   gallerySubtitle: 'The best images from our expeditions, lessons and experiences in the Atlantic Amazon.',
   galleryAll: 'All',
+  galleryViewFull: 'View Full Gallery',
 
   aboutValues: 'Core Values',
   aboutValue1Title: 'Safety',
@@ -1504,6 +1507,7 @@ const es: TranslationKeys = {
   galleryTitle: 'Galería',
   gallerySubtitle: 'Las mejores imágenes de nuestras expediciones, clases y experiencias en la Amazonía Atlántica.',
   galleryAll: 'Todas',
+  galleryViewFull: 'Ver Galería Completa',
 
   aboutValues: 'Valores Fundamentales',
   aboutValue1Title: 'Seguridad',
