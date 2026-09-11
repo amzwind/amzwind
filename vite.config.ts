@@ -12,7 +12,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo/favicon.svg'],
+      includeAssets: ['favicon.svg'],
       manifest: {
         name: 'Amazon Wind — Expedições & Kitesurf',
         short_name: 'Amazon Wind',
@@ -22,7 +22,7 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: '/logo/favicon.svg',
+            src: '/favicon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
             purpose: 'any maskable',

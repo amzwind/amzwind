@@ -109,7 +109,7 @@ export default function InstallAppBanner() {
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amz-oceano to-amz-dourado flex items-center justify-center shrink-0 overflow-hidden">
-                      <img src="/logo/favicon.svg" alt="AW" className="w-7 h-7" />
+                      <img src="/favicon.svg" alt="AW" className="w-7 h-7" />
                     </div>
                     <div>
                       <h3 className="font-maybug text-base sm:text-lg text-amz-terra dark:text-amz-areia leading-tight">

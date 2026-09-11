@@ -4,48 +4,48 @@
 
 @font-face {
   font-family: 'Maybug MS';
-  src: url('/logo/font/MaybugMSRegular.eot');
+  src: url('/logo-font/MaybugMSRegular.eot');
   src: local('Maybug MS'), local('MaybugMSRegular'),
-    url('/logo/font/MaybugMSRegular.eot?#iefix') format('embedded-opentype'),
-    url('/logo/font/MaybugMSRegular.woff2') format('woff2'),
-    url('/logo/font/MaybugMSRegular.woff') format('woff'),
-    url('/logo/font/MaybugMSRegular.ttf') format('truetype');
+    url('/logo-font/MaybugMSRegular.eot?#iefix') format('embedded-opentype'),
+    url('/logo-font/MaybugMSRegular.woff2') format('woff2'),
+    url('/logo-font/MaybugMSRegular.woff') format('woff'),
+    url('/logo-font/MaybugMSRegular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Maybug MS';
-  src: url('/logo/font/MaybugMSBlack.eot');
+  src: url('/logo-font/MaybugMSBlack.eot');
   src: local('Maybug MS Black'), local('MaybugMSBlack'),
-    url('/logo/font/MaybugMSBlack.eot?#iefix') format('embedded-opentype'),
-    url('/logo/font/MaybugMSBlack.woff2') format('woff2'),
-    url('/logo/font/MaybugMSBlack.woff') format('woff'),
-    url('/logo/font/MaybugMSBlack.ttf') format('truetype');
+    url('/logo-font/MaybugMSBlack.eot?#iefix') format('embedded-opentype'),
+    url('/logo-font/MaybugMSBlack.woff2') format('woff2'),
+    url('/logo-font/MaybugMSBlack.woff') format('woff'),
+    url('/logo-font/MaybugMSBlack.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Maybug MS Handwritten';
-  src: url('/logo/font/MaybugMSHandwritten.eot');
+  src: url('/logo-font/MaybugMSHandwritten.eot');
   src: local('Maybug MS Handwritten'), local('MaybugMSHandwritten'),
-    url('/logo/font/MaybugMSHandwritten.eot?#iefix') format('embedded-opentype'),
-    url('/logo/font/MaybugMSHandwritten.woff2') format('woff2'),
-    url('/logo/font/MaybugMSHandwritten.woff') format('woff'),
-    url('/logo/font/MaybugMSHandwritten.ttf') format('truetype');
+    url('/logo-font/MaybugMSHandwritten.eot?#iefix') format('embedded-opentype'),
+    url('/logo-font/MaybugMSHandwritten.woff2') format('woff2'),
+    url('/logo-font/MaybugMSHandwritten.woff') format('woff'),
+    url('/logo-font/MaybugMSHandwritten.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Maybug MS Decorative';
-  src: url('/logo/font/MaybugMSDecorative.eot');
+  src: url('/logo-font/MaybugMSDecorative.eot');
   src: local('Maybug MS Decorative'), local('MaybugMSDecorative'),
-    url('/logo/font/MaybugMSDecorative.eot?#iefix') format('embedded-opentype'),
-    url('/logo/font/MaybugMSDecorative.woff2') format('woff2'),
-    url('/logo/font/MaybugMSDecorative.woff') format('woff'),
-    url('/logo/font/MaybugMSDecorative.ttf') format('truetype');
+    url('/logo-font/MaybugMSDecorative.eot?#iefix') format('embedded-opentype'),
+    url('/logo-font/MaybugMSDecorative.woff2') format('woff2'),
+    url('/logo-font/MaybugMSDecorative.woff') format('woff'),
+    url('/logo-font/MaybugMSDecorative.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

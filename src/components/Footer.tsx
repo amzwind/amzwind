@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="relative max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <img src="/logo/logo-horizontal-branca.svg" alt="Amazon Wind" className="h-12 mb-4" />
+            <img src="/logo-horizontal-branca.svg" alt="Amazon Wind" className="h-12 mb-4" />
             <p className="text-white/50 text-sm leading-relaxed">
               {t.footerAbout}
             </p>

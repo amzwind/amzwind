@@ -82,7 +82,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       <div ref={logoRef} className="relative mb-6">
         <div className="w-28 h-28 md:w-36 md:h-36 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 shadow-2xl">
           <img
-            src="/logo/logo-redonda-branco.svg"
+            src="/logo-redonda-branco.svg"
             alt="Amazon Wind"
             className="w-20 h-20 md:w-24 md:h-24"
           />
