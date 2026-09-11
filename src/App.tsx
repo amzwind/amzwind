@@ -15,6 +15,7 @@ import ProductDetail from './pages/ProductDetail'
 import CustomerDashboard from './pages/CustomerDashboard'
 import UserProfile from './pages/UserProfile'
 import CartCheckout from './components/CartCheckout'
+import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -66,6 +67,7 @@ export default function App() {
               <Route path="*" element={<Home />} />
             </Routes>
             <InstallAppBanner />
+            <Analytics />
           </BrowserRouter>
         </CartProvider>
       </ThemeProvider>
