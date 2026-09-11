@@ -201,6 +201,7 @@ export type TranslationKeys = {
 
   // Financial Manager
   adminFinancial: string
+  adminAbout: string
   adminFinPayable: string
   adminFinReceivable: string
   adminFinPending: string
@@ -553,6 +554,7 @@ const pt: TranslationKeys = {
 
   // Financial Manager
   adminFinancial: 'Financeiro',
+  adminAbout: 'Sobre',
   adminFinPayable: 'A Pagar',
   adminFinReceivable: 'A Receber',
   adminFinPending: 'Pendente',
@@ -901,6 +903,7 @@ const en: TranslationKeys = {
 
   // Financial Manager
   adminFinancial: 'Financial',
+  adminAbout: 'About',
   adminFinPayable: 'Payable',
   adminFinReceivable: 'Receivable',
   adminFinPending: 'Pending',
@@ -1249,6 +1252,7 @@ const es: TranslationKeys = {
 
   // Financial Manager
   adminFinancial: 'Financiero',
+  adminAbout: 'Sobre',
   adminFinPayable: 'A Pagar',
   adminFinReceivable: 'A Recibir',
   adminFinPending: 'Pendiente',

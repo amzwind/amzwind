@@ -234,7 +234,7 @@ export function FinancialManager() {
     return (
       <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] overflow-hidden w-full min-w-0">
         <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 mb-6 uppercase tracking-wider">Resumo Financeiro</h3>
-        <div className="flex items-end justify-center gap-4 sm:gap-8 h-48 min-w-0 overflow-hidden">
+        <div className="w-full h-[220px] sm:h-[260px] overflow-hidden relative flex items-end justify-center gap-4 sm:gap-8">
           <div className="flex flex-col items-center gap-2 flex-1 min-w-0 max-w-[80px]">
             <div className="w-full flex flex-col justify-end h-40 relative">
               <div className="absolute bottom-0 w-full bg-red-100 dark:bg-red-500/10 rounded-t-lg" style={{ height: `${payableH}%` }} />

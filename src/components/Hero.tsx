@@ -35,12 +35,50 @@ const fallbackSlides: HeroSlide[] = [
   }
 ]
 
+function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.RefObject<HTMLDivElement> }) {
+  return (
+    <div ref={layerRef} className="absolute inset-0 w-full h-full">
+      {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+          <iframe
+            key={slide.id}
+            src={getYouTubeEmbedUrl(slide.media_url)}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
+            style={{ minWidth: '110%', minHeight: '110%' }}
+            allow="autoplay; encrypted-media"
+            title={slide.title}
+          />
+        </div>
+      ) : slide.media_type === 'video' ? (
+        <video
+          key={slide.id}
+          src={slide.media_url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <img
+          key={slide.id}
+          src={slide.media_url}
+          alt={slide.title}
+          className="w-full h-full object-cover"
+        />
+      )}
+    </div>
+  )
+}
+
 export default function Hero() {
   const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides)
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [prevSlide, setPrevSlide] = useState<number | null>(null)
 
   const heroRef = useRef<HTMLDivElement>(null)
-  const mediaRef = useRef<HTMLDivElement>(null)
+  const currentLayerRef = useRef<HTMLDivElement>(null)
+  const prevLayerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -62,80 +100,77 @@ export default function Hero() {
     fetchHeroSlides()
   }, [])
 
+  // 5-second auto-advance
   useEffect(() => {
     if (slides.length <= 1) return
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, 6000)
+      setCurrentSlide((prev) => {
+        setPrevSlide(prev)
+        return (prev + 1) % slides.length
+      })
+    }, 5000)
     return () => clearInterval(timer)
   }, [slides.length])
 
-  // Efeito Ken Burns limpo e sem oscilações escuras
+  // GSAP crossfade + Ken Burns
   useEffect(() => {
+    if (!currentLayerRef.current) return
+
     const ctx = gsap.context(() => {
-      if (mediaRef.current) {
+      // Crossfade: fade out prev, fade in current
+      if (prevLayerRef.current) {
         gsap.fromTo(
-          mediaRef.current,
-          { scale: 1 },
-          {
-            scale: 1.08,
-            duration: 8,
-            ease: 'power1.out',
-            repeat: -1,
-            yoyo: true
-          }
+          prevLayerRef.current,
+          { opacity: 1 },
+          { opacity: 0, duration: 0.8, ease: 'power2.inOut' }
         )
       }
 
+      gsap.fromTo(
+        currentLayerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.8, ease: 'power2.inOut' }
+      )
+
+      // Ken Burns zoom on current
+      gsap.fromTo(
+        currentLayerRef.current,
+        { scale: 1 },
+        {
+          scale: 1.08,
+          duration: 5,
+          ease: 'power1.out',
+          repeat: 0,
+        }
+      )
+
+      // Content fade in
       if (contentRef.current) {
         gsap.fromTo(
           contentRef.current,
           { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }
+          { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.3 }
         )
       }
     }, heroRef)
 
     return () => ctx.revert()
-  }, [currentSlide])
+  }, [currentSlide, slides])
 
   const slide = slides[currentSlide] || slides[0]
 
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      <div ref={mediaRef} className="absolute inset-0 w-full h-full overflow-hidden z-0">
-        {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
-          <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-            <iframe
-              key={slide.media_url}
-              src={getYouTubeEmbedUrl(slide.media_url)}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
-              style={{ minWidth: '110%', minHeight: '110%' }}
-              allow="autoplay; encrypted-media"
-              title={slide.title}
-            />
-          </div>
-        ) : slide.media_type === 'video' ? (
-          <video
-            key={slide.media_url}
-            src={slide.media_url}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <img
-            key={slide.media_url}
-            src={slide.media_url}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
+      {/* Media layers for crossfade */}
+      {prevSlide !== null && slides[prevSlide] && (
+        <MediaLayer slide={slides[prevSlide]} layerRef={prevLayerRef} />
+      )}
+      <MediaLayer slide={slide} layerRef={currentLayerRef} />
 
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/40 z-[1]" />
+
+      {/* Content */}
       <div ref={contentRef} className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white mt-12">
         <span className="inline-block text-xs uppercase tracking-[0.3em] font-bold px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md mb-4 border border-white/20">
           Amazon Wind Expeditions
@@ -159,20 +194,6 @@ export default function Hero() {
           </div>
         )}
       </div>
-
-      {slides.length > 1 && (
-        <div className="absolute bottom-8 z-20 flex gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${currentSlide === idx ? 'w-8 bg-amz-dourado' : 'w-2 bg-white/50 hover:bg-white/80'
-                }`}
-              aria-label={`Ir para slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }
