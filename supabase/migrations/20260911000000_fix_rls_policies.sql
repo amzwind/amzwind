@@ -154,6 +154,11 @@ CREATE POLICY "Admins full access on about_page"
 -- 2. STORAGE: Enable RLS + Create Policies
 -- ============================================================
 
+-- ── Create about bucket if not exists ──
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('about', 'about', true)
+ON CONFLICT (id) DO NOTHING;
+
 -- ── avatars bucket ──
 DROP POLICY IF EXISTS "Authenticated users can upload avatars" ON storage.objects;
 CREATE POLICY "Authenticated users can upload avatars"
@@ -196,3 +201,25 @@ DROP POLICY IF EXISTS "Authenticated can delete experiences files" ON storage.ob
 CREATE POLICY "Authenticated can delete experiences files"
   ON storage.objects FOR DELETE TO authenticated
   USING (bucket_id = 'experiences');
+
+
+-- ── about bucket (about page cover images) ──
+DROP POLICY IF EXISTS "Authenticated users can upload to about" ON storage.objects;
+CREATE POLICY "Authenticated users can upload to about"
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'about');
+
+DROP POLICY IF EXISTS "Public can view about files" ON storage.objects;
+CREATE POLICY "Public can view about files"
+  ON storage.objects FOR SELECT TO public
+  USING (bucket_id = 'about');
+
+DROP POLICY IF EXISTS "Authenticated can update about files" ON storage.objects;
+CREATE POLICY "Authenticated can update about files"
+  ON storage.objects FOR UPDATE TO authenticated
+  USING (bucket_id = 'about');
+
+DROP POLICY IF EXISTS "Authenticated can delete about files" ON storage.objects;
+CREATE POLICY "Authenticated can delete about files"
+  ON storage.objects FOR DELETE TO authenticated
+  USING (bucket_id = 'about');

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../services/supabase'
+import { ABOUT_FALLBACK, type AboutLocale, type AboutFallbackData } from '../../data/aboutFallback'
 import {
   FormField,
   Input,
@@ -10,7 +11,7 @@ import {
   Toast,
 } from './SharedUI'
 
-type Locale = 'pt' | 'en' | 'es'
+type Locale = AboutLocale
 
 interface AboutPage {
   id: string
@@ -27,16 +28,7 @@ interface AboutPage {
   updated_at: string
 }
 
-interface AboutFormData {
-  title: string
-  subtitle: string
-  description: string
-  cover_url: string
-  video_url: string
-  gallery_urls: string[]
-  mission: string
-  vision: string
-}
+type AboutFormData = AboutFallbackData
 
 const EMPTY_FORM: AboutFormData = {
   title: '',
@@ -93,11 +85,11 @@ export function AboutManager() {
         })
       } else {
         setAboutData(null)
-        setFormData(EMPTY_FORM)
+        setFormData({ ...ABOUT_FALLBACK[activeLocale] })
       }
     } catch {
       setAboutData(null)
-      setFormData(EMPTY_FORM)
+      setFormData({ ...ABOUT_FALLBACK[activeLocale] })
     }
     setLoading(false)
   }
@@ -119,6 +111,8 @@ export function AboutManager() {
         mission: aboutData.mission || '',
         vision: aboutData.vision || '',
       })
+    } else {
+      setFormData({ ...ABOUT_FALLBACK[activeLocale] })
     }
   }
 
@@ -190,6 +184,15 @@ export function AboutManager() {
       gallery_urls: prev.gallery_urls.filter((_, i) => i !== index),
     }))
   }
+
+  const displayData = aboutData || {
+    ...ABOUT_FALLBACK[activeLocale],
+    id: '',
+    locale: activeLocale,
+    created_at: '',
+    updated_at: '',
+    gallery_urls: ABOUT_FALLBACK[activeLocale].gallery_urls,
+  } as AboutPage
 
   return (
     <div className="space-y-6">
@@ -364,26 +367,33 @@ export function AboutManager() {
             </PrimaryButton>
           </div>
         </form>
-      ) : aboutData ? (
-        /* View Mode */
+      ) : (
+        /* View Mode - Always show data (DB or fallback) */
         <div className="space-y-6">
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-            <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Conteúdo Principal</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider">Conteúdo Principal</h3>
+              {!aboutData && (
+                <span className="text-[10px] uppercase tracking-wider text-amber-500 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-lg">
+                  Dados oficiais (não salvos)
+                </span>
+              )}
+            </div>
             <div className="space-y-3">
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Título</span>
-                <p className="text-sm text-gray-900 dark:text-white font-medium">{aboutData.title}</p>
+                <p className="text-sm text-gray-900 dark:text-white font-medium">{displayData.title}</p>
               </div>
-              {aboutData.subtitle && (
+              {displayData.subtitle && (
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Subtítulo</span>
-                  <p className="text-sm text-gray-700 dark:text-white/70">{aboutData.subtitle}</p>
+                  <p className="text-sm text-gray-700 dark:text-white/70">{displayData.subtitle}</p>
                 </div>
               )}
-              {aboutData.description && (
+              {displayData.description && (
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Descrição</span>
-                  <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line line-clamp-6">{aboutData.description}</p>
+                  <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line line-clamp-6">{displayData.description}</p>
                 </div>
               )}
             </div>
@@ -392,55 +402,42 @@ export function AboutManager() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
               <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">Missão</h3>
-              <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{aboutData.mission || '—'}</p>
+              <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{displayData.mission || '—'}</p>
             </div>
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
               <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">Visão</h3>
-              <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{aboutData.vision || '—'}</p>
+              <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{displayData.vision || '—'}</p>
             </div>
           </div>
 
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
             <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Mídia</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {aboutData.cover_url && (
+              {displayData.cover_url && (
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Capa</span>
-                  <img src={aboutData.cover_url} alt="Capa" className="mt-1 w-full h-32 object-cover rounded-xl" />
+                  <img src={displayData.cover_url} alt="Capa" className="mt-1 w-full h-32 object-cover rounded-xl" />
                 </div>
               )}
-              {aboutData.video_url && (
+              {displayData.video_url && (
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Vídeo</span>
-                  <p className="mt-1 text-xs text-amz-dourado truncate">{aboutData.video_url}</p>
+                  <p className="mt-1 text-xs text-amz-dourado truncate">{displayData.video_url}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {aboutData.gallery_urls.length > 0 && (
+          {displayData.gallery_urls.length > 0 && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Galeria ({aboutData.gallery_urls.length} imagens)</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Galeria ({displayData.gallery_urls.length} imagens)</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {aboutData.gallery_urls.map((url, i) => (
+                {displayData.gallery_urls.map((url, i) => (
                   <img key={i} src={url} alt={`Galeria ${i + 1}`} className="w-full h-24 object-cover rounded-xl" />
                 ))}
               </div>
             </div>
           )}
-        </div>
-      ) : (
-        /* Empty State */
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-12 border border-gray-100 dark:border-white/[0.06] text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 text-gray-300 dark:text-white/20">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <p className="text-sm text-gray-400 dark:text-white/30 mb-4">
-            Nenhum conteúdo configurado para {LOCALE_LABELS[activeLocale]}.
-          </p>
-          <PrimaryButton onClick={enterEditMode}>Criar Conteúdo</PrimaryButton>
         </div>
       )}
     </div>
