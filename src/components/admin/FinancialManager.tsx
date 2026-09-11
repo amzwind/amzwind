@@ -157,12 +157,11 @@ export function FinancialManager() {
 
     setSaving(true)
     const payload = {
-      account_type: formData.account_type,
-      type: formData.account_type,
       description: formData.description.trim(),
       amount: parseFloat(formData.amount),
-      due_date: formData.due_date,
+      account_type: formData.account_type,
       status: formData.status,
+      due_date: formData.due_date,
       category: formData.category,
       notes: formData.notes.trim() || null,
     }

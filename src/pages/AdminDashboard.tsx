@@ -35,6 +35,7 @@ export function AdminDashboard() {
     classesCount: 0,
     bookingsCount: 0,
   })
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null)
 
   useEffect(() => {
     checkAdminAccess()
@@ -50,7 +51,7 @@ export function AdminDashboard() {
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, full_name, avatar_url')
         .eq('id', session.user.id)
         .single()
 
@@ -60,6 +61,7 @@ export function AdminDashboard() {
         return
       }
 
+      setProfile({ full_name: profile.full_name, avatar_url: profile.avatar_url })
       setIsAdmin(true)
       loadStats()
     } catch (err) {
@@ -330,11 +332,31 @@ export function AdminDashboard() {
               {sidebarItems.find((i) => i.key === activeTab)?.label}
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400 dark:text-white/30">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               {t.adminConnected || 'Online'}
             </div>
+            {profile && (
+              <div className="flex items-center gap-2.5 pl-3 border-l border-gray-200 dark:border-white/[0.06]">
+                {profile.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.full_name || 'Admin'}
+                    className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-white/[0.1]"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-amz-dourado/20 flex items-center justify-center">
+                    <span className="text-xs font-bold text-amz-dourado">
+                      {(profile.full_name || 'A').split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <span className="hidden md:block text-xs font-medium text-gray-700 dark:text-white/60 max-w-[120px] truncate">
+                  {profile.full_name || 'Admin'}
+                </span>
+              </div>
+            )}
           </div>
         </header>
 

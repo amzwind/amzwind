@@ -72,6 +72,10 @@ export function HeroManager() {
   }
 
   function openNew() {
+    if (slides.length >= 6) {
+      setToast({ message: 'Limite de 6 slides atingido. Exclua um slide antes de criar outro.', type: 'error' })
+      return
+    }
     setEditingSlide(null)
     setFormData({ ...INITIAL_FORM, display_order: String(slides.length) })
     setModalOpen(true)
@@ -143,6 +147,25 @@ export function HeroManager() {
     setModalOpen(false)
   }
 
+  async function moveSlide(index: number, direction: 'up' | 'down') {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    if (targetIndex < 0 || targetIndex >= slides.length) return
+
+    const updated = [...slides]
+    const tempOrder = updated[index].display_order
+    updated[index].display_order = updated[targetIndex].display_order
+    updated[targetIndex].display_order = tempOrder
+
+    const [a, b] = [updated[index], updated[targetIndex]]
+
+    await Promise.all([
+      supabase.from('hero_slides' as any).update({ display_order: a.display_order }).eq('id', a.id),
+      supabase.from('hero_slides' as any).update({ display_order: b.display_order }).eq('id', b.id),
+    ])
+
+    loadSlides()
+  }
+
   async function handleDelete() {
     if (!deleteTarget) return
     const { error } = await supabase
@@ -168,10 +191,16 @@ export function HeroManager() {
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gerenciar Hero / Capa</h2>
           <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
-            Controle as mídias e textos de destaque da página inicial.
+            Controle as mídias e textos de destaque da página inicial. {slides.length}/6 slides
           </p>
         </div>
-        <PrimaryButton onClick={openNew}>+ Novo Slide</PrimaryButton>
+        {slides.length >= 6 ? (
+          <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-xl font-medium">
+            Limite de 6 slides atingido
+          </span>
+        ) : (
+          <PrimaryButton onClick={openNew}>+ Novo Slide</PrimaryButton>
+        )}
       </div>
 
       {/* Tips */}
@@ -245,6 +274,22 @@ export function HeroManager() {
 
               {/* Actions */}
               <div className="px-4 pb-4 flex gap-2">
+                <button
+                  onClick={() => moveSlide(slides.indexOf(slide), 'up')}
+                  disabled={slides.indexOf(slide) === 0}
+                  className="inline-flex items-center justify-center px-2 py-1.5 rounded-xl border border-gray-200 dark:border-white/[0.08] text-xs text-gray-500 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  title="Mover para cima"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                </button>
+                <button
+                  onClick={() => moveSlide(slides.indexOf(slide), 'down')}
+                  disabled={slides.indexOf(slide) === slides.length - 1}
+                  className="inline-flex items-center justify-center px-2 py-1.5 rounded-xl border border-gray-200 dark:border-white/[0.08] text-xs text-gray-500 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-white/[0.04] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  title="Mover para baixo"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
                 <GhostButton onClick={() => openEdit(slide)} className="flex-1 text-xs py-1.5">
                   Editar
                 </GhostButton>
