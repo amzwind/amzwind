@@ -20,7 +20,7 @@ function getYouTubeEmbedUrl(url: string): string {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   if (!match) return url
   const id = match[1]
-  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0`
+  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0`
 }
 
 const fallbackSlides: HeroSlide[] = [
@@ -105,15 +105,16 @@ export default function Hero() {
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <div ref={mediaRef} className="absolute inset-0 w-full h-full overflow-hidden z-0">
         {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
-          <iframe
-            key={slide.media_url}
-            src={getYouTubeEmbedUrl(slide.media_url)}
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ objectFit: 'cover', minWidth: '100%', minHeight: '100%' }}
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-            title={slide.title}
-          />
+          <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+            <iframe
+              key={slide.media_url}
+              src={getYouTubeEmbedUrl(slide.media_url)}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%]"
+              style={{ minWidth: '110%', minHeight: '110%' }}
+              allow="autoplay; encrypted-media"
+              title={slide.title}
+            />
+          </div>
         ) : slide.media_type === 'video' ? (
           <video
             key={slide.media_url}

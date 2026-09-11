@@ -232,26 +232,26 @@ export function FinancialManager() {
     const paidReceivableH = (totals.paidReceivable / maxVal) * 100
 
     return (
-      <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
+      <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] overflow-hidden w-full min-w-0">
         <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 mb-6 uppercase tracking-wider">Resumo Financeiro</h3>
-        <div className="flex items-end justify-center gap-8 h-48">
-          <div className="flex flex-col items-center gap-2 flex-1 max-w-[80px]">
+        <div className="flex items-end justify-center gap-4 sm:gap-8 h-48 min-w-0 overflow-hidden">
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0 max-w-[80px]">
             <div className="w-full flex flex-col justify-end h-40 relative">
               <div className="absolute bottom-0 w-full bg-red-100 dark:bg-red-500/10 rounded-t-lg" style={{ height: `${payableH}%` }} />
               <div className="absolute bottom-0 w-full bg-red-500 dark:bg-red-400 rounded-t-lg opacity-40" style={{ height: `${paidPayableH}%` }} />
             </div>
             <span className="text-[10px] font-semibold text-gray-500 dark:text-white/40 uppercase">Pagar</span>
-            <span className="text-xs font-bold text-red-600 dark:text-red-400">{formatCurrency(totals.payable)}</span>
+            <span className="text-xs font-bold text-red-600 dark:text-red-400 truncate w-full text-center">{formatCurrency(totals.payable)}</span>
           </div>
-          <div className="flex flex-col items-center gap-2 flex-1 max-w-[80px]">
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0 max-w-[80px]">
             <div className="w-full flex flex-col justify-end h-40 relative">
               <div className="absolute bottom-0 w-full bg-emerald-100 dark:bg-emerald-500/10 rounded-t-lg" style={{ height: `${receivableH}%` }} />
               <div className="absolute bottom-0 w-full bg-emerald-500 dark:bg-emerald-400 rounded-t-lg opacity-40" style={{ height: `${paidReceivableH}%` }} />
             </div>
             <span className="text-[10px] font-semibold text-gray-500 dark:text-white/40 uppercase">Receber</span>
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{formatCurrency(totals.receivable)}</span>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 truncate w-full text-center">{formatCurrency(totals.receivable)}</span>
           </div>
-          <div className="flex flex-col items-center gap-2 flex-1 max-w-[80px]">
+          <div className="flex flex-col items-center gap-2 flex-1 min-w-0 max-w-[80px]">
             <div className="w-full flex flex-col justify-end h-40">
               <div
                 className={`w-full rounded-t-lg ${balance >= 0 ? 'bg-amz-dourado' : 'bg-red-500'}`}
@@ -259,7 +259,7 @@ export function FinancialManager() {
               />
             </div>
             <span className="text-[10px] font-semibold text-gray-500 dark:text-white/40 uppercase">Saldo</span>
-            <span className={`text-xs font-bold ${balance >= 0 ? 'text-amz-dourado' : 'text-red-600 dark:text-red-400'}`}>
+            <span className={`text-xs font-bold truncate w-full text-center ${balance >= 0 ? 'text-amz-dourado' : 'text-red-600 dark:text-red-400'}`}>
               {formatCurrency(balance)}
             </span>
           </div>
@@ -340,8 +340,8 @@ export function FinancialManager() {
             message="Nenhum lançamento encontrado"
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-6 px-6">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-white/[0.06]">
                   <th className="text-left px-6 py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30">Descrição</th>

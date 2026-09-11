@@ -4,6 +4,7 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { CartProvider } from './contexts/CartContext'
 import SplashScreen from './components/SplashScreen'
+import InstallAppBanner from './components/InstallAppBanner'
 import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import { AdminDashboard } from './pages/AdminDashboard'
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="/checkout" element={<div className="pt-24 pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
               <Route path="*" element={<Home />} />
             </Routes>
+            <InstallAppBanner />
           </BrowserRouter>
         </CartProvider>
       </ThemeProvider>

@@ -357,6 +357,24 @@ export type TranslationKeys = {
   adminCalendar: string
   adminCalendarTitle: string
   adminCalendarToday: string
+
+  // Install App Banner (PWA)
+  installTitle: string
+  installSubtitle: string
+  installFeature1: string
+  installFeature2: string
+  installFeature3: string
+  installButton: string
+  installNotNow: string
+  installInstructionsTitle: string
+  installIOSSubtitle: string
+  installChromeSubtitle: string
+  installIOSStep1: string
+  installIOSStep2: string
+  installIOSStep3: string
+  installChromeStep1: string
+  installChromeStep2: string
+  installGotIt: string
 }
 
 const pt: TranslationKeys = {
@@ -688,6 +706,23 @@ const pt: TranslationKeys = {
   adminCalendar: 'Calendário',
   adminCalendarTitle: 'Calendário de Operações',
   adminCalendarToday: 'Hoje',
+
+  installTitle: 'Instale o App',
+  installSubtitle: 'Acesse rápido, use offline e receba notificações.',
+  installFeature1: 'Acesso instantâneo na sua tela inicial',
+  installFeature2: 'Funciona mesmo sem internet',
+  installFeature3: 'Receba ofertas e novidades',
+  installButton: 'Instalar Aplicativo',
+  installNotNow: 'Agora não',
+  installInstructionsTitle: 'Como instalar',
+  installIOSSubtitle: 'No Safari, siga os passos abaixo para adicionar à tela de início:',
+  installChromeSubtitle: 'No navegador, siga os passos abaixo:',
+  installIOSStep1: 'Toque no botão de compartilhar (ícone com seta para cima)',
+  installIOSStep2: 'Role para baixo e selecione "Adicionar à Tela de Início"',
+  installIOSStep3: 'Confirme tocando em "Adicionar" no canto superior direito',
+  installChromeStep1: 'Toque no menu (três pontinhos) na barra de endereço',
+  installChromeStep2: 'Selecione "Instalar aplicativo" ou "Adicionar à tela inicial"',
+  installGotIt: 'Entendi!',
 }
 
 const en: TranslationKeys = {
@@ -1019,6 +1054,23 @@ const en: TranslationKeys = {
   adminCalendar: 'Calendar',
   adminCalendarTitle: 'Operations Calendar',
   adminCalendarToday: 'Today',
+
+  installTitle: 'Install the App',
+  installSubtitle: 'Quick access, offline use and push notifications.',
+  installFeature1: 'Instant access from your home screen',
+  installFeature2: 'Works even without internet',
+  installFeature3: 'Receive offers and news',
+  installButton: 'Install App',
+  installNotNow: 'Not now',
+  installInstructionsTitle: 'How to install',
+  installIOSSubtitle: 'In Safari, follow the steps below to add to your home screen:',
+  installChromeSubtitle: 'In your browser, follow the steps below:',
+  installIOSStep1: 'Tap the share button (icon with an upward arrow)',
+  installIOSStep2: 'Scroll down and select "Add to Home Screen"',
+  installIOSStep3: 'Confirm by tapping "Add" in the top right corner',
+  installChromeStep1: 'Tap the menu (three dots) in the address bar',
+  installChromeStep2: 'Select "Install app" or "Add to home screen"',
+  installGotIt: 'Got it!',
 }
 
 const es: TranslationKeys = {
@@ -1350,6 +1402,23 @@ const es: TranslationKeys = {
   adminCalendar: 'Calendario',
   adminCalendarTitle: 'Calendario de Operaciones',
   adminCalendarToday: 'Hoy',
+
+  installTitle: 'Instala la App',
+  installSubtitle: 'Acceso rápido, uso sin internet y notificaciones.',
+  installFeature1: 'Acceso instantáneo desde tu pantalla de inicio',
+  installFeature2: 'Funciona sin conexión a internet',
+  installFeature3: 'Recibe ofertas y novedades',
+  installButton: 'Instalar Aplicación',
+  installNotNow: 'Ahora no',
+  installInstructionsTitle: 'Cómo instalar',
+  installIOSSubtitle: 'En Safari, sigue los pasos para añadir a tu pantalla de inicio:',
+  installChromeSubtitle: 'En tu navegador, sigue los pasos:',
+  installIOSStep1: 'Toca el botón de compartir (ícono con flecha hacia arriba)',
+  installIOSStep2: 'Desplaza hacia abajo y selecciona "Añadir a pantalla de inicio"',
+  installIOSStep3: 'Confirma tocando "Añadir" en la esquina superior derecha',
+  installChromeStep1: 'Toca el menú (tres puntos) en la barra de direcciones',
+  installChromeStep2: 'Selecciona "Instalar aplicación" o "Añadir a pantalla de inicio"',
+  installGotIt: '¡Entendido!',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }
