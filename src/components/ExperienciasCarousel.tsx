@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { supabase } from '../services/supabase'
-import { portraitImages } from '../data/media'
-
-const staticExperiences = [
-  { id: '1', titleKey: 'exp1Title', descKey: 'exp1Desc', badge: 'Downwind', levelKey: 'levelIntermediate', duration: '2h30', image: portraitImages[15]?.src || portraitImages[0]?.src },
-  { id: '2', titleKey: 'exp2Title', descKey: 'exp2Desc', badge: 'Expedition', levelKey: 'levelIntermediateAdv', duration: '3h', image: portraitImages[40]?.src || portraitImages[5]?.src },
-  { id: '3', titleKey: 'exp3Title', descKey: 'exp3Desc', badge: 'Vivência Cultural', levelKey: 'levelAll', duration: '4h', image: portraitImages[50]?.src || portraitImages[10]?.src },
-  { id: '4', titleKey: 'exp4Title', descKey: 'exp4Desc', badge: 'Vivência Cultural', levelKey: 'levelAll', duration: '2h', image: portraitImages[55]?.src || portraitImages[20]?.src },
-]
+import { staticExperiences } from '../data/experiences'
 
 const badgeColors: Record<string, string> = {
   Downwind: 'bg-amz-oceano/10 text-amz-oceano dark:bg-amz-oceano/20 dark:text-amz-oceano',
@@ -171,13 +164,7 @@ export default function ExperienciasCarousel() {
                 </Link>
               ))
             ) : (
-              staticExperiences.map((exp, i) => {
-                const titleMap: Record<string, string> = { exp1: t.exp1Title, exp2: t.exp2Title, exp3: t.exp3Title, exp4: t.exp4Title }
-                const descMap: Record<string, string> = { exp1: t.exp1Desc, exp2: t.exp2Desc, exp3: t.exp3Desc, exp4: t.exp4Desc }
-                const badges = [t.badgeDownwind, t.badgeDownwind, t.badgeExpedition, t.badgeCultural]
-                const levels = [t.levelIntermediate, t.levelIntermediateAdv, t.levelAll, t.levelAll]
-                const durations = ['2h30', '3h', '4h', '2h']
-
+              staticExperiences.map((exp) => {
                 return (
                   <Link
                     to={`/experiencia/${exp.id}`}
@@ -187,21 +174,21 @@ export default function ExperienciasCarousel() {
                     <div className="bg-white dark:bg-amz-terra/40 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-amz-areia-dark/30 dark:border-white/5 backdrop-blur-sm">
                       <div className="relative h-48 overflow-hidden">
                         <img
-                          src={exp.image}
-                          alt={titleMap[exp.titleKey]}
+                          src={exp.image_url || ''}
+                          alt={exp.title}
                           loading="lazy"
                           decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                         <div className="absolute top-4 left-4">
-                          <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm ${badgeColors[badges[i]] || badgeColors['Downwind']}`}>
-                            {badges[i]}
+                          <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm ${badgeColors[exp.badge] || badgeColors['Downwind']}`}>
+                            {exp.badge}
                           </span>
                         </div>
                         <div className="absolute bottom-4 right-4">
                           <span className="text-xs font-medium text-white/90 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">
-                            {levels[i]}
+                            {exp.level}
                           </span>
                         </div>
                       </div>
@@ -209,12 +196,12 @@ export default function ExperienciasCarousel() {
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="text-xl font-maybug text-amz-terra dark:text-amz-areia group-hover:text-amz-oceano dark:group-hover:text-amz-dourado transition-colors">
-                            {titleMap[exp.titleKey]}
+                            {exp.title}
                           </h3>
                         </div>
 
                         <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 leading-relaxed mb-5 line-clamp-2">
-                          {descMap[exp.descKey]}
+                          {exp.description}
                         </p>
 
                         <div className="flex items-center gap-4 text-xs text-amz-terra-light dark:text-amz-areia/50 pt-4 border-t border-amz-areia-dark/30 dark:border-white/5">
@@ -222,14 +209,14 @@ export default function ExperienciasCarousel() {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            {durations[i]}
+                            {exp.duration}
                           </span>
                           <span className="w-1 h-1 rounded-full bg-amz-terra-light/30" />
                           <span className="flex items-center gap-1.5">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            {levels[i]}
+                            {exp.level}
                           </span>
                         </div>
                       </div>

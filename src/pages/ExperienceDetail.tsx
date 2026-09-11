@@ -6,6 +6,7 @@ import { useCart } from '../contexts/CartContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TripCalendar from '../components/TripCalendar'
+import { getStaticExperience, type StaticExperience } from '../data/experiences'
 
 type Experience = Tables<'experiences'>
 
@@ -14,18 +15,26 @@ export default function ExperienceDetail() {
   const navigate = useNavigate()
   const { t } = useLanguage()
   const { addItem, checkIn, checkOut, setCheckIn, setCheckOut } = useCart()
-  const [exp, setExp] = useState<Experience | null>(null)
+  const [exp, setExp] = useState<(Experience & { image_url?: string | null }) | StaticExperience | null>(null)
   const [related, setRelated] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
+    const experienceId = id
     async function load() {
-      const { data } = await supabase.from('experiences').select('*').eq('id', id).single()
+      // Try Supabase first
+      const { data } = await supabase.from('experiences').select('*').eq('id', experienceId).single()
       if (data) {
         setExp(data)
         const { data: rel } = await supabase.from('experiences').select('*').eq('category_id', data.category_id).neq('id', data.id).limit(3)
         if (rel) setRelated(rel)
+      } else {
+        // Fallback to static data
+        const staticExp = getStaticExperience(experienceId)
+        if (staticExp) {
+          setExp(staticExp)
+        }
       }
       setLoading(false)
     }
