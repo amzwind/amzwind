@@ -162,8 +162,6 @@ export function FinancialManager() {
       account_type: formData.account_type,
       status: formData.status,
       due_date: formData.due_date,
-      category: formData.category,
-      notes: formData.notes.trim() || null,
     }
 
     if (editingAccount) {

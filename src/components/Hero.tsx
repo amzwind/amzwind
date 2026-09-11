@@ -18,7 +18,9 @@ function isYouTubeUrl(url: string): boolean {
 
 function getYouTubeEmbedUrl(url: string): string {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
-  return match ? `https://www.youtube.com/embed/${match[1]}` : url
+  if (!match) return url
+  const id = match[1]
+  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0`
 }
 
 const fallbackSlides: HeroSlide[] = [
@@ -106,7 +108,8 @@ export default function Hero() {
           <iframe
             key={slide.media_url}
             src={getYouTubeEmbedUrl(slide.media_url)}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] pointer-events-none"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ objectFit: 'cover', minWidth: '100%', minHeight: '100%' }}
             allow="autoplay; encrypted-media"
             allowFullScreen
             title={slide.title}
