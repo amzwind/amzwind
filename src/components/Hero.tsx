@@ -20,7 +20,7 @@ function getYouTubeEmbedUrl(url: string): string {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   if (!match) return url
   const id = match[1]
-  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0`
+  return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`
 }
 
 const fallbackSlides: HeroSlide[] = [
@@ -39,7 +39,7 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
   return (
     <div ref={layerRef} className="absolute inset-0 w-full h-full">
       {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden scale-[1.3]">
           <iframe
             key={slide.id}
             src={getYouTubeEmbedUrl(slide.media_url)}
@@ -57,6 +57,9 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
           muted
           loop
           playsInline
+          preload="auto"
+          disablePictureInPicture
+          controls={false}
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
       ) : (

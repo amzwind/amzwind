@@ -45,8 +45,9 @@ const experiencias = [
 
 export default function Experiencias() {
   return (
-    <section id="experiencias" className="py-16 md:py-24 px-4 bg-amz-areia">
-      <div className="max-w-7xl mx-auto">
+    <section id="experiencias" className="relative py-16 md:py-24 px-4 bg-amz-areia overflow-hidden">
+      <div className="absolute inset-0 bg-patterns opacity-5 pointer-events-none" />
+      <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-12 fade-up">
           <p className="section-subtitle mb-2">Descubra</p>
           <h2 className="section-title">Experiências & Downwinds</h2>

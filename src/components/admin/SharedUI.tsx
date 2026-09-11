@@ -15,8 +15,9 @@ export default function MetricCard({ label, value, icon, color = 'text-amz-doura
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] transition-all duration-300 group ${onClick ? 'hover:border-gray-200 dark:hover:border-white/[0.1] hover:shadow-lg cursor-pointer active:scale-[0.98]' : ''}`}
+      className={`relative overflow-hidden bg-white dark:bg-white/[0.03] rounded-2xl p-5 border border-gray-100 dark:border-white/[0.06] transition-all duration-300 group ${onClick ? 'hover:border-gray-200 dark:hover:border-white/[0.1] hover:shadow-lg cursor-pointer active:scale-[0.98]' : ''}`}
     >
+      <div className="absolute inset-0 bg-patterns opacity-[0.03] pointer-events-none" />
       <div className="flex items-start justify-between mb-4">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color} bg-current/10`}>
           {icon}

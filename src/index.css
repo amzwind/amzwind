@@ -131,6 +131,12 @@
   }
 }
 
+.bg-patterns {
+  background-image: url('/patterns.svg');
+  background-repeat: repeat;
+  background-size: 400px auto;
+}
+
 @keyframes slideDown {
   from { transform: translateY(-12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
