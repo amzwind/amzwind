@@ -12,6 +12,15 @@ interface HeroSlide {
   cta_link: string | null
 }
 
+function isYouTubeUrl(url: string): boolean {
+  return /(?:youtube\.com\/|youtu\.be\/)/i.test(url)
+}
+
+function getYouTubeEmbedUrl(url: string): string {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  return match ? `https://www.youtube.com/embed/${match[1]}` : url
+}
+
 const fallbackSlides: HeroSlide[] = [
   {
     id: 'default-1',
@@ -93,7 +102,16 @@ export default function Hero() {
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <div ref={mediaRef} className="absolute inset-0 w-full h-full overflow-hidden z-0">
-        {slide.media_type === 'video' ? (
+        {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
+          <iframe
+            key={slide.media_url}
+            src={getYouTubeEmbedUrl(slide.media_url)}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] pointer-events-none"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title={slide.title}
+          />
+        ) : slide.media_type === 'video' ? (
           <video
             key={slide.media_url}
             src={slide.media_url}

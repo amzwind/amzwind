@@ -44,6 +44,23 @@ const INITIAL_FORM: SlideFormData = {
   display_order: '0',
 }
 
+function isYouTubeUrl(url: string): boolean {
+  return /(?:youtube\.com\/|youtu\.be\/)/i.test(url)
+}
+
+function getYouTubeThumbnail(url: string): string | null {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null
+}
+
+function detectMediaType(url: string, fileName?: string): 'image' | 'video' {
+  if (isYouTubeUrl(url)) return 'video'
+  if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return 'video'
+  if (fileName && /\.(mp4|webm|ogg|mov)$/i.test(fileName)) return 'video'
+  if (/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i.test(url)) return 'image'
+  return 'image'
+}
+
 export function HeroManager() {
   const [slides, setSlides] = useState<HeroSlide[]>([])
   const [loading, setLoading] = useState(true)
@@ -206,7 +223,7 @@ export function HeroManager() {
       {/* Tips */}
       <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-800 dark:text-amber-200 space-y-1">
         <p><strong>Sugestão de dimensões:</strong> 1920×1080px (proporção 16:9).</p>
-        <p>Você pode fazer upload de arquivo ou colar diretamente o link público (URL) de uma imagem ou vídeo.</p>
+        <p>Você pode fazer upload de arquivo, colar um link direto (URL) de imagem/vídeo, ou colar um link do YouTube — o tipo de mídia será detectado automaticamente.</p>
       </div>
 
       {/* Slides Grid */}
@@ -233,7 +250,17 @@ export function HeroManager() {
             >
               {/* Media Preview */}
               <div className="relative h-40 bg-black/5 dark:bg-white/[0.02] overflow-hidden">
-                {slide.media_type === 'video' ? (
+                {slide.media_type === 'video' && isYouTubeUrl(slide.media_url) ? (
+                  <img
+                    src={getYouTubeThumbnail(slide.media_url) || ''}
+                    alt={slide.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                    }}
+                  />
+                ) : slide.media_type === 'video' ? (
                   <video
                     src={slide.media_url}
                     className="w-full h-full object-cover"
@@ -251,7 +278,7 @@ export function HeroManager() {
                 )}
                 <div className="absolute top-2 left-2 flex gap-1.5">
                   <span className="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold backdrop-blur-sm">
-                    {slide.media_type === 'video' ? 'Vídeo' : 'Imagem'}
+                    {slide.media_type === 'video' ? (isYouTubeUrl(slide.media_url) ? 'YouTube' : 'Vídeo') : 'Imagem'}
                   </span>
                   <span className="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
                     #{slide.display_order}
@@ -354,7 +381,14 @@ export function HeroManager() {
               label="Fazer Upload do Arquivo"
               accept={formData.media_type === 'image' ? 'image/*' : 'video/mp4,video/webm'}
               value={formData.media_url}
-              onUpload={(url) => setFormData((prev) => ({ ...prev, media_url: url }))}
+              onUpload={(url) => {
+                const fileName = url.split('/').pop() || ''
+                setFormData((prev) => ({
+                  ...prev,
+                  media_url: url,
+                  media_type: detectMediaType(url, fileName),
+                }))
+              }}
               bucket="hero"
             />
 
@@ -362,8 +396,15 @@ export function HeroManager() {
               <Input
                 type="url"
                 value={formData.media_url}
-                onChange={(e) => setFormData((prev) => ({ ...prev, media_url: e.target.value }))}
-                placeholder="https://exemplo.com/imagem.jpg"
+                onChange={(e) => {
+                  const url = e.target.value
+                  setFormData((prev) => ({
+                    ...prev,
+                    media_url: url,
+                    media_type: detectMediaType(url),
+                  }))
+                }}
+                placeholder="https://exemplo.com/imagem.jpg ou link do YouTube"
               />
             </FormField>
 
