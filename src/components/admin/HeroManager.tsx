@@ -146,7 +146,7 @@ export function HeroManager() {
       display_order: parseInt(formData.display_order) || 0,
     }
 
-    if (editingSlide && !editingSlide.id.startsWith('default-')) {
+    if (editingSlide && !String(editingSlide.id ?? '').startsWith('default-')) {
       const { error } = await supabase
         .from('hero_slides' as any)
         .update(payload)
@@ -194,7 +194,7 @@ export function HeroManager() {
 
   async function handleDelete() {
     if (!deleteTarget) return
-    if (deleteTarget.id.startsWith('default-')) {
+    if (String(deleteTarget.id ?? '').startsWith('default-')) {
       setSlides((prev) => prev.filter((s) => s.id !== deleteTarget.id))
       setToast({ message: 'Slide oficial removido da visualizacao.', type: 'success' })
       setDeleteTarget(null)
@@ -299,7 +299,7 @@ export function HeroManager() {
                   <span className="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
                     #{slide.display_order}
                   </span>
-                  {slide.id.startsWith('default-') && (
+                  {String(slide.id ?? '').startsWith('default-') && (
                     <span className="bg-amz-dourado/80 text-white text-[10px] px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
                       Oficial
                     </span>
