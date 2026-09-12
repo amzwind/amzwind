@@ -36,6 +36,10 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
   )
 }
 
+function isStaticExp(exp: any): exp is StaticExperience {
+  return exp && ('gallery' in exp || ('includes' in exp && !Array.isArray(exp.includes)))
+}
+
 export default function ExperienceDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -139,9 +143,17 @@ export default function ExperienceDetail() {
   const avgRating = approvedReviews.length > 0 ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length : 0
   function getReplies(reviewId: string) { return reviews.filter((r) => r.parent_id === reviewId && r.status === 'approved') }
 
-  const galleryImages: { src: string; alt: string }[] = [
-    exp.image_url ? { src: exp.image_url, alt: exp.title } : { src: getExpFallback(exp.id), alt: exp.title },
-  ]
+  // Build gallery from static data or fallback
+  const staticData = isStaticExp(exp) ? exp : null
+  const expType = staticData?.type || (exp as any)?.type || 'individual'
+  const expIncludes = staticData?.includes || (exp as any)?.includes || []
+  const expOriginalPrice = staticData?.originalPrice || (exp as any)?.original_price || null
+
+  const galleryImages: { src: string; alt: string }[] = staticData?.gallery?.length
+    ? staticData.gallery.map((src, i) => ({ src, alt: `${exp.title} — ${i + 1}` }))
+    : exp.image_url
+      ? [{ src: exp.image_url, alt: exp.title }, { src: getExpFallback(exp.id), alt: exp.title }]
+      : [{ src: getExpFallback(exp.id), alt: exp.title }]
 
   function handleAddToCart() {
     if (!exp) return
@@ -170,9 +182,23 @@ export default function ExperienceDetail() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
             <div className="max-w-4xl mx-auto">
-              <span className="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-amz-dourado/20 text-amz-dourado backdrop-blur-sm mb-4">
-                {exp.community || 'Amazon Wind'}
-              </span>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className="inline-block text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-amz-dourado/20 text-amz-dourado backdrop-blur-sm">
+                  {exp.community || 'Amazon Wind'}
+                </span>
+                {expType === 'package' && (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 backdrop-blur-sm">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    Pacote
+                  </span>
+                )}
+                {expType === 'individual' && (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 backdrop-blur-sm">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    Avulso
+                  </span>
+                )}
+              </div>
               <h1 className="text-3xl md:text-5xl font-maybug text-white mb-3">{exp.title}</h1>
               <p className="text-white/70 text-lg max-w-2xl">{exp.description}</p>
               {approvedReviews.length > 0 && (
@@ -209,6 +235,12 @@ export default function ExperienceDetail() {
                   <span className="text-sm text-amz-terra dark:text-amz-areia">{t.expDetailLevel}: {exp.level}</span>
                 </div>
               )}
+              {expType === 'package' && (
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+                  <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                  <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Pacote Completo</span>
+                </div>
+              )}
             </div>
 
             {/* Description */}
@@ -217,8 +249,29 @@ export default function ExperienceDetail() {
               <p className="text-amz-terra-light dark:text-amz-areia/60 leading-relaxed whitespace-pre-line">{exp.description}</p>
             </div>
 
+            {/* Includes (for experiences with includes) */}
+            {expIncludes && expIncludes.length > 0 && (
+              <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
+                <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">
+                  {expType === 'package' ? 'O que está incluído no pacote' : 'O que está incluído'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {expIncludes.map((item: string) => (
+                    <div key={item} className="flex items-start gap-3 bg-amz-areia/50 dark:bg-white/[0.02] rounded-xl p-3 border border-amz-areia-dark/10 dark:border-white/5">
+                      <div className="w-6 h-6 rounded-full bg-amz-bio/10 dark:bg-amz-bio/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3.5 h-3.5 text-amz-bio" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-sm text-amz-terra dark:text-amz-areia/80">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Gallery */}
-            {galleryImages.length > 0 && (
+            {galleryImages.length > 1 && (
               <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.galleryTitle || 'Galeria'}</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -255,8 +308,18 @@ export default function ExperienceDetail() {
           <div className="space-y-4">
             <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5 sticky top-24 space-y-5">
               <div>
+                {expOriginalPrice && expOriginalPrice > exp.price && (
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm text-gray-400 dark:text-white/30 line-through">{formatBRL(expOriginalPrice)}</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                     -{Math.round((1 - exp.price / expOriginalPrice) * 100)}%
+                    </span>
+                  </div>
+                )}
                 <p className="text-3xl font-maybug text-amz-dourado">R$ {Number(exp.price).toFixed(2)}</p>
-                <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1">por pessoa</p>
+                <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1">
+                  {expType === 'package' ? 'Investimento total do pacote' : 'por pessoa'}
+                </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5">
@@ -269,7 +332,14 @@ export default function ExperienceDetail() {
                   className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
                 />
               </div>
-              <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">{t.expDetailBook}</button>
+              <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">
+                {expType === 'package' ? 'Adicionar Pacote ao Carrinho' : t.expDetailBook}
+              </button>
+              {expType === 'package' && (
+                <p className="text-[10px] text-center text-amz-terra-light dark:text-amz-areia/30">
+                  Pagamento seguro via PIX, Cartão ou PayPal
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -369,4 +439,8 @@ export default function ExperienceDetail() {
       )}
     </div>
   )
+}
+
+function formatBRL(v: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 }

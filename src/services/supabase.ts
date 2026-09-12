@@ -101,6 +101,9 @@ export type Database = {
           image_url: string | null
           video_url: string | null
           featured: boolean
+          type: string | null
+          includes: string[] | null
+          original_price: number | null
           created_at: string
           updated_at: string
         }
@@ -117,6 +120,9 @@ export type Database = {
           image_url?: string | null
           video_url?: string | null
           featured?: boolean
+          type?: string | null
+          includes?: string[] | null
+          original_price?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -133,6 +139,9 @@ export type Database = {
           image_url?: string | null
           video_url?: string | null
           featured?: boolean
+          type?: string | null
+          includes?: string[] | null
+          original_price?: number | null
           created_at?: string
           updated_at?: string
         }

@@ -23,7 +23,11 @@ export function ExperiencesManager() {
   const [newCatName, setNewCatName] = useState('')
   const [showNewCat, setShowNewCat] = useState(false)
 
-  const emptyForm = { title: '', description: '', category_id: '', price: '', duration: '', level: t.adminLevels[1], community: '', image_url: '', video_url: '', featured: false }
+  const emptyForm = {
+    title: '', description: '', category_id: '', price: '', duration: '',
+    level: t.adminLevels[1], community: '', image_url: '', video_url: '',
+    featured: false, type: 'individual', includes: '', original_price: '',
+  }
   const [form, setForm] = useState(emptyForm)
 
   useEffect(() => { loadData() }, [])
@@ -48,7 +52,11 @@ export function ExperiencesManager() {
     setForm({
       title: exp.title, description: exp.description || '', category_id: exp.category_id,
       price: String(exp.price), duration: exp.duration || '', level: exp.level || t.adminLevels[1],
-      community: exp.community || '', image_url: exp.image_url || '', video_url: exp.video_url || '', featured: exp.featured,
+      community: exp.community || '', image_url: exp.image_url || '', video_url: exp.video_url || '',
+      featured: exp.featured,
+      type: exp.type || 'individual',
+      includes: Array.isArray(exp.includes) ? (exp.includes as string[]).join('\n') : '',
+      original_price: exp.original_price ? String(exp.original_price) : '',
     })
     setShowModal(true)
   }
@@ -69,11 +77,18 @@ export function ExperiencesManager() {
       }
     }
 
+    const includesArr = form.includes
+      ? form.includes.split('\n').map((s) => s.trim()).filter(Boolean)
+      : []
+
     const payload = {
       title: form.title, slug: slugify(form.title), description: form.description || null,
       category_id: categoryId, price: Number(form.price) || 0, duration: form.duration || null,
       level: form.level || null, community: form.community || null, image_url: form.image_url || null,
       video_url: form.video_url || null, featured: form.featured,
+      type: form.type || 'individual',
+      includes: includesArr.length > 0 ? includesArr : null,
+      original_price: form.original_price ? Number(form.original_price) : null,
     }
     const { error } = editingExp
       ? await supabase.from('experiences').update(payload).eq('id', editingExp.id)
@@ -92,6 +107,21 @@ export function ExperiencesManager() {
   }
 
   const filtered = experiences.filter((e) => !search || e.title.toLowerCase().includes(search.toLowerCase()))
+
+  const typeBadge = (type: string | null) => {
+    if (type === 'package') return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        Pacote
+      </span>
+    )
+    return (
+      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10 px-2 py-0.5 rounded-full">
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+        Avulso
+      </span>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -124,12 +154,25 @@ export function ExperiencesManager() {
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="font-bold text-gray-900 dark:text-white truncate">{exp.title}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900 dark:text-white truncate">{exp.title}</h3>
+                      {typeBadge(exp.type)}
+                    </div>
                     <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">{exp.community || '—'} · {exp.duration || '—'}</p>
                   </div>
                   {exp.featured && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-400 px-2 py-0.5 rounded-full shrink-0">★</span>}
                 </div>
-                <p className="text-lg font-bold text-amz-dourado mt-2">R$ {exp.price}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <p className="text-lg font-bold text-amz-dourado">R$ {exp.price}</p>
+                  {exp.original_price && exp.original_price > exp.price && (
+                    <span className="text-xs text-gray-400 line-through">R$ {exp.original_price}</span>
+                  )}
+                </div>
+                {Array.isArray(exp.includes) && exp.includes.length > 0 && (
+                  <p className="text-[10px] text-gray-400 dark:text-white/30 mt-1 truncate">
+                    ✓ {exp.includes.length} itens inclusos
+                  </p>
+                )}
                 <div className="flex gap-2 mt-3">
                   <button onClick={() => openEdit(exp)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white/60 hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">{t.adminEdit}</button>
                   <button onClick={() => setDeleteTarget(exp)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminDelete}</button>
@@ -145,6 +188,38 @@ export function ExperiencesManager() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormField label={t.adminExpFormTitle}><Input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ex: Downwind Ajuruteua → Salinas" /></FormField>
             <FormField label={t.adminExpFormDescription}><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="..." /></FormField>
+
+            {/* Type Selector */}
+            <FormField label="Tipo de Experiência">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, type: 'individual' })}
+                  className={`p-3 rounded-xl border-2 text-center transition-all ${
+                    form.type === 'individual'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 shadow-sm'
+                      : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5 mx-auto mb-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  <p className="text-xs font-bold text-gray-900 dark:text-white">Experiência Individual</p>
+                  <p className="text-[10px] text-gray-400 dark:text-white/30">Aula avulsa, downwind, etc.</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, type: 'package' })}
+                  className={`p-3 rounded-xl border-2 text-center transition-all ${
+                    form.type === 'package'
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 shadow-sm'
+                      : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5 mx-auto mb-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                  <p className="text-xs font-bold text-gray-900 dark:text-white">Pacote Completo</p>
+                  <p className="text-[10px] text-gray-400 dark:text-white/30">All-Inclusive, curso, etc.</p>
+                </button>
+              </div>
+            </FormField>
 
             <FormField label={t.adminExpFormCategory}>
               {showNewCat ? (
@@ -167,6 +242,15 @@ export function ExperiencesManager() {
               <FormField label={t.adminExpFormPrice}><Input type="number" required min="0" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="450.00" /></FormField>
               <FormField label={t.adminExpFormDuration}><Input value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} placeholder="2h30" /></FormField>
             </div>
+
+            {/* Original Price (for packages) */}
+            {form.type === 'package' && (
+              <FormField label="Preço Original (de referência, opcional)">
+                <Input type="number" min="0" step="0.01" value={form.original_price} onChange={(e) => setForm({ ...form, original_price: e.target.value })} placeholder="Ex: 14500.00 (mostra desconto)" />
+                <p className="text-[10px] text-gray-400 dark:text-white/30 mt-1">Se preenchido, mostra o preço riscado e o percentual de desconto.</p>
+              </FormField>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <FormField label={t.adminExpFormLevel}>
                 <Select value={form.level} onChange={(e) => setForm({ ...form, level: e.target.value })}>
@@ -175,6 +259,17 @@ export function ExperiencesManager() {
               </FormField>
               <FormField label={t.adminExpFormCommunity}><Input value={form.community} onChange={(e) => setForm({ ...form, community: e.target.value })} placeholder="Ajuruteua" /></FormField>
             </div>
+
+            {/* Includes (for packages) */}
+            <FormField label="O que está incluído (1 item por linha)">
+              <Textarea
+                rows={4}
+                value={form.includes}
+                onChange={(e) => setForm({ ...form, includes: e.target.value })}
+                placeholder={"10 aulas práticas (30h)\nEquipamento completo\nCertificação IKO\nSeguro de acidente\nÁgua e lanches"}
+              />
+              <p className="text-[10px] text-gray-400 dark:text-white/30 mt-1">Separe cada item por linha. Esses itens aparecerão na página de detalhes da experiência.</p>
+            </FormField>
 
             <FileUpload label={t.adminExpFormImageUrl} value={form.image_url} onUpload={(url) => setForm({ ...form, image_url: url })} bucket="experiences" />
             <FormField label={t.adminExpFormVideoUrl}><Input type="url" value={form.video_url} onChange={(e) => setForm({ ...form, video_url: e.target.value })} placeholder="https://youtube.com/..." /></FormField>
