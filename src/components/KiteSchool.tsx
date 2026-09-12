@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useCart } from '../contexts/CartContext'
 import { schoolImages } from '../data/media'
+import FavoriteButton from './FavoriteButton'
 
 export default function KiteSchool() {
   const { t } = useLanguage()
@@ -88,9 +89,20 @@ export default function KiteSchool() {
                 </span>
               )}
 
-              <h3 className={`relative text-2xl font-maybug mb-1 ${aula.destaque ? 'text-white' : 'text-amz-terra dark:text-amz-areia'}`}>
-                {aula.titulo}
-              </h3>
+              <div className="relative flex items-start justify-between mb-1">
+                <h3 className={`relative text-2xl font-maybug ${aula.destaque ? 'text-white' : 'text-amz-terra dark:text-amz-areia'}`}>
+                  {aula.titulo}
+                </h3>
+                <FavoriteButton
+                  id={`class-${aula.titulo}`}
+                  type="class"
+                  title={`${t.customerTypeClass}: ${aula.titulo}`}
+                  price={aula.precoNum}
+                  image_url={schoolImages[0]?.src || null}
+                  size="sm"
+                  className={aula.destaque ? 'bg-white/20 text-white hover:bg-white/30' : ''}
+                />
+              </div>
 
               <div className="relative flex items-baseline gap-2 mb-6">
                 <span className={`text-3xl font-bold ${aula.destaque ? 'text-white' : 'text-amz-terra dark:text-amz-areia'}`}>

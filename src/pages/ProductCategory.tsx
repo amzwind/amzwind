@@ -4,6 +4,7 @@ import { supabase, type Tables } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import FavoriteButton from '../components/FavoriteButton'
 
 type Product = Tables<'products'>
 type Category = Tables<'categories'>
@@ -87,12 +88,15 @@ export default function ProductCategory() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {filtered.map((p) => (
-                <a key={p.id} href={`/produto/${p.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                <a key={p.id} href={`/produto/${p.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative">
                   {p.image_url ? (
                     <div className="h-40 overflow-hidden"><img src={p.image_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
                   ) : (
                     <div className="h-40 bg-amz-areia-dark/10 dark:bg-white/5 flex items-center justify-center text-3xl">📦</div>
                   )}
+                  <div className="absolute top-2 right-2">
+                    <FavoriteButton id={p.id} type="product" title={p.title} price={p.price} image_url={p.image_url} size="sm" />
+                  </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{p.title}</h3>
                     <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1 line-clamp-2">{p.description || '—'}</p>

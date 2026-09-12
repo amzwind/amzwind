@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext'
 import { supabase } from '../services/supabase'
 import { staticExperiences } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
+import FavoriteButton from './FavoriteButton'
 
 const badgeColors: Record<string, string> = {
   Downwind: 'bg-amz-oceano/10 text-amz-oceano dark:bg-amz-oceano/20 dark:text-amz-oceano',
@@ -155,6 +156,9 @@ export default function ExperienciasCarousel() {
                           {exp.community || 'Amazon Wind'}
                         </span>
                       </div>
+                      <div className="absolute top-4 right-4">
+                        <FavoriteButton id={exp.id} type="experience" title={exp.title} price={exp.price} image_url={exp.image_url} size="sm" />
+                      </div>
                       {exp.level && (
                         <div className="absolute bottom-4 right-4">
                           <span className="text-xs font-medium text-white/90 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -208,6 +212,9 @@ export default function ExperienciasCarousel() {
                           <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full backdrop-blur-sm ${badgeColors[exp.badge] || badgeColors['Downwind']}`}>
                             {exp.badge}
                           </span>
+                        </div>
+                        <div className="absolute top-4 right-4">
+                          <FavoriteButton id={exp.id} type="experience" title={exp.title} price={exp.price} image_url={exp.image_url} size="sm" />
                         </div>
                         <div className="absolute bottom-4 right-4">
                           <span className="text-xs font-medium text-white/90 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">

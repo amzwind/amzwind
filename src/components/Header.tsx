@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
-import { useCart } from '../contexts/CartContext'
+import { useFavorites } from '../contexts/FavoritesContext'
 import { locales } from '../i18n/translations'
 import { supabase } from '../services/supabase'
 import type { Session } from '@supabase/supabase-js'
@@ -12,10 +12,10 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const { theme, toggleTheme } = useTheme()
-  const { getItemCount } = useCart()
+  const { getFavoritesCount } = useFavorites()
   const [session, setSession] = useState<Session | null>(null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null)
-  const cartCount = getItemCount()
+  const cartCount = getFavoritesCount()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {

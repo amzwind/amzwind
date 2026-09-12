@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { supabase, type Tables } from '../services/supabase'
 import { useEffect, useState } from 'react'
 import { portraitImages, heroDesktopFallback } from '../data/media'
+import FavoriteButton from '../components/FavoriteButton'
 
 type Experience = Tables<'experiences'>
 
@@ -101,6 +102,9 @@ export default function ExperienciasPage() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute top-3 right-3">
+                    <FavoriteButton id={exp.id} type="experience" title={exp.title} price={exp.price} image_url={exp.image_url} size="sm" />
+                  </div>
                   <div className="absolute bottom-3 left-3 right-3">
                     <div className="flex items-center gap-2 mb-1">
                       {exp.level && (

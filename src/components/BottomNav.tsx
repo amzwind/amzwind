@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
-import { useCart } from '../contexts/CartContext'
+import { useFavorites } from '../contexts/FavoritesContext'
 
 const NAV_ITEMS = [
   { path: '/', icon: 'home', labelKey: 'navHome' },
@@ -13,8 +13,8 @@ export default function BottomNav() {
   const location = useLocation()
   const navigate = useNavigate()
   const { t } = useLanguage()
-  const { getItemCount } = useCart()
-  const wishlistCount = getItemCount()
+  const { getFavoritesCount } = useFavorites()
+  const wishlistCount = getFavoritesCount()
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/'

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { CartProvider } from './contexts/CartContext'
+import { FavoritesProvider } from './contexts/FavoritesContext'
 import SplashScreen from './components/SplashScreen'
 import InstallAppBanner from './components/InstallAppBanner'
 import Home from './pages/Home'
@@ -53,8 +54,9 @@ export default function App() {
   return (
     <LanguageProvider>
       <ThemeProvider>
-        <CartProvider>
-          <BrowserRouter>
+        <FavoritesProvider>
+          <CartProvider>
+            <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sobre" element={<Sobre />} />
@@ -75,7 +77,8 @@ export default function App() {
             <InstallAppBanner />
             <Analytics />
           </BrowserRouter>
-        </CartProvider>
+          </CartProvider>
+        </FavoritesProvider>
       </ThemeProvider>
     </LanguageProvider>
   )
