@@ -2,8 +2,18 @@ import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase, type Tables } from '../services/supabase'
 import { useEffect, useState } from 'react'
+import { portraitImages, heroDesktopFallback } from '../data/media'
 
 type Experience = Tables<'experiences'>
+
+const FALLBACK_IMAGES = [
+  portraitImages[0]?.src, portraitImages[5]?.src, portraitImages[10]?.src, portraitImages[15]?.src, portraitImages[20]?.src,
+].filter(Boolean)
+
+function getExpFallback(id: string): string {
+  const hash = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  return FALLBACK_IMAGES[hash % FALLBACK_IMAGES.length] || heroDesktopFallback.src
+}
 
 export default function ExperienciasPage() {
   const { t } = useLanguage()
@@ -26,7 +36,7 @@ export default function ExperienciasPage() {
       const match = exp.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
       if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
     }
-    return 'https://images.unsplash.com/photo-1502680390548-bdbac40a5b85?w=800&q=80'
+    return getExpFallback(exp.id)
   }
 
   const formatBRL = (v: number) =>
