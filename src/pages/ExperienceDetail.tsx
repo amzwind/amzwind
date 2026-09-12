@@ -10,6 +10,7 @@ import { getStaticExperience, type StaticExperience } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 
 type Experience = Tables<'experiences'>
+type Review = Tables<'experience_reviews'>
 
 const FALLBACK_IMAGES = [
   portraitImages[0]?.src,
@@ -24,36 +25,119 @@ function getExpFallback(id: string): string {
   return FALLBACK_IMAGES[hash % FALLBACK_IMAGES.length] || heroDesktopFallback.src
 }
 
+function StarRating({ value, onChange, readonly = false }: { value: number; onChange?: (v: number) => void; readonly?: boolean }) {
+  const [hover, setHover] = useState(0)
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          disabled={readonly}
+          onClick={() => onChange?.(star)}
+          onMouseEnter={() => !readonly && setHover(star)}
+          onMouseLeave={() => !readonly && setHover(0)}
+          className={`text-lg transition-colors ${readonly ? 'cursor-default' : 'cursor-pointer'}`}
+        >
+          <span className={star <= (hover || value) ? 'text-amz-dourado' : 'text-gray-300 dark:text-white/10'}>★</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function ExperienceDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const { addItem, checkIn, checkOut, setCheckIn, setCheckOut } = useCart()
   const [exp, setExp] = useState<(Experience & { image_url?: string | null }) | StaticExperience | null>(null)
   const [related, setRelated] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Reviews state
+  const [reviews, setReviews] = useState<(Review & { user_name?: string })[]>([])
+  const [reviewsLoading, setReviewsLoading] = useState(true)
+  const [currentUser, setCurrentUser] = useState<string | null>(null)
+  const [newRating, setNewRating] = useState(0)
+  const [newComment, setNewComment] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitMsg, setSubmitMsg] = useState<string | null>(null)
+  const [replyTo, setReplyTo] = useState<string | null>(null)
+  const [replyComment, setReplyComment] = useState('')
+  const [replyRating, setReplyRating] = useState(5)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setCurrentUser(data.session?.user?.id || null))
+  }, [])
+
   useEffect(() => {
     if (!id) return
     const experienceId = id
     async function load() {
-      // Try Supabase first
       const { data } = await supabase.from('experiences').select('*').eq('id', experienceId).single()
       if (data) {
         setExp(data)
         const { data: rel } = await supabase.from('experiences').select('*').eq('category_id', data.category_id).neq('id', data.id).limit(3)
         if (rel) setRelated(rel)
       } else {
-        // Fallback to static data
         const staticExp = getStaticExperience(experienceId)
-        if (staticExp) {
-          setExp(staticExp)
-        }
+        if (staticExp) setExp(staticExp)
       }
       setLoading(false)
     }
     load()
   }, [id])
+
+  useEffect(() => {
+    if (!id) return
+    loadReviews()
+  }, [id])
+
+  async function loadReviews() {
+    setReviewsLoading(true)
+    const { data } = await supabase
+      .from('experience_reviews')
+      .select('*')
+      .eq('experience_id', id!)
+      .order('created_at', { ascending: false })
+
+    if (data) {
+      const userIds = [...new Set(data.map((r) => r.user_id))]
+      const { data: users } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
+      const userMap = new Map((users || []).map((u) => [u.id, u.full_name || 'User']))
+      setReviews(data.map((r) => ({ ...r, user_name: userMap.get(r.user_id) || 'User' })))
+    }
+    setReviewsLoading(false)
+  }
+
+  async function submitReview(parentId: string | null = null) {
+    if (!currentUser || !id) return
+    setSubmitting(true)
+    const rating = parentId ? replyRating : newRating
+    const comment = parentId ? replyComment : newComment
+
+    if (!rating) { setSubmitting(false); return }
+
+    const { error } = await supabase.from('experience_reviews').insert({
+      experience_id: id,
+      user_id: currentUser,
+      rating,
+      comment: comment || null,
+      parent_id: parentId,
+    })
+
+    setSubmitting(false)
+    if (!error) {
+      setSubmitMsg(t.reviewsPendingNotice)
+      setNewRating(0)
+      setNewComment('')
+      setReplyTo(null)
+      setReplyComment('')
+      setReplyRating(5)
+      setTimeout(() => setSubmitMsg(null), 5000)
+    }
+  }
 
   if (loading) {
     return (
@@ -71,10 +155,23 @@ export default function ExperienceDetail() {
     )
   }
 
+  const approvedReviews = reviews.filter((r) => r.status === 'approved' && !r.parent_id)
+  const avgRating = approvedReviews.length > 0 ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length : 0
+
+  function getReplies(reviewId: string) {
+    return reviews.filter((r) => r.parent_id === reviewId && r.status === 'approved')
+  }
+
   function handleAddToCart() {
     if (!exp) return
     addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url })
     navigate('/checkout')
+  }
+
+  const getName = (e: Experience & { name_pt?: string; name_en?: string; name_es?: string }) => {
+    if (locale === 'en') return e.name_en || e.name_pt || e.title
+    if (locale === 'es') return e.name_es || e.name_pt || e.title
+    return e.name_pt || e.title
   }
 
   return (
@@ -97,6 +194,16 @@ export default function ExperienceDetail() {
               </span>
               <h1 className="text-3xl md:text-5xl font-maybug text-white mb-3">{exp.title}</h1>
               <p className="text-white/70 text-lg max-w-2xl">{exp.description}</p>
+              {approvedReviews.length > 0 && (
+                <div className="flex items-center gap-3 mt-4">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <span key={s} className={s <= Math.round(avgRating) ? 'text-amz-dourado' : 'text-white/30'}>★</span>
+                    ))}
+                  </div>
+                  <span className="text-white/70 text-sm">{avgRating.toFixed(1)} ({approvedReviews.length} {t.reviewsTotal})</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -129,6 +236,121 @@ export default function ExperienceDetail() {
               <p className="text-amz-terra-light dark:text-amz-areia/60 leading-relaxed whitespace-pre-line">{exp.description}</p>
             </div>
 
+            {/* Reviews Section */}
+            <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
+              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-6">{t.reviewsTitle}</h3>
+
+              {/* Review form */}
+              {currentUser ? (
+                <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
+                  <h4 className="text-sm font-semibold text-amz-terra dark:text-amz-areia mb-3">{t.reviewsWrite}</h4>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
+                    <StarRating value={newRating} onChange={setNewRating} />
+                  </div>
+                  <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={`${t.reviewsComment}...`}
+                    rows={3}
+                    className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors resize-none"
+                  />
+                  <div className="flex items-center justify-between mt-3">
+                    <button
+                      onClick={() => submitReview()}
+                      disabled={submitting || !newRating}
+                      className="px-5 py-2 rounded-xl bg-amz-dourado text-white text-sm font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50"
+                    >
+                      {submitting ? '...' : t.reviewsSubmit}
+                    </button>
+                    {submitMsg && <span className="text-xs text-amz-dourado font-medium">{submitMsg}</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 text-center">
+                  <p className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsLoginToComment}</p>
+                </div>
+              )}
+
+              {/* Reviews list */}
+              {reviewsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-amz-dourado border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : approvedReviews.length === 0 ? (
+                <p className="text-sm text-amz-terra-light dark:text-amz-areia/40 text-center py-8">{t.reviewsNoReviews}</p>
+              ) : (
+                <div className="space-y-6">
+                  {approvedReviews.map((review) => (
+                    <div key={review.id} className="border-b border-gray-100 dark:border-white/5 pb-6 last:border-0">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{review.user_name}</span>
+                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(review.created_at).toLocaleDateString(locale)}</span>
+                          </div>
+                          <StarRating value={review.rating} readonly />
+                          {review.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-2 leading-relaxed">{review.comment}</p>}
+                          {currentUser && (
+                            <button
+                              onClick={() => setReplyTo(replyTo === review.id ? null : review.id)}
+                              className="text-xs text-amz-dourado font-medium mt-2 hover:underline"
+                            >
+                              {replyTo === review.id ? t.reviewsCancel : t.reviewsReply}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Reply form */}
+                      {replyTo === review.id && currentUser && (
+                        <div className="mt-4 ml-6 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
+                            <StarRating value={replyRating} onChange={setReplyRating} />
+                          </div>
+                          <textarea
+                            value={replyComment}
+                            onChange={(e) => setReplyComment(e.target.value)}
+                            placeholder={`${t.reviewsReply}...`}
+                            rows={2}
+                            className="w-full px-3 py-2 rounded-lg border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 resize-none"
+                          />
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              onClick={() => submitReview(review.id)}
+                              disabled={submitting}
+                              className="px-4 py-1.5 rounded-lg bg-amz-dourado text-white text-xs font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50"
+                            >
+                              {submitting ? '...' : t.reviewsSubmit}
+                            </button>
+                            <button
+                              onClick={() => { setReplyTo(null); setReplyComment('') }}
+                              className="px-4 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs"
+                            >
+                              {t.reviewsCancel}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Replies */}
+                      {getReplies(review.id).map((reply) => (
+                        <div key={reply.id} className="ml-6 mt-4 pl-4 border-l-2 border-amz-dourado/20">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{reply.user_name}</span>
+                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(reply.created_at).toLocaleDateString(locale)}</span>
+                          </div>
+                          <StarRating value={reply.rating} readonly />
+                          {reply.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-1">{reply.comment}</p>}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Related */}
             {related.length > 0 && (
               <div>
@@ -138,7 +360,7 @@ export default function ExperienceDetail() {
                     <a key={r.id} href={`/experiencia/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
                       {r.image_url ? <div className="h-24 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div> : <div className="h-24 overflow-hidden"><img src={getExpFallback(r.id)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
                       <div className="p-3">
-                        <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{r.title}</p>
+                        <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{getName(r)}</p>
                         <p className="text-xs text-amz-dourado font-bold mt-1">R$ {r.price}</p>
                       </div>
                     </a>

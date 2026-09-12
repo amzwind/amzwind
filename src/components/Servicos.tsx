@@ -127,7 +127,7 @@ export default function Servicos() {
         return
       }
       if (formCheckOut <= formCheckIn) {
-        setError('Check-out deve ser posterior ao Check-in')
+                    setError('Saida deve ser posterior a Chegada')
         return
       }
     }
@@ -328,12 +328,12 @@ export default function Servicos() {
                     />
                   </div>
 
-                  {/* Check-in / Check-out (hospedagem) OR Date (transfer) */}
+                  {/* Chegada / Saida (hospedagem) OR Date (transfer) */}
                   {activeService === 'hospedagem' ? (
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
-                          Check-in <span className="text-red-500">*</span>
+                          Chegada <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="date"
@@ -345,7 +345,7 @@ export default function Servicos() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
-                          Check-out <span className="text-red-500">*</span>
+                          Saida <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="date"

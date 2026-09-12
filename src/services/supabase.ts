@@ -391,6 +391,41 @@ export type Database = {
           created_at?: string
         }
       }
+      experience_reviews: {
+        Row: {
+          id: string
+          experience_id: string
+          user_id: string
+          rating: number
+          comment: string | null
+          status: 'pending' | 'approved' | 'rejected'
+          parent_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          experience_id: string
+          user_id: string
+          rating: number
+          comment?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          parent_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          experience_id?: string
+          user_id?: string
+          rating?: number
+          comment?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          parent_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {

@@ -223,6 +223,33 @@ export type TranslationKeys = {
   aboutMission: string
   aboutVision: string
 
+  // Reviews
+  adminReviews: string
+  reviewsTitle: string
+  reviewsAverage: string
+  reviewsTotal: string
+  reviewsWrite: string
+  reviewsLoginToComment: string
+  reviewsSubmit: string
+  reviewsPendingNotice: string
+  reviewsNoReviews: string
+  reviewsReply: string
+  reviewsReplyTo: string
+  reviewsCancel: string
+  reviewsRating: string
+  reviewsComment: string
+  reviewsSelectRating: string
+  reviewsPending: string
+  reviewsApproved: string
+  reviewsRejected: string
+  reviewsApprove: string
+  reviewsReject: string
+  reviewsDelete: string
+  reviewsConfirmDelete: string
+  reviewsAdminTitle: string
+  reviewsAdminPending: string
+  reviewsAdminAll: string
+
   // Cart / Checkout
   cartTitle: string
   cartEmpty: string
@@ -605,14 +632,41 @@ const pt: TranslationKeys = {
   aboutMission: 'Missão',
   aboutVision: 'Visão',
 
+  // Reviews
+  adminReviews: 'Avaliações',
+  reviewsTitle: 'Avaliações & Comentários',
+  reviewsAverage: 'Média',
+  reviewsTotal: 'avaliações',
+  reviewsWrite: 'Deixe sua avaliação',
+  reviewsLoginToComment: 'Faça login para comentar',
+  reviewsSubmit: 'Enviar avaliação',
+  reviewsPendingNotice: 'Seu comentário passará por moderação antes de ser publicado.',
+  reviewsNoReviews: 'Nenhuma avaliação ainda. Seja o primeiro!',
+  reviewsReply: 'Responder',
+  reviewsReplyTo: 'Responder a',
+  reviewsCancel: 'Cancelar',
+  reviewsRating: 'Sua nota',
+  reviewsComment: 'Seu comentário',
+  reviewsSelectRating: 'Selecione uma nota',
+  reviewsPending: 'Pendente',
+  reviewsApproved: 'Aprovado',
+  reviewsRejected: 'Rejeitado',
+  reviewsApprove: 'Aprovar',
+  reviewsReject: 'Rejeitar',
+  reviewsDelete: 'Excluir',
+  reviewsConfirmDelete: 'Tem certeza que deseja excluir esta avaliação?',
+  reviewsAdminTitle: 'Gerenciar Avaliações',
+  reviewsAdminPending: 'Pendentes',
+  reviewsAdminAll: 'Todas',
+
   cartTitle: 'Carrinho & Checkout',
   cartEmpty: 'Seu carrinho está vazio',
   cartAddExperience: 'Adicionar Experiência',
   cartAddProduct: 'Adicionar Produto',
   cartAddClass: 'Adicionar Aula',
   cartTripDates: 'Datas da Viagem',
-  cartCheckIn: 'Check-in',
-  cartCheckOut: 'Check-out',
+  cartCheckIn: 'Chegada',
+  cartCheckOut: 'Saida',
   cartNights: 'Noites',
   cartBasePrice: 'Preço Base / Noite',
   cartSubtotal: 'Subtotal',
@@ -979,14 +1033,41 @@ const en: TranslationKeys = {
   aboutMission: 'Mission',
   aboutVision: 'Vision',
 
+  // Reviews
+  adminReviews: 'Reviews',
+  reviewsTitle: 'Reviews & Comments',
+  reviewsAverage: 'Average',
+  reviewsTotal: 'reviews',
+  reviewsWrite: 'Write a review',
+  reviewsLoginToComment: 'Log in to comment',
+  reviewsSubmit: 'Submit review',
+  reviewsPendingNotice: 'Your comment will be moderated before being published.',
+  reviewsNoReviews: 'No reviews yet. Be the first!',
+  reviewsReply: 'Reply',
+  reviewsReplyTo: 'Reply to',
+  reviewsCancel: 'Cancel',
+  reviewsRating: 'Your rating',
+  reviewsComment: 'Your comment',
+  reviewsSelectRating: 'Select a rating',
+  reviewsPending: 'Pending',
+  reviewsApproved: 'Approved',
+  reviewsRejected: 'Rejected',
+  reviewsApprove: 'Approve',
+  reviewsReject: 'Reject',
+  reviewsDelete: 'Delete',
+  reviewsConfirmDelete: 'Are you sure you want to delete this review?',
+  reviewsAdminTitle: 'Manage Reviews',
+  reviewsAdminPending: 'Pending',
+  reviewsAdminAll: 'All',
+
   cartTitle: 'Cart & Checkout',
   cartEmpty: 'Your cart is empty',
   cartAddExperience: 'Add Experience',
   cartAddProduct: 'Add Product',
   cartAddClass: 'Add Class',
   cartTripDates: 'Trip Dates',
-  cartCheckIn: 'Check-in',
-  cartCheckOut: 'Check-out',
+  cartCheckIn: 'Arrival',
+  cartCheckOut: 'Departure',
   cartNights: 'Nights',
   cartBasePrice: 'Base Price / Night',
   cartSubtotal: 'Subtotal',
@@ -1353,14 +1434,41 @@ const es: TranslationKeys = {
   aboutMission: 'Misión',
   aboutVision: 'Visión',
 
+  // Reviews
+  adminReviews: 'Reseñas',
+  reviewsTitle: 'Reseñas & Comentarios',
+  reviewsAverage: 'Promedio',
+  reviewsTotal: 'reseñas',
+  reviewsWrite: 'Deja tu reseña',
+  reviewsLoginToComment: 'Inicia sesión para comentar',
+  reviewsSubmit: 'Enviar reseña',
+  reviewsPendingNotice: 'Tu comentario será moderado antes de ser publicado.',
+  reviewsNoReviews: 'Sin reseñas aún. ¡Sé el primero!',
+  reviewsReply: 'Responder',
+  reviewsReplyTo: 'Responder a',
+  reviewsCancel: 'Cancelar',
+  reviewsRating: 'Tu nota',
+  reviewsComment: 'Tu comentario',
+  reviewsSelectRating: 'Selecciona una nota',
+  reviewsPending: 'Pendiente',
+  reviewsApproved: 'Aprobado',
+  reviewsRejected: 'Rechazado',
+  reviewsApprove: 'Aprobar',
+  reviewsReject: 'Rechazar',
+  reviewsDelete: 'Eliminar',
+  reviewsConfirmDelete: '¿Estás seguro de que deseas eliminar esta reseña?',
+  reviewsAdminTitle: 'Gestionar Reseñas',
+  reviewsAdminPending: 'Pendientes',
+  reviewsAdminAll: 'Todas',
+
   cartTitle: 'Carrito & Checkout',
   cartEmpty: 'Tu carrito está vacío',
   cartAddExperience: 'Agregar Experiencia',
   cartAddProduct: 'Agregar Producto',
   cartAddClass: 'Agregar Clase',
   cartTripDates: 'Fechas del Viaje',
-  cartCheckIn: 'Check-in',
-  cartCheckOut: 'Check-out',
+  cartCheckIn: 'Llegada',
+  cartCheckOut: 'Salida',
   cartNights: 'Noches',
   cartBasePrice: 'Precio Base / Noche',
   cartSubtotal: 'Subtotal',
