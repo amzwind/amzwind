@@ -7,8 +7,22 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TripCalendar from '../components/TripCalendar'
 import { getStaticExperience, type StaticExperience } from '../data/experiences'
+import { portraitImages, heroDesktopFallback } from '../data/media'
 
 type Experience = Tables<'experiences'>
+
+const FALLBACK_IMAGES = [
+  portraitImages[0]?.src,
+  portraitImages[5]?.src,
+  portraitImages[10]?.src,
+  portraitImages[15]?.src,
+  portraitImages[20]?.src,
+].filter(Boolean)
+
+function getExpFallback(id: string): string {
+  const hash = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  return FALLBACK_IMAGES[hash % FALLBACK_IMAGES.length] || heroDesktopFallback.src
+}
 
 export default function ExperienceDetail() {
   const { id } = useParams<{ id: string }>()
@@ -70,7 +84,11 @@ export default function ExperienceDetail() {
       {/* Hero */}
       <div className="pt-16">
         <div className="relative h-[50vh] md:h-[60vh] bg-gradient-to-br from-amz-oceano to-amz-terra-dark overflow-hidden">
-          {exp.image_url && <img src={exp.image_url} alt={exp.title} className="w-full h-full object-cover" />}
+          {exp.image_url ? (
+            <img src={exp.image_url} alt={exp.title} className="w-full h-full object-cover" />
+          ) : (
+            <img src={getExpFallback(exp.id)} alt={exp.title} className="w-full h-full object-cover" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
             <div className="max-w-4xl mx-auto">
@@ -118,7 +136,7 @@ export default function ExperienceDetail() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {related.map((r) => (
                     <a key={r.id} href={`/experiencia/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
-                      {r.image_url && <div className="h-24 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
+                      {r.image_url ? <div className="h-24 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div> : <div className="h-24 overflow-hidden"><img src={getExpFallback(r.id)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
                       <div className="p-3">
                         <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{r.title}</p>
                         <p className="text-xs text-amz-dourado font-bold mt-1">R$ {r.price}</p>
