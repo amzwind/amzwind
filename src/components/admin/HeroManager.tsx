@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../services/supabase'
+import { OFFICIAL_HERO_SLIDES, type HeroSlide } from '../../data/heroSlides'
 import {
   ModalShell,
   FormField,
@@ -11,18 +12,6 @@ import {
   Toast,
   ConfirmModal,
 } from './SharedUI'
-
-interface HeroSlide {
-  id: string
-  title: string
-  subtitle: string | null
-  media_url: string
-  media_type: 'image' | 'video'
-  cta_text: string | null
-  cta_link: string | null
-  display_order: number
-  created_at: string
-}
 
 interface SlideFormData {
   title: string
@@ -61,8 +50,26 @@ function detectMediaType(url: string, fileName?: string): 'image' | 'video' {
   return 'image'
 }
 
+function mergeWithOfficial(dbSlides: HeroSlide[]): HeroSlide[] {
+  const officialIds = new Set(OFFICIAL_HERO_SLIDES.map((s) => s.id))
+  const merged: HeroSlide[] = []
+
+  for (const official of OFFICIAL_HERO_SLIDES) {
+    const dbVersion = dbSlides.find((s) => s.id === official.id)
+    merged.push(dbVersion || official)
+  }
+
+  for (const dbSlide of dbSlides) {
+    if (!officialIds.has(dbSlide.id)) {
+      merged.push(dbSlide)
+    }
+  }
+
+  return merged
+}
+
 export function HeroManager() {
-  const [slides, setSlides] = useState<HeroSlide[]>([])
+  const [slides, setSlides] = useState<HeroSlide[]>(OFFICIAL_HERO_SLIDES)
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null)
@@ -82,8 +89,10 @@ export function HeroManager() {
       .select('*')
       .order('display_order', { ascending: true })
 
-    if (!error && data) {
-      setSlides(data as unknown as HeroSlide[])
+    if (!error && data && data.length > 0) {
+      setSlides(mergeWithOfficial(data as unknown as HeroSlide[]))
+    } else {
+      setSlides([...OFFICIAL_HERO_SLIDES])
     }
     setLoading(false)
   }
@@ -118,11 +127,11 @@ export function HeroManager() {
     const title = formData.title.trim()
 
     if (!mediaUrl) {
-      setToast({ message: 'Informe ou envie a mídia de fundo.', type: 'error' })
+      setToast({ message: 'Informe ou envie a midia de fundo.', type: 'error' })
       return
     }
     if (!title) {
-      setToast({ message: 'O título é obrigatório.', type: 'error' })
+      setToast({ message: 'O titulo e obrigatorio.', type: 'error' })
       return
     }
 
@@ -137,7 +146,7 @@ export function HeroManager() {
       display_order: parseInt(formData.display_order) || 0,
     }
 
-    if (editingSlide) {
+    if (editingSlide && !editingSlide.id.startsWith('default-')) {
       const { error } = await supabase
         .from('hero_slides' as any)
         .update(payload)
@@ -185,13 +194,20 @@ export function HeroManager() {
 
   async function handleDelete() {
     if (!deleteTarget) return
+    if (deleteTarget.id.startsWith('default-')) {
+      setSlides((prev) => prev.filter((s) => s.id !== deleteTarget.id))
+      setToast({ message: 'Slide oficial removido da visualizacao.', type: 'success' })
+      setDeleteTarget(null)
+      return
+    }
+
     const { error } = await supabase
       .from('hero_slides' as any)
       .delete()
       .eq('id', deleteTarget.id)
 
     if (!error) {
-      setToast({ message: 'Slide excluído.', type: 'success' })
+      setToast({ message: 'Slide excluido.', type: 'success' })
       loadSlides()
     } else {
       setToast({ message: error.message, type: 'error' })
@@ -208,7 +224,7 @@ export function HeroManager() {
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gerenciar Hero / Capa</h2>
           <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
-            Controle as mídias e textos de destaque da página inicial. {slides.length}/6 slides
+            Controle as midias e textos de destaque da pagina inicial. {slides.length}/6 slides
           </p>
         </div>
         {slides.length >= 6 ? (
@@ -222,8 +238,8 @@ export function HeroManager() {
 
       {/* Tips */}
       <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-800 dark:text-amber-200 space-y-1">
-        <p><strong>Sugestão de dimensões:</strong> 1920×1080px (proporção 16:9).</p>
-        <p>Você pode fazer upload de arquivo, colar um link direto (URL) de imagem/vídeo, ou colar um link do YouTube — o tipo de mídia será detectado automaticamente.</p>
+        <p><strong>Sugestao de dimensoes:</strong> 1920x1080px (proporcao 16:9).</p>
+        <p>Voce pode fazer upload de arquivo, colar um link direto (URL) de imagem/video, ou colar um link do YouTube — o tipo de midia sera detectado automaticamente.</p>
       </div>
 
       {/* Slides Grid */}
@@ -278,11 +294,16 @@ export function HeroManager() {
                 )}
                 <div className="absolute top-2 left-2 flex gap-1.5">
                   <span className="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold backdrop-blur-sm">
-                    {slide.media_type === 'video' ? (isYouTubeUrl(slide.media_url) ? 'YouTube' : 'Vídeo') : 'Imagem'}
+                    {slide.media_type === 'video' ? (isYouTubeUrl(slide.media_url) ? 'YouTube' : 'Video') : 'Imagem'}
                   </span>
                   <span className="bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
                     #{slide.display_order}
                   </span>
+                  {slide.id.startsWith('default-') && (
+                    <span className="bg-amz-dourado/80 text-white text-[10px] px-2 py-0.5 rounded-full font-bold backdrop-blur-sm">
+                      Oficial
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -339,31 +360,31 @@ export function HeroManager() {
           title={editingSlide ? 'Editar Slide' : 'Novo Slide da Hero'}
         >
           <form onSubmit={handleSave} className="space-y-4">
-            <FormField label="Título de Destaque">
+            <FormField label="Titulo de Destaque">
               <Input
                 required
                 value={formData.title}
                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="Ex: Expedições na Costa Norte"
+                placeholder="Ex: Expedicoes na Costa Norte"
               />
             </FormField>
 
-            <FormField label="Subtítulo">
+            <FormField label="Subtitulo">
               <Input
                 value={formData.subtitle}
                 onChange={(e) => setFormData((prev) => ({ ...prev, subtitle: e.target.value }))}
-                placeholder="Ex: Sinta a força dos ventos alísios"
+                placeholder="Ex: Sinta a forca dos ventos alisios"
               />
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Tipo de Mídia">
+              <FormField label="Tipo de Midia">
                 <Select
                   value={formData.media_type}
                   onChange={(e) => setFormData((prev) => ({ ...prev, media_type: e.target.value as 'image' | 'video' }))}
                 >
                   <option value="image">Imagem</option>
-                  <option value="video">Vídeo</option>
+                  <option value="video">Video</option>
                 </Select>
               </FormField>
               <FormField label="Ordem">
@@ -409,14 +430,14 @@ export function HeroManager() {
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Texto do Botão (CTA)">
+              <FormField label="Texto do Botao (CTA)">
                 <Input
                   value={formData.cta_text}
                   onChange={(e) => setFormData((prev) => ({ ...prev, cta_text: e.target.value }))}
                   placeholder="Explorar Roteiros"
                 />
               </FormField>
-              <FormField label="Link do Botão">
+              <FormField label="Link do Botao">
                 <Input
                   value={formData.cta_link}
                   onChange={(e) => setFormData((prev) => ({ ...prev, cta_link: e.target.value }))}

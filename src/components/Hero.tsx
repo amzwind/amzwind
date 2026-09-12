@@ -1,17 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useLanguage } from '../contexts/LanguageContext'
-import { heroVideo, heroDesktopFallback, portraitImages } from '../data/media'
-
-interface HeroSlide {
-  id: string
-  title: string
-  subtitle: string | null
-  media_url: string
-  media_type: 'image' | 'video'
-  cta_text: string | null
-  cta_link: string | null
-}
+import { OFFICIAL_HERO_SLIDES, type HeroSlide } from '../data/heroSlides'
 
 function isYouTubeUrl(url: string): boolean {
   return /(?:youtube\.com\/|youtu\.be\/)/i.test(url)
@@ -23,36 +13,6 @@ function getYouTubeEmbedUrl(url: string): string {
   const id = match[1]
   return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`
 }
-
-const SLIDES: HeroSlide[] = [
-  {
-    id: 'default-video',
-    title: 'Expedições. Downwinds. Experiências na Amazônia Atlântica.',
-    subtitle: 'A Amazônia é o nosso ponto de partida. Não queremos apenas organizar viagens. Queremos revelar um território.',
-    media_url: heroVideo,
-    media_type: 'video',
-    cta_text: 'Explorar Roteiros',
-    cta_link: '#experiencias',
-  },
-  {
-    id: 'default-img-1',
-    title: 'Kitesurf na Amazônia Atlântica',
-    subtitle: 'Ventos alísios constantes, águas cristalinas e praias selvagens. O cenário perfeito para sua aventura.',
-    media_url: portraitImages[5]?.src || heroDesktopFallback.src,
-    media_type: 'image',
-    cta_text: 'Agendar Aula',
-    cta_link: '#escola',
-  },
-  {
-    id: 'default-img-2',
-    title: 'Downwinds Épicos',
-    subtitle: 'Navegue entre ilhas paradisíacas, praias de águas-transparentes e restingas intocadas.',
-    media_url: portraitImages[30]?.src || heroDesktopFallback.src,
-    media_type: 'image',
-    cta_text: 'Ver Roteiros',
-    cta_link: '#experiencias',
-  },
-]
 
 function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.RefObject<HTMLDivElement> }) {
   return (
@@ -106,11 +66,11 @@ export default function Hero() {
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (SLIDES.length <= 1) return
+    if (OFFICIAL_HERO_SLIDES.length <= 1) return
     const timer = setInterval(() => {
       setCurrentSlide((prev) => {
         setPrevSlide(prev)
-        return (prev + 1) % SLIDES.length
+        return (prev + 1) % OFFICIAL_HERO_SLIDES.length
       })
     }, 5000)
     return () => clearInterval(timer)
@@ -152,12 +112,12 @@ export default function Hero() {
     return () => ctx.revert()
   }, [currentSlide])
 
-  const slide = SLIDES[currentSlide] || SLIDES[0]
+  const slide = OFFICIAL_HERO_SLIDES[currentSlide] || OFFICIAL_HERO_SLIDES[0]
 
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {prevSlide !== null && SLIDES[prevSlide] && (
-        <MediaLayer slide={SLIDES[prevSlide]} layerRef={prevLayerRef} />
+      {prevSlide !== null && OFFICIAL_HERO_SLIDES[prevSlide] && (
+        <MediaLayer slide={OFFICIAL_HERO_SLIDES[prevSlide]} layerRef={prevLayerRef} />
       )}
       <MediaLayer slide={slide} layerRef={currentLayerRef} />
 

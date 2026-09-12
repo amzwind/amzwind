@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { supabase } from '../services/supabase'
 import { staticExperiences } from '../data/experiences'
+import { portraitImages, heroDesktopFallback } from '../data/media'
 
 const badgeColors: Record<string, string> = {
   Downwind: 'bg-amz-oceano/10 text-amz-oceano dark:bg-amz-oceano/20 dark:text-amz-oceano',
@@ -11,6 +12,23 @@ const badgeColors: Record<string, string> = {
   'Expedição': 'bg-amz-terra/10 text-amz-terra dark:bg-amz-terra/20 dark:text-amz-terra-light',
   'Cultural Experience': 'bg-amz-dourado/10 text-amz-dourado dark:bg-amz-dourado/20 dark:text-amz-dourado',
   'Vivência Cultural': 'bg-amz-dourado/10 text-amz-dourado dark:bg-amz-dourado/20 dark:text-amz-dourado',
+}
+
+const FALLBACK_IMAGES = [
+  portraitImages[0]?.src,
+  portraitImages[5]?.src,
+  portraitImages[10]?.src,
+  portraitImages[15]?.src,
+  portraitImages[20]?.src,
+  portraitImages[25]?.src,
+  portraitImages[30]?.src,
+  portraitImages[35]?.src,
+  portraitImages[40]?.src,
+  portraitImages[45]?.src,
+].filter(Boolean)
+
+function getFallbackImage(index: number): string {
+  return FALLBACK_IMAGES[index % FALLBACK_IMAGES.length] || heroDesktopFallback.src
 }
 
 export default function ExperienciasCarousel() {
@@ -35,10 +53,15 @@ export default function ExperienciasCarousel() {
 
       if (error) throw error
       if (data && data.length > 0) {
-        setDbExperiences(data)
+        setDbExperiences(
+          data.map((exp, i) => ({
+            ...exp,
+            image_url: exp.image_url || getFallbackImage(i),
+          }))
+        )
       }
     } catch (err) {
-      console.error('Erro ao buscar experiências do banco:', err)
+      console.error('Erro ao buscar experiencias do banco:', err)
     }
   }
 
@@ -114,7 +137,7 @@ export default function ExperienciasCarousel() {
             className="flex gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory scroll-smooth px-1 py-2"
           >
             {hasDbItems ? (
-              dbExperiences.map((exp) => (
+              dbExperiences.map((exp, i) => (
                 <Link
                   to={`/experiencia/${exp.id}`}
                   key={exp.id}
@@ -125,7 +148,7 @@ export default function ExperienciasCarousel() {
                       {exp.image_url ? (
                         <img src={exp.image_url} alt={exp.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-4xl">🏄‍♂️</div>
+                        <img src={getFallbackImage(i)} alt={exp.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       )}
                       <div className="absolute top-4 left-4">
                         <span className="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-amz-oceano/10 text-amz-oceano dark:bg-amz-oceano/20 dark:text-amz-oceano backdrop-blur-sm">
