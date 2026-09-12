@@ -285,6 +285,17 @@ export type TranslationKeys = {
   checkoutSuccess: string
   checkoutSuccessDetail: string
   checkoutProcessing: string
+  checkoutLoginTitle: string
+  checkoutLoginSubtitle: string
+  checkoutLoginGoogle: string
+  checkoutLoginDivider: string
+  checkoutLoginEmail: string
+  checkoutLoginPassword: string
+  checkoutLoginButton: string
+  checkoutLoginForgot: string
+  checkoutLoginNoAccount: string
+  checkoutLoggedInAs: string
+  checkoutGuest: string
 
   // Common
   adminSave: string
@@ -691,8 +702,19 @@ const pt: TranslationKeys = {
   checkoutEmailInvalid: 'E-mail inválido.',
   checkoutError: 'Erro ao criar reserva(s).',
   checkoutSuccess: 'Reserva confirmada!',
-  checkoutSuccessDetail: 'Você receberá um e-mail de confirmação em breve. Acompanhe suas reservas no painel.',
+  checkoutSuccessDetail: 'Voce recebera um e-mail de confirmacao em breve. Acompanhe suas reservas no painel.',
   checkoutProcessing: 'Processando...',
+  checkoutLoginTitle: 'Entrar para continuar',
+  checkoutLoginSubtitle: 'Acesse sua conta para finalizar a reserva',
+  checkoutLoginGoogle: 'Entrar com Google',
+  checkoutLoginDivider: 'ou',
+  checkoutLoginEmail: 'E-mail',
+  checkoutLoginPassword: 'Senha',
+  checkoutLoginButton: 'Entrar',
+  checkoutLoginForgot: 'Esqueceu a senha?',
+  checkoutLoginNoAccount: 'Nao tem conta?',
+  checkoutLoggedInAs: 'Conectado como',
+  checkoutGuest: 'Continuar como visitante',
 
   adminSave: 'Salvar',
   adminCancel: 'Cancelar',
@@ -1094,6 +1116,17 @@ const en: TranslationKeys = {
   checkoutSuccess: 'Booking confirmed!',
   checkoutSuccessDetail: 'You will receive a confirmation email shortly. Track your bookings in the dashboard.',
   checkoutProcessing: 'Processing...',
+  checkoutLoginTitle: 'Sign in to continue',
+  checkoutLoginSubtitle: 'Access your account to complete your booking',
+  checkoutLoginGoogle: 'Sign in with Google',
+  checkoutLoginDivider: 'or',
+  checkoutLoginEmail: 'Email',
+  checkoutLoginPassword: 'Password',
+  checkoutLoginButton: 'Sign in',
+  checkoutLoginForgot: 'Forgot password?',
+  checkoutLoginNoAccount: "Don't have an account?",
+  checkoutLoggedInAs: 'Signed in as',
+  checkoutGuest: 'Continue as guest',
 
   adminSave: 'Save',
   adminCancel: 'Cancel',
@@ -1492,9 +1525,20 @@ const es: TranslationKeys = {
   checkoutEmailRequired: 'Ingresa tu correo.',
   checkoutEmailInvalid: 'Correo inválido.',
   checkoutError: 'Error al crear reserva(s).',
-  checkoutSuccess: '¡Reserva confirmada!',
-  checkoutSuccessDetail: 'Recibirás un correo de confirmação pronto. Sigue tus reservas en el panel.',
+  checkoutSuccess: 'Reserva confirmada!',
+  checkoutSuccessDetail: 'Recibiras un correo de confirmacion pronto. Sigue tus reservas en el panel.',
   checkoutProcessing: 'Procesando...',
+  checkoutLoginTitle: 'Iniciar sesion para continuar',
+  checkoutLoginSubtitle: 'Accede a tu cuenta para completar la reserva',
+  checkoutLoginGoogle: 'Iniciar sesion con Google',
+  checkoutLoginDivider: 'o',
+  checkoutLoginEmail: 'Correo',
+  checkoutLoginPassword: 'Contrasena',
+  checkoutLoginButton: 'Iniciar sesion',
+  checkoutLoginForgot: 'Olvidaste la contrasena?',
+  checkoutLoginNoAccount: 'No tienes cuenta?',
+  checkoutLoggedInAs: 'Conectado como',
+  checkoutGuest: 'Continuar como invitado',
 
   adminSave: 'Guardar',
   adminCancel: 'Cancelar',

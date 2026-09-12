@@ -11,6 +11,10 @@ type Product = Tables<'products'>
 
 const CART_STORAGE_KEY = 'amzwind-cart'
 
+function isValidUUID(str: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str)
+}
+
 interface StoredCart {
   items: CartItem[]
   checkIn: string | null
@@ -49,6 +53,14 @@ export default function CartCheckout() {
   const [catalogLoading, setCatalogLoading] = useState(true)
 
   const [sessionUserId, setSessionUserId] = useState<string | null>(null)
+  const [sessionEmail, setSessionEmail] = useState<string | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
+  const [authEmail, setAuthEmail] = useState('')
+  const [authPassword, setAuthPassword] = useState('')
+  const [authLoading, setAuthLoading] = useState(false)
+  const [authError, setAuthError] = useState('')
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
 
   const [guestName, setGuestName] = useState('')
   const [guestEmail, setGuestEmail] = useState('')
@@ -63,7 +75,10 @@ export default function CartCheckout() {
         supabase.from('experiences').select('*').order('title'),
         supabase.from('products').select('*').order('title'),
       ])
-      if (session) setSessionUserId(session.user.id)
+      if (session) {
+        setSessionUserId(session.user.id)
+        setSessionEmail(session.user.email || null)
+      }
 
       if (eRes.error) {
         console.error('[CartCheckout] Error loading experiences:', eRes.error)
@@ -91,14 +106,60 @@ export default function CartCheckout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    if (loaded) saveCart(items, checkIn, checkOut)
-  }, [items, checkIn, checkOut, loaded])
+  useEffect(() => { loaded && saveCart(items, checkIn, checkOut) }, [items, checkIn, checkOut, loaded])
+
+  async function handleGoogleLogin() {
+    setAuthLoading(true)
+    setAuthError('')
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
+    if (error) { setAuthError(error.message); setAuthLoading(false) }
+  }
+
+  async function handleEmailAuth(e: React.FormEvent) {
+    e.preventDefault()
+    setAuthLoading(true)
+    setAuthError('')
+    try {
+      if (authMode === 'login') {
+        const { data, error } = await supabase.auth.signInWithPassword({ email: authEmail, password: authPassword })
+        if (error) throw error
+        setSessionUserId(data.user.id)
+        setSessionEmail(data.user.email || null)
+        setShowAuthModal(false)
+      } else {
+        const { data, error } = await supabase.auth.signUp({ email: authEmail, password: authPassword })
+        if (error) throw error
+        if (data.user) {
+          setSessionUserId(data.user.id)
+          setSessionEmail(data.user.email || null)
+        }
+        setShowAuthModal(false)
+      }
+    } catch (err: any) {
+      setAuthError(err.message || 'Authentication failed')
+    }
+    setAuthLoading(false)
+  }
+
+  async function handleForgotPassword() {
+    if (!authEmail) { setAuthError('Enter your email first'); return }
+    setAuthLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(authEmail)
+    if (error) setAuthError(error.message)
+    else setAuthError('Check your email for reset link')
+    setAuthLoading(false)
+  }
+
+  function handleGuestCheckout() {
+    setShowAuthModal(false)
+  }
 
   const isGuest = !sessionUserId
 
   function validate(): string | null {
     if (items.length === 0) return t.cartEmpty
+    const hasInvalidId = items.some((item) => !isValidUUID(item.id))
+    if (hasInvalidId) return 'Some items have invalid IDs. Please remove and re-add them.'
     if (isGuest) {
       if (!guestName.trim()) return t.checkoutNameRequired
       if (!guestEmail.trim()) return t.checkoutEmailRequired
@@ -108,14 +169,15 @@ export default function CartCheckout() {
   }
 
   async function handleCheckout() {
-    const err = validate()
-    if (err) {
-      setToast({ message: err, type: 'error' })
+    if (isGuest && !showAuthModal && items.length > 0) {
+      setShowAuthModal(true)
       return
     }
 
-    setSubmitting(true)
+    const err = validate()
+    if (err) { setToast({ message: err, type: 'error' }); return }
 
+    setSubmitting(true)
     const userId = sessionUserId || null
 
     const accommodation = nights > 0 ? {
@@ -153,7 +215,7 @@ export default function CartCheckout() {
       supabase.from('bookings').insert({
         user_id: userId,
         item_type: item.type,
-        item_id: item.id,
+        item_id: isValidUUID(item.id) ? item.id : null,
         status: 'pending',
         booking_date: bookingDate,
         notes,
@@ -161,7 +223,6 @@ export default function CartCheckout() {
     )
 
     const results = await Promise.all(bookingPromises)
-
     const errors: { item: CartItem; error: { message: string; code?: string; details?: string; hint?: string } }[] = []
     const ids: string[] = []
 
@@ -169,11 +230,7 @@ export default function CartCheckout() {
       const r = results[i]
       if (r.error) {
         console.error(`[CartCheckout] Booking insert error for "${items[i].title}" (${items[i].type}):`, {
-          message: r.error.message,
-          code: r.error.code,
-          details: r.error.details,
-          hint: r.error.hint,
-          fullError: r.error,
+          message: r.error.message, code: r.error.code, details: r.error.details, hint: r.error.hint, fullError: r.error,
         })
         errors.push({ item: items[i], error: r.error })
       } else if (r.data && r.data.length > 0) {
@@ -184,10 +241,7 @@ export default function CartCheckout() {
     if (errors.length > 0) {
       const firstErr = errors[0]
       const detail = firstErr.error.code ? ` [${firstErr.error.code}]` : ''
-      setToast({
-        message: `${t.checkoutError} (${errors.length})${detail}: ${firstErr.error.message}`,
-        type: 'error',
-      })
+      setToast({ message: `${t.checkoutError} (${errors.length})${detail}: ${firstErr.error.message}`, type: 'error' })
     } else {
       const financialPromises = items.map((item) =>
         supabase.from('financial_accounts' as any).insert({
@@ -200,15 +254,11 @@ export default function CartCheckout() {
       )
       const finResults = await Promise.all(financialPromises)
       const finErrors = finResults.filter((r) => r.error)
-      if (finErrors.length > 0) {
-        console.error('[CartCheckout] Financial account insert errors:', finErrors)
-      }
-
+      if (finErrors.length > 0) console.error('[CartCheckout] Financial account insert errors:', finErrors)
       setSuccessIds(ids)
       clearCart()
       localStorage.removeItem(CART_STORAGE_KEY)
     }
-
     setSubmitting(false)
   }
 
@@ -224,34 +274,80 @@ export default function CartCheckout() {
           </svg>
         </div>
         <h1 className="text-2xl font-maybug text-amz-terra dark:text-amz-areia mb-3">{t.checkoutSuccess}</h1>
-        <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mb-2 max-w-md">
-          {t.checkoutSuccessDetail}
-        </p>
-        {successIds.length > 0 && (
-          <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mb-6">
-            #{successIds.slice(0, 3).join(' · #')}
-          </p>
-        )}
+        <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mb-2 max-w-md">{t.checkoutSuccessDetail}</p>
+        {successIds.length > 0 && <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mb-6">#{successIds.slice(0, 3).join(' · #')}</p>}
         <div className="flex gap-3">
-          <button onClick={() => navigate('/')} className="px-6 py-2.5 rounded-xl text-sm font-semibold border border-amz-areia-dark/20 dark:border-white/10 text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors">
-            {t.navHome}
-          </button>
-          <button onClick={() => navigate('/minha-conta')} className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors">
-            {t.cartMyBookings}
-          </button>
+          <button onClick={() => navigate('/')} className="px-6 py-2.5 rounded-xl text-sm font-semibold border border-amz-areia-dark/20 dark:border-white/10 text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors">{t.navHome}</button>
+          <button onClick={() => navigate('/minha-conta')} className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors">{t.cartMyBookings}</button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowAuthModal(false)}>
+          <div className="bg-white dark:bg-[#1a0f08] rounded-2xl shadow-2xl border border-gray-100 dark:border-white/[0.06] w-full max-w-md p-6 sm:p-8 space-y-5" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-xl bg-amz-dourado/10 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t.checkoutLoginTitle}</h2>
+              <p className="text-xs text-gray-500 dark:text-white/40 mt-1">{t.checkoutLoginSubtitle}</p>
+            </div>
+
+            {authError && (
+              <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-xs text-red-600 dark:text-red-400 text-center">{authError}</div>
+            )}
+
+            <button onClick={handleGoogleLogin} disabled={authLoading} className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-sm font-semibold text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/10 transition-colors disabled:opacity-50">
+              <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              {t.checkoutLoginGoogle}
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+              <span className="text-xs text-gray-400 dark:text-white/30">{t.checkoutLoginDivider}</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+            </div>
+
+            <form onSubmit={handleEmailAuth} className="space-y-3">
+              <input type="email" required value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder={t.checkoutLoginEmail}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+              <input type="password" required value={authPassword} onChange={(e) => setAuthPassword(e.target.value)} placeholder={t.checkoutLoginPassword}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
+              <div className="flex items-center justify-between text-xs">
+                <button type="button" onClick={handleForgotPassword} className="text-amz-dourado hover:underline">{t.checkoutLoginForgot}</button>
+                <button type="button" onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="text-amz-dourado hover:underline">
+                  {authMode === 'login' ? t.checkoutLoginNoAccount : t.checkoutLoginButton}
+                </button>
+              </div>
+              <button type="submit" disabled={authLoading}
+                className="w-full py-2.5 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50">
+                {authLoading ? '...' : authMode === 'login' ? t.checkoutLoginButton : 'Criar conta'}
+              </button>
+            </form>
+
+            <button onClick={handleGuestCheckout} className="w-full py-2 text-xs font-semibold text-gray-400 dark:text-white/30 hover:text-gray-600 dark:hover:text-white/60 transition-colors">
+              {t.checkoutGuest}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t.cartTitle}</h1>
         <p className="text-sm text-gray-500 dark:text-white/40 mt-1">
-          {items.length > 0 ? `${items.length} ${t.cartItemCount}` : t.cartEmpty}
+          {sessionUserId ? (
+            <span className="flex items-center gap-1">
+              <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+              {t.checkoutLoggedInAs} {sessionEmail}
+            </span>
+          ) : items.length > 0 ? `${items.length} ${t.cartItemCount}` : t.cartEmpty}
         </p>
       </div>
 
@@ -332,16 +428,12 @@ export default function CartCheckout() {
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.checkoutContactInfo}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">
-                    {t.checkoutName} <span className="text-red-500">*</span>
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutName} <span className="text-red-500">*</span></label>
                   <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">
-                    {t.checkoutEmail} <span className="text-red-500">*</span>
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutEmail} <span className="text-red-500">*</span></label>
                   <input type="email" required value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
                 </div>
@@ -424,6 +516,11 @@ export default function CartCheckout() {
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   {t.checkoutProcessing}
+                </span>
+              ) : isGuest ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                  {t.checkoutLoginTitle}
                 </span>
               ) : (
                 t.cartCheckout

@@ -192,7 +192,7 @@ export function AdminDashboard() {
   if (!isAdmin) return null
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0a06] text-gray-900 dark:text-white flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0f0a06] text-gray-900 dark:text-white flex overflow-x-hidden">
       {/* Sidebar - Desktop */}
       <aside
         className={`hidden lg:flex flex-col fixed inset-y-0 left-0 z-30 bg-white dark:bg-[#1a0f08] border-r border-gray-200 dark:border-white/[0.06] transition-all duration-300 ${
@@ -381,7 +381,7 @@ export function AdminDashboard() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
           {activeTab === 'dashboard' && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
