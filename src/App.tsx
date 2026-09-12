@@ -15,6 +15,7 @@ import ProductDetail from './pages/ProductDetail'
 import CustomerDashboard from './pages/CustomerDashboard'
 import UserProfile from './pages/UserProfile'
 import CartCheckout from './components/CartCheckout'
+import BottomNav from './components/BottomNav'
 import GaleriaPage from './pages/GaleriaPage'
 import { Analytics } from '@vercel/analytics/react'
 
@@ -65,9 +66,10 @@ export default function App() {
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<div className="pt-24 pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
+              <Route path="/checkout" element={<div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
               <Route path="*" element={<Home />} />
             </Routes>
+            <BottomNav />
             <InstallAppBanner />
             <Analytics />
           </BrowserRouter>

@@ -166,8 +166,8 @@ export function FinancialManager() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+      <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden max-w-full">
+        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Lançamentos</h3>
           <span className="text-xs text-gray-400 dark:text-white/30">{filtered.length} itens</span>
         </div>
@@ -179,7 +179,7 @@ export function FinancialManager() {
         ) : (
           <>
             {/* Desktop table */}
-            <div className="hidden md:block overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="hidden md:block overflow-x-auto max-w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-white/[0.06]">
@@ -218,7 +218,7 @@ export function FinancialManager() {
             </div>
 
             {/* Mobile cards */}
-            <div className="md:hidden p-4 space-y-3">
+            <div className="md:hidden p-3 sm:p-4 space-y-3 max-w-full">
               {filtered.map((acc) => (
                 <div key={acc.id} className="rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">

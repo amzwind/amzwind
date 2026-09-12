@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allMedia, type MediaCategory } from '../data/media'
+import Lightbox from './Lightbox'
 
 const categoryLabels: Record<MediaCategory, Record<string, string>> = {
   kite: { pt: 'Kitesurf', en: 'Kitesurf', es: 'Kitesurf' },
@@ -43,32 +44,6 @@ export default function Gallery() {
   const imgRef = (_idx: number) => (el: HTMLDivElement | null) => {
     if (el) observerRef.current?.observe(el)
   }
-
-  function openLightbox(index: number) {
-    setLightboxIndex(index)
-    document.body.style.overflow = 'hidden'
-  }
-
-  function closeLightbox() {
-    setLightboxIndex(null)
-    document.body.style.overflow = ''
-  }
-
-  function navLightbox(dir: -1 | 1) {
-    if (lightboxIndex === null) return
-    setLightboxIndex((lightboxIndex + dir + filteredMedia.length) % filteredMedia.length)
-  }
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (lightboxIndex === null) return
-      if (e.key === 'Escape') closeLightbox()
-      if (e.key === 'ArrowLeft') navLightbox(-1)
-      if (e.key === 'ArrowRight') navLightbox(1)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [lightboxIndex, filteredMedia.length])
 
   return (
     <section id="galeria" className="py-16 md:py-24 px-4 bg-white dark:bg-[#2A1508] transition-colors duration-500">
@@ -116,7 +91,7 @@ export default function Gallery() {
               ref={imgRef(i)}
               data-index={i}
               className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-2xl"
-              onClick={() => openLightbox(i)}
+              onClick={() => setLightboxIndex(i)}
             >
               {visibleImages.has(i) ? (
                 <img
@@ -138,50 +113,13 @@ export default function Gallery() {
         </div>
 
         {/* Lightbox */}
-        {lightboxIndex !== null && filteredMedia[lightboxIndex] && (
-          <div
-            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-            onClick={closeLightbox}
-          >
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <button
-              onClick={(e) => { e.stopPropagation(); navLightbox(-1) }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-
-            <button
-              onClick={(e) => { e.stopPropagation(); navLightbox(1) }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-
-            <img
-              key={lightboxIndex}
-              src={filteredMedia[lightboxIndex].src}
-              alt={filteredMedia[lightboxIndex].alt}
-              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-              {lightboxIndex + 1} / {filteredMedia.length}
-            </div>
-          </div>
+        {lightboxIndex !== null && (
+          <Lightbox
+            images={filteredMedia.map((m) => ({ src: m.src, alt: m.alt }))}
+            index={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onNav={(dir) => setLightboxIndex((prev) => prev !== null ? (prev + dir + filteredMedia.length) % filteredMedia.length : null)}
+          />
         )}
       </div>
     </section>

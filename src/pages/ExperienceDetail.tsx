@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -6,6 +6,7 @@ import { useCart } from '../contexts/CartContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import TripCalendar from '../components/TripCalendar'
+import Lightbox from '../components/Lightbox'
 import { getStaticExperience, type StaticExperience } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 
@@ -13,11 +14,7 @@ type Experience = Tables<'experiences'>
 type Review = Tables<'experience_reviews'>
 
 const FALLBACK_IMAGES = [
-  portraitImages[0]?.src,
-  portraitImages[5]?.src,
-  portraitImages[10]?.src,
-  portraitImages[15]?.src,
-  portraitImages[20]?.src,
+  portraitImages[0]?.src, portraitImages[5]?.src, portraitImages[10]?.src, portraitImages[15]?.src, portraitImages[20]?.src,
 ].filter(Boolean)
 
 function getExpFallback(id: string): string {
@@ -30,15 +27,9 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
   return (
     <div className="flex gap-1">
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={readonly}
-          onClick={() => onChange?.(star)}
-          onMouseEnter={() => !readonly && setHover(star)}
-          onMouseLeave={() => !readonly && setHover(0)}
-          className={`text-lg transition-colors ${readonly ? 'cursor-default' : 'cursor-pointer'}`}
-        >
+        <button key={star} type="button" disabled={readonly} onClick={() => onChange?.(star)}
+          onMouseEnter={() => !readonly && setHover(star)} onMouseLeave={() => !readonly && setHover(0)}
+          className={`text-lg transition-colors ${readonly ? 'cursor-default' : 'cursor-pointer'}`}>
           <span className={star <= (hover || value) ? 'text-amz-dourado' : 'text-gray-300 dark:text-white/10'}>★</span>
         </button>
       ))}
@@ -55,7 +46,7 @@ export default function ExperienceDetail() {
   const [related, setRelated] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Reviews state
+  // Reviews
   const [reviews, setReviews] = useState<(Review & { user_name?: string })[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(true)
   const [currentUser, setCurrentUser] = useState<string | null>(null)
@@ -66,6 +57,9 @@ export default function ExperienceDetail() {
   const [replyTo, setReplyTo] = useState<string | null>(null)
   const [replyComment, setReplyComment] = useState('')
   const [replyRating, setReplyRating] = useState(5)
+
+  // Gallery lightbox
+  const [lbIndex, setLbIndex] = useState<number | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setCurrentUser(data.session?.user?.id || null))
@@ -89,19 +83,11 @@ export default function ExperienceDetail() {
     load()
   }, [id])
 
-  useEffect(() => {
-    if (!id) return
-    loadReviews()
-  }, [id])
+  useEffect(() => { if (id) loadReviews() }, [id])
 
   async function loadReviews() {
     setReviewsLoading(true)
-    const { data } = await supabase
-      .from('experience_reviews')
-      .select('*')
-      .eq('experience_id', id!)
-      .order('created_at', { ascending: false })
-
+    const { data } = await supabase.from('experience_reviews').select('*').eq('experience_id', id!).order('created_at', { ascending: false })
     if (data) {
       const userIds = [...new Set(data.map((r) => r.user_id))]
       const { data: users } = await supabase.from('profiles').select('id, full_name').in('id', userIds)
@@ -116,28 +102,22 @@ export default function ExperienceDetail() {
     setSubmitting(true)
     const rating = parentId ? replyRating : newRating
     const comment = parentId ? replyComment : newComment
-
     if (!rating) { setSubmitting(false); return }
-
     const { error } = await supabase.from('experience_reviews').insert({
-      experience_id: id,
-      user_id: currentUser,
-      rating,
-      comment: comment || null,
-      parent_id: parentId,
+      experience_id: id, user_id: currentUser, rating, comment: comment || null, parent_id: parentId,
     })
-
     setSubmitting(false)
     if (!error) {
       setSubmitMsg(t.reviewsPendingNotice)
-      setNewRating(0)
-      setNewComment('')
-      setReplyTo(null)
-      setReplyComment('')
-      setReplyRating(5)
+      setNewRating(0); setNewComment(''); setReplyTo(null); setReplyComment(''); setReplyRating(5)
       setTimeout(() => setSubmitMsg(null), 5000)
     }
   }
+
+  const handleNavLb = useCallback((dir: -1 | 1) => {
+    if (lbIndex === null || !galleryImages.length) return
+    setLbIndex((prev) => prev !== null ? (prev + dir + galleryImages.length) % galleryImages.length : null)
+  }, [lbIndex])
 
   if (loading) {
     return (
@@ -157,10 +137,11 @@ export default function ExperienceDetail() {
 
   const approvedReviews = reviews.filter((r) => r.status === 'approved' && !r.parent_id)
   const avgRating = approvedReviews.length > 0 ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length : 0
+  function getReplies(reviewId: string) { return reviews.filter((r) => r.parent_id === reviewId && r.status === 'approved') }
 
-  function getReplies(reviewId: string) {
-    return reviews.filter((r) => r.parent_id === reviewId && r.status === 'approved')
-  }
+  const galleryImages: { src: string; alt: string }[] = [
+    exp.image_url ? { src: exp.image_url, alt: exp.title } : { src: getExpFallback(exp.id), alt: exp.title },
+  ]
 
   function handleAddToCart() {
     if (!exp) return
@@ -175,7 +156,7 @@ export default function ExperienceDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500">
+    <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500 pb-20 md:pb-0">
       <Header />
 
       {/* Hero */}
@@ -236,120 +217,20 @@ export default function ExperienceDetail() {
               <p className="text-amz-terra-light dark:text-amz-areia/60 leading-relaxed whitespace-pre-line">{exp.description}</p>
             </div>
 
-            {/* Reviews Section */}
-            <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
-              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-6">{t.reviewsTitle}</h3>
-
-              {/* Review form */}
-              {currentUser ? (
-                <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
-                  <h4 className="text-sm font-semibold text-amz-terra dark:text-amz-areia mb-3">{t.reviewsWrite}</h4>
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
-                    <StarRating value={newRating} onChange={setNewRating} />
-                  </div>
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder={`${t.reviewsComment}...`}
-                    rows={3}
-                    className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors resize-none"
-                  />
-                  <div className="flex items-center justify-between mt-3">
-                    <button
-                      onClick={() => submitReview()}
-                      disabled={submitting || !newRating}
-                      className="px-5 py-2 rounded-xl bg-amz-dourado text-white text-sm font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50"
-                    >
-                      {submitting ? '...' : t.reviewsSubmit}
+            {/* Gallery */}
+            {galleryImages.length > 0 && (
+              <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
+                <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.galleryTitle || 'Galeria'}</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {galleryImages.map((img, i) => (
+                    <button key={i} onClick={() => setLbIndex(i)}
+                      className="rounded-xl overflow-hidden aspect-square bg-gray-100 dark:bg-white/5 group">
+                      <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     </button>
-                    {submitMsg && <span className="text-xs text-amz-dourado font-medium">{submitMsg}</span>}
-                  </div>
-                </div>
-              ) : (
-                <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 text-center">
-                  <p className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsLoginToComment}</p>
-                </div>
-              )}
-
-              {/* Reviews list */}
-              {reviewsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="w-6 h-6 border-2 border-amz-dourado border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : approvedReviews.length === 0 ? (
-                <p className="text-sm text-amz-terra-light dark:text-amz-areia/40 text-center py-8">{t.reviewsNoReviews}</p>
-              ) : (
-                <div className="space-y-6">
-                  {approvedReviews.map((review) => (
-                    <div key={review.id} className="border-b border-gray-100 dark:border-white/5 pb-6 last:border-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{review.user_name}</span>
-                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(review.created_at).toLocaleDateString(locale)}</span>
-                          </div>
-                          <StarRating value={review.rating} readonly />
-                          {review.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-2 leading-relaxed">{review.comment}</p>}
-                          {currentUser && (
-                            <button
-                              onClick={() => setReplyTo(replyTo === review.id ? null : review.id)}
-                              className="text-xs text-amz-dourado font-medium mt-2 hover:underline"
-                            >
-                              {replyTo === review.id ? t.reviewsCancel : t.reviewsReply}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Reply form */}
-                      {replyTo === review.id && currentUser && (
-                        <div className="mt-4 ml-6 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
-                            <StarRating value={replyRating} onChange={setReplyRating} />
-                          </div>
-                          <textarea
-                            value={replyComment}
-                            onChange={(e) => setReplyComment(e.target.value)}
-                            placeholder={`${t.reviewsReply}...`}
-                            rows={2}
-                            className="w-full px-3 py-2 rounded-lg border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 resize-none"
-                          />
-                          <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={() => submitReview(review.id)}
-                              disabled={submitting}
-                              className="px-4 py-1.5 rounded-lg bg-amz-dourado text-white text-xs font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50"
-                            >
-                              {submitting ? '...' : t.reviewsSubmit}
-                            </button>
-                            <button
-                              onClick={() => { setReplyTo(null); setReplyComment('') }}
-                              className="px-4 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs"
-                            >
-                              {t.reviewsCancel}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Replies */}
-                      {getReplies(review.id).map((reply) => (
-                        <div key={reply.id} className="ml-6 mt-4 pl-4 border-l-2 border-amz-dourado/20">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{reply.user_name}</span>
-                            <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(reply.created_at).toLocaleDateString(locale)}</span>
-                          </div>
-                          <StarRating value={reply.rating} readonly />
-                          {reply.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-1">{reply.comment}</p>}
-                        </div>
-                      ))}
-                    </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Related */}
             {related.length > 0 && (
@@ -377,18 +258,105 @@ export default function ExperienceDetail() {
                 <p className="text-3xl font-maybug text-amz-dourado">R$ {Number(exp.price).toFixed(2)}</p>
                 <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1">por pessoa</p>
               </div>
-
               <TripCalendar checkIn={checkIn} checkOut={checkOut} onCheckInChange={setCheckIn} onCheckOutChange={setCheckOut} />
-
-              <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">
-                {t.expDetailBook}
-              </button>
+              <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">{t.expDetailBook}</button>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Reviews - ALWAYS last before Footer */}
+      <div className="max-w-4xl mx-auto px-4 pb-12">
+        <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
+          <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-6">{t.reviewsTitle}</h3>
+          {currentUser ? (
+            <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
+              <h4 className="text-sm font-semibold text-amz-terra dark:text-amz-areia mb-3">{t.reviewsWrite}</h4>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
+                <StarRating value={newRating} onChange={setNewRating} />
+              </div>
+              <textarea value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder={`${t.reviewsComment}...`} rows={3}
+                className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors resize-none" />
+              <div className="flex items-center justify-between mt-3">
+                <button onClick={() => submitReview()} disabled={submitting || !newRating}
+                  className="px-5 py-2 rounded-xl bg-amz-dourado text-white text-sm font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50">
+                  {submitting ? '...' : t.reviewsSubmit}
+                </button>
+                {submitMsg && <span className="text-xs text-amz-dourado font-medium">{submitMsg}</span>}
+              </div>
+            </div>
+          ) : (
+            <div className="mb-8 p-4 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5 text-center">
+              <p className="text-sm text-amz-terra-light dark:text-amz-areia/60">{t.reviewsLoginToComment}</p>
+            </div>
+          )}
+          {reviewsLoading ? (
+            <div className="flex justify-center py-8"><div className="w-6 h-6 border-2 border-amz-dourado border-t-transparent rounded-full animate-spin" /></div>
+          ) : approvedReviews.length === 0 ? (
+            <p className="text-sm text-amz-terra-light dark:text-amz-areia/40 text-center py-8">{t.reviewsNoReviews}</p>
+          ) : (
+            <div className="space-y-6">
+              {approvedReviews.map((review) => (
+                <div key={review.id} className="border-b border-gray-100 dark:border-white/5 pb-6 last:border-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{review.user_name}</span>
+                        <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(review.created_at).toLocaleDateString(locale)}</span>
+                      </div>
+                      <StarRating value={review.rating} readonly />
+                      {review.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-2 leading-relaxed">{review.comment}</p>}
+                      {currentUser && (
+                        <button onClick={() => setReplyTo(replyTo === review.id ? null : review.id)}
+                          className="text-xs text-amz-dourado font-medium mt-2 hover:underline">
+                          {replyTo === review.id ? t.reviewsCancel : t.reviewsReply}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {replyTo === review.id && currentUser && (
+                    <div className="mt-4 ml-6 p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/5">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-xs text-amz-terra-light dark:text-amz-areia/60">{t.reviewsRating}:</span>
+                        <StarRating value={replyRating} onChange={setReplyRating} />
+                      </div>
+                      <textarea value={replyComment} onChange={(e) => setReplyComment(e.target.value)} placeholder={`${t.reviewsReply}...`} rows={2}
+                        className="w-full px-3 py-2 rounded-lg border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 resize-none" />
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => submitReview(review.id)} disabled={submitting}
+                          className="px-4 py-1.5 rounded-lg bg-amz-dourado text-white text-xs font-medium hover:bg-amz-dourado/90 transition-colors disabled:opacity-50">
+                          {submitting ? '...' : t.reviewsSubmit}
+                        </button>
+                        <button onClick={() => { setReplyTo(null); setReplyComment('') }}
+                          className="px-4 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-amz-terra dark:text-amz-areia text-xs">
+                          {t.reviewsCancel}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {getReplies(review.id).map((reply) => (
+                    <div key={reply.id} className="ml-6 mt-4 pl-4 border-l-2 border-amz-dourado/20">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-semibold text-amz-terra dark:text-amz-areia">{reply.user_name}</span>
+                        <span className="text-xs text-amz-terra-light dark:text-amz-areia/30">{new Date(reply.created_at).toLocaleDateString(locale)}</span>
+                      </div>
+                      <StarRating value={reply.rating} readonly />
+                      {reply.comment && <p className="text-sm text-amz-terra-light dark:text-amz-areia/60 mt-1">{reply.comment}</p>}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
       <Footer />
+
+      {lbIndex !== null && (
+        <Lightbox images={galleryImages} index={lbIndex} onClose={() => setLbIndex(null)} onNav={handleNavLb} />
+      )}
     </div>
   )
 }

@@ -62,7 +62,7 @@ export function BookingsManager() {
         <p className="text-sm text-gray-500 dark:text-white/40 mt-0.5">{t.adminBookSubtitle}</p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+      <div className="flex gap-2 overflow-x-auto whitespace-nowrap px-1 pb-1 -mx-1 hide-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
         {filters.map((f) => (
           <button key={f.key} onClick={() => setFilter(f.key)}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
