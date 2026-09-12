@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { path: '/experiencias', icon: 'exp', labelKey: 'expTitle' },
   { path: '/checkout', icon: 'cart', labelKey: 'cartTitle' },
   { path: '/favoritos', icon: 'heart', labelKey: 'favorites' },
-  { path: '/minha-conta', icon: 'user', labelKey: 'cartMyBookings' },
+  { path: '/perfil', icon: 'user', labelKey: 'navProfile' },
 ] as const
 
 const ADMIN_NAV_ITEMS = [

@@ -276,6 +276,7 @@ export type TranslationKeys = {
   cartItemCount: string
   cartMyBookings: string
   navHome: string
+  navProfile: string
   checkoutContactInfo: string
   checkoutName: string
   checkoutEmail: string
@@ -697,6 +698,7 @@ const pt: TranslationKeys = {
   cartItemCount: 'itens no carrinho',
   cartMyBookings: 'Minhas Reservas',
   navHome: 'Início',
+  navProfile: 'Perfil',
   checkoutContactInfo: 'Dados de Contato',
   checkoutName: 'Nome',
   checkoutEmail: 'E-mail',
@@ -1111,6 +1113,7 @@ const en: TranslationKeys = {
   cartItemCount: 'items in cart',
   cartMyBookings: 'My Bookings',
   navHome: 'Home',
+  navProfile: 'Profile',
   checkoutContactInfo: 'Contact Information',
   checkoutName: 'Name',
   checkoutEmail: 'Email',
@@ -1525,6 +1528,7 @@ const es: TranslationKeys = {
   cartItemCount: 'artículos en el carrito',
   cartMyBookings: 'Mis Reservas',
   navHome: 'Inicio',
+  navProfile: 'Perfil',
   checkoutContactInfo: 'Información de Contacto',
   checkoutName: 'Nombre',
   checkoutEmail: 'Correo',

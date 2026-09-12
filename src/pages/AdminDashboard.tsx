@@ -37,6 +37,13 @@ export function AdminDashboard() {
     setSearchParams({ tab }, { replace: true })
   }, [setSearchParams])
 
+  useEffect(() => {
+    const urlTab = searchParams.get('tab') as AdminTab | null
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTabState(urlTab)
+    }
+  }, [searchParams])
+
   const [stats, setStats] = useState({
     experiencesCount: 0,
     productsCount: 0,

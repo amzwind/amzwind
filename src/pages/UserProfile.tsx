@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import Header from '../components/Header'
@@ -29,7 +29,7 @@ function parseNotes(notes: string | null): BookingNotes | null {
   try { return JSON.parse(notes) as BookingNotes } catch { return null }
 }
 
-const TABS = ['portal', 'reservas', 'produtos', 'galeria'] as const
+const TABS = ['portal', 'reservas', 'produtos', 'galeria', 'comunidade'] as const
 type Tab = typeof TABS[number]
 
 export default function UserProfile() {
@@ -49,6 +49,15 @@ export default function UserProfile() {
   const [avatarUrl, setAvatarUrl] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null)
+
+  const [posts, setPosts] = useState<any[]>([])
+  const [newPostContent, setNewPostContent] = useState('')
+  const [newPostMedia, setNewPostMedia] = useState<File | null>(null)
+  const [posting, setPosting] = useState(false)
+  const [expandedComments, setExpandedComments] = useState<string | null>(null)
+  const [commentText, setCommentText] = useState('')
+  const [allProfiles, setAllProfiles] = useState<Record<string, { full_name: string | null; avatar_url: string | null }>>({})
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     async function loadProfile() {
@@ -130,6 +139,103 @@ export default function UserProfile() {
     if (!error) {
       setBookings((prev) => prev.map((b) => b.id === bookingId ? { ...b, status: 'cancelled' as const } : b))
     }
+  }
+
+  async function loadPosts() {
+    const { data: postsData } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50)
+
+    if (postsData) {
+      setPosts(postsData)
+      const userIds = [...new Set(postsData.map((p: any) => p.user_id))]
+      if (userIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .in('id', userIds)
+        if (profilesData) {
+          const map: Record<string, { full_name: string | null; avatar_url: string | null }> = {}
+          profilesData.forEach((p: any) => { map[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url } })
+          setAllProfiles(map)
+        }
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'comunidade') loadPosts()
+  }, [activeTab])
+
+  async function handleCreatePost() {
+    if (!newPostContent.trim() && !newPostMedia) return
+    if (!profile) return
+    setPosting(true)
+
+    let mediaUrl: string | null = null
+    if (newPostMedia) {
+      const ext = newPostMedia.name.split('.').pop() || 'jpg'
+      const path = `posts/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+      const { error: uploadErr } = await supabase.storage.from('posts').upload(path, newPostMedia, { contentType: newPostMedia.type })
+      if (!uploadErr) {
+        const { data: urlData } = supabase.storage.from('posts').getPublicUrl(path)
+        mediaUrl = urlData?.publicUrl || null
+      }
+    }
+
+    const { error } = await supabase.from('posts').insert({
+      user_id: profile.id,
+      content: newPostContent.trim() || null,
+      media_url: mediaUrl,
+    })
+
+    if (!error) {
+      setNewPostContent('')
+      setNewPostMedia(null)
+      loadPosts()
+    }
+    setPosting(false)
+  }
+
+  async function handleLikePost(postId: string) {
+    if (!profile) return
+    const { data: existing } = await supabase
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', profile.id)
+      .maybeSingle()
+
+    if (existing) {
+      await supabase.from('post_likes').delete().eq('id', existing.id)
+      setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p))
+    } else {
+      await supabase.from('post_likes').insert({ post_id: postId, user_id: profile.id })
+      setPosts((prev) => prev.map((p) => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p))
+    }
+  }
+
+  async function handleAddComment(postId: string) {
+    if (!commentText.trim() || !profile) return
+    const { error } = await supabase.from('post_comments').insert({
+      post_id: postId,
+      user_id: profile.id,
+      content: commentText.trim(),
+    })
+    if (!error) {
+      setCommentText('')
+      setExpandedComments(postId)
+    }
+  }
+
+  async function handleDeletePost(postId: string) {
+    if (!window.confirm('Excluir esta publicação?')) return
+    await supabase.from('post_comments').delete().eq('post_id', postId)
+    await supabase.from('post_likes').delete().eq('post_id', postId)
+    await supabase.from('posts').delete().eq('id', postId)
+    setPosts((prev) => prev.filter((p) => p.id !== postId))
   }
 
   function getInitials(name: string | null | undefined): string {
@@ -254,6 +360,7 @@ export default function UserProfile() {
               { key: 'reservas' as const, icon: '🌊', label: 'Minhas Reservas' },
               { key: 'produtos' as const, icon: '🛍️', label: 'Produtos' },
               { key: 'galeria' as const, icon: '📸', label: 'Galeria' },
+              { key: 'comunidade' as const, icon: '🏄', label: 'Feed' },
             ]).map((tab) => (
               <button
                 key={tab.key}
@@ -598,6 +705,138 @@ export default function UserProfile() {
             </div>
           )}
 
+          {/* Tab: Comunidade / Feed Kitesurf */}
+          {activeTab === 'comunidade' && (
+            <div className="space-y-6">
+              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
+                <svg className="w-5 h-5 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                Feed da Comunidade
+              </h3>
+              <p className="text-sm text-amz-terra-light dark:text-amz-areia/50">
+                Conecte-se com outros riders. Compartilhe suas sessões, fotos e conquistas no kitesurf.
+              </p>
+
+              {/* New Post Form */}
+              <div className="bg-white dark:bg-white/5 rounded-2xl p-5 border border-amz-areia-dark/20 dark:border-white/5">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-amz-dourado/20 flex items-center justify-center shrink-0">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-bold text-amz-dourado">{getInitials(fullName || profile?.full_name)}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <textarea
+                      rows={3}
+                      value={newPostContent}
+                      onChange={(e) => setNewPostContent(e.target.value)}
+                      placeholder="Compartilhe sua session de kite... 🪁"
+                      className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm resize-none"
+                    />
+                    {newPostMedia && (
+                      <div className="relative inline-block">
+                        <img src={URL.createObjectURL(newPostMedia)} alt="Preview" className="w-20 h-20 rounded-xl object-cover" />
+                        <button onClick={() => setNewPostMedia(null)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs">×</button>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input ref={fileInputRef} type="file" accept="image/*,video/*" onChange={(e) => setNewPostMedia(e.target.files?.[0] || null)} className="hidden" />
+                        <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-amz-oceano hover:bg-amz-oceano/10 transition-colors">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          Foto/Vídeo
+                        </button>
+                      </div>
+                      <button onClick={handleCreatePost} disabled={posting || (!newPostContent.trim() && !newPostMedia)} className="px-5 py-2 rounded-xl bg-amz-dourado text-white text-sm font-semibold hover:bg-amz-dourado/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        {posting ? 'Publicando...' : 'Publicar'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Posts Feed */}
+              <div className="space-y-4">
+                {posts.length === 0 ? (
+                  <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
+                    <div className="text-4xl mb-3">🏄</div>
+                    <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma publicação ainda</p>
+                    <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">Seja o primeiro a compartilhar uma session!</p>
+                  </div>
+                ) : (
+                  posts.map((post) => {
+                    const author = allProfiles[post.user_id] || { full_name: 'Rider', avatar_url: null }
+                    const isOwn = profile?.id === post.user_id
+                    const timeAgo = getTimeAgo(post.created_at)
+
+                    return (
+                      <div key={post.id} className="bg-white dark:bg-white/5 rounded-2xl border border-amz-areia-dark/20 dark:border-white/5 overflow-hidden">
+                        <div className="p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-amz-oceano/10 flex items-center justify-center shrink-0">
+                              {author.avatar_url ? (
+                                <img src={author.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                              ) : (
+                                <span className="text-xs font-bold text-amz-oceano">{getInitials(author.full_name)}</span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{author.full_name || 'Rider'}</p>
+                              <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">{timeAgo}</p>
+                            </div>
+                            {isOwn && (
+                              <button onClick={() => handleDeletePost(post.id)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </button>
+                            )}
+                          </div>
+                          {post.content && <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap mb-3">{post.content}</p>}
+                          {post.media_url && (
+                            <div className="mb-3 rounded-xl overflow-hidden">
+                              {post.media_url.match(/\.(mp4|webm|ogg)$/i) || post.media_url.includes('video') ? (
+                                <video src={post.media_url} controls className="w-full max-h-80 object-cover" />
+                              ) : (
+                                <img src={post.media_url} alt="" className="w-full max-h-80 object-cover" />
+                              )}
+                            </div>
+                          )}
+                          <div className="flex items-center gap-4 pt-2 border-t border-amz-areia-dark/10 dark:border-white/5">
+                            <button onClick={() => handleLikePost(post.id)} className="flex items-center gap-1.5 text-sm text-amz-terra-light dark:text-amz-areia/40 hover:text-amz-oceano dark:hover:text-amz-oceano transition-colors">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                              {post.likes_count || 0}
+                            </button>
+                            <button onClick={() => setExpandedComments(expandedComments === post.id ? null : post.id)} className="flex items-center gap-1.5 text-sm text-amz-terra-light dark:text-amz-areia/40 hover:text-amz-dourado dark:hover:text-amz-dourado transition-colors">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                              Comentar
+                            </button>
+                          </div>
+                        </div>
+                        {expandedComments === post.id && (
+                          <div className="px-4 pb-4 border-t border-amz-areia-dark/10 dark:border-white/5 pt-3 space-y-3">
+                            <div className="flex gap-2">
+                              <input
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                                placeholder="Escreva um comentário..."
+                                className="flex-1 px-3 py-2 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-sm text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50"
+                              />
+                              <button onClick={() => handleAddComment(post.id)} disabled={!commentText.trim()} className="px-4 py-2 rounded-xl bg-amz-oceano text-white text-sm font-semibold hover:bg-amz-oceano/90 transition-colors disabled:opacity-40">
+                                Enviar
+                              </button>
+                            </div>
+                            <PostComments postId={post.id} />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Sign out */}
           <div className="mt-12 pt-8 border-t border-amz-areia-dark/20 dark:border-white/5">
             <button
@@ -617,4 +856,70 @@ export default function UserProfile() {
 
 function formatBRL(value: number): string {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function getTimeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diff = Math.floor((now - then) / 1000)
+  if (diff < 60) return 'agora'
+  if (diff < 3600) return `${Math.floor(diff / 60)}min`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d`
+  return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+}
+
+function PostComments({ postId }: { postId: string }) {
+  const [comments, setComments] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('post_comments')
+        .select('*')
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true })
+      if (data) {
+        const userIds = [...new Set(data.map((c: any) => c.user_id))]
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, full_name, avatar_url')
+            .in('id', userIds)
+          const profileMap: Record<string, any> = {}
+          profilesData?.forEach((p: any) => { profileMap[p.id] = p })
+          setComments(data.map((c: any) => ({ ...c, author: profileMap[c.user_id] || { full_name: 'Rider' } })))
+        } else {
+          setComments(data.map((c: any) => ({ ...c, author: { full_name: 'Rider' } })))
+        }
+      }
+      setLoading(false)
+    }
+    load()
+  }, [postId])
+
+  if (loading) return <div className="text-xs text-amz-terra-light dark:text-amz-areia/40">Carregando...</div>
+  if (comments.length === 0) return <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 italic">Nenhum comentário ainda.</p>
+
+  return (
+    <div className="space-y-2 max-h-48 overflow-y-auto">
+      {comments.map((c) => (
+        <div key={c.id} className="flex items-start gap-2">
+          <div className="w-7 h-7 rounded-full bg-amz-terra/10 dark:bg-amz-terra/20 flex items-center justify-center shrink-0">
+            {c.author?.avatar_url ? (
+              <img src={c.author.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <span className="text-[9px] font-bold text-amz-terra">{(c.author?.full_name || 'R')[0]}</span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{c.author?.full_name || 'Rider'}</p>
+            <p className="text-xs text-amz-terra-light dark:text-amz-areia/50">{c.content}</p>
+          </div>
+          <span className="text-[10px] text-amz-terra-light dark:text-amz-areia/30 shrink-0">{getTimeAgo(c.created_at)}</span>
+        </div>
+      ))}
+    </div>
+  )
 }
