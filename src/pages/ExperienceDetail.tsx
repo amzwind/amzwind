@@ -305,8 +305,8 @@ export default function ExperienceDetail() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5 sticky top-24 space-y-5">
+          <div className="space-y-4 min-w-0">
+            <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5 sticky top-24 space-y-5 overflow-hidden">
               <div>
                 {expOriginalPrice && expOriginalPrice > exp.price && (
                   <div className="flex items-center gap-2 mb-1">
@@ -329,7 +329,7 @@ export default function ExperienceDetail() {
                   type="date"
                   value={selectedDate || ''}
                   onChange={(e) => setSelectedDate(e.target.value || null)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                  className="w-full max-w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors box-border"
                 />
               </div>
               <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">
