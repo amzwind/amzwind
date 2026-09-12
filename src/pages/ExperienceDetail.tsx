@@ -5,7 +5,6 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useCart } from '../contexts/CartContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import TripCalendar from '../components/TripCalendar'
 import Lightbox from '../components/Lightbox'
 import { getStaticExperience, type StaticExperience } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
@@ -41,10 +40,11 @@ export default function ExperienceDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t, locale } = useLanguage()
-  const { addItem, checkIn, checkOut, setCheckIn, setCheckOut } = useCart()
+  const { addItem } = useCart()
   const [exp, setExp] = useState<(Experience & { image_url?: string | null }) | StaticExperience | null>(null)
   const [related, setRelated] = useState<Experience[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
   // Reviews
   const [reviews, setReviews] = useState<(Review & { user_name?: string })[]>([])
@@ -145,7 +145,7 @@ export default function ExperienceDetail() {
 
   function handleAddToCart() {
     if (!exp) return
-    addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url })
+    addItem({ id: exp.id, type: 'experience', title: exp.title, price: exp.price, image_url: exp.image_url, booking_date: selectedDate })
     navigate('/checkout')
   }
 
@@ -258,7 +258,17 @@ export default function ExperienceDetail() {
                 <p className="text-3xl font-maybug text-amz-dourado">R$ {Number(exp.price).toFixed(2)}</p>
                 <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1">por pessoa</p>
               </div>
-              <TripCalendar checkIn={checkIn} checkOut={checkOut} onCheckInChange={setCheckIn} onCheckOutChange={setCheckOut} />
+              <div>
+                <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5">
+                  Data da Reserva
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate || ''}
+                  onChange={(e) => setSelectedDate(e.target.value || null)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                />
+              </div>
               <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">{t.expDetailBook}</button>
             </div>
           </div>

@@ -250,6 +250,9 @@ export type TranslationKeys = {
   reviewsAdminPending: string
   reviewsAdminAll: string
 
+  // Favorites
+  favorites: string
+
   // Cart / Checkout
   cartTitle: string
   cartEmpty: string
@@ -670,8 +673,10 @@ const pt: TranslationKeys = {
   reviewsAdminPending: 'Pendentes',
   reviewsAdminAll: 'Todas',
 
-  cartTitle: 'Lista de Desejos & Checkout',
-  cartEmpty: 'Sua lista de desejos está vazia',
+  favorites: 'Favoritos',
+
+  cartTitle: 'Carrinho',
+  cartEmpty: 'Seu carrinho está vazio',
   cartAddExperience: 'Adicionar Experiência',
   cartAddProduct: 'Adicionar Produto',
   cartAddClass: 'Adicionar Aula',
@@ -689,7 +694,7 @@ const pt: TranslationKeys = {
   cartSelectDates: 'Selecione as datas da viagem',
   cartSummary: 'Resumo',
   cartAccommodation: 'Hospedagem',
-  cartItemCount: 'itens na lista',
+  cartItemCount: 'itens no carrinho',
   cartMyBookings: 'Minhas Reservas',
   navHome: 'Início',
   checkoutContactInfo: 'Dados de Contato',
@@ -1082,8 +1087,10 @@ const en: TranslationKeys = {
   reviewsAdminPending: 'Pending',
   reviewsAdminAll: 'All',
 
-  cartTitle: 'Wishlist & Checkout',
-  cartEmpty: 'Your wishlist is empty',
+  favorites: 'Favorites',
+
+  cartTitle: 'Cart',
+  cartEmpty: 'Your cart is empty',
   cartAddExperience: 'Add Experience',
   cartAddProduct: 'Add Product',
   cartAddClass: 'Add Class',
@@ -1101,7 +1108,7 @@ const en: TranslationKeys = {
   cartSelectDates: 'Select trip dates',
   cartSummary: 'Summary',
   cartAccommodation: 'Accommodation',
-  cartItemCount: 'items in wishlist',
+  cartItemCount: 'items in cart',
   cartMyBookings: 'My Bookings',
   navHome: 'Home',
   checkoutContactInfo: 'Contact Information',
@@ -1494,8 +1501,10 @@ const es: TranslationKeys = {
   reviewsAdminPending: 'Pendientes',
   reviewsAdminAll: 'Todas',
 
-  cartTitle: 'Lista de Deseos & Checkout',
-  cartEmpty: 'Tu lista de deseos está vacía',
+  favorites: 'Favoritos',
+
+  cartTitle: 'Carrito',
+  cartEmpty: 'Tu carrito está vacío',
   cartAddExperience: 'Agregar Experiencia',
   cartAddProduct: 'Agregar Producto',
   cartAddClass: 'Agregar Clase',
@@ -1513,7 +1522,7 @@ const es: TranslationKeys = {
   cartSelectDates: 'Selecciona las fechas del viaje',
   cartSummary: 'Resumen',
   cartAccommodation: 'Alojamiento',
-  cartItemCount: 'artículos en la lista',
+  cartItemCount: 'artículos en el carrito',
   cartMyBookings: 'Mis Reservas',
   navHome: 'Inicio',
   checkoutContactInfo: 'Información de Contacto',

@@ -1,51 +1,31 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
-import { useFavorites, type FavoriteItem, type FavoriteItemType } from '../contexts/FavoritesContext'
 import { useCart, type CartItemType } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
-import TripCalendar from './TripCalendar'
 import { Toast } from './admin/SharedUI'
 
-const CART_STORAGE_KEY = 'amzwind-cart'
-
-interface StoredCart {
-  items: { id: string; type: string; title: string; price: number; quantity: number; image_url?: string | null }[]
-  checkIn: string | null
-  checkOut: string | null
-}
-
-function loadCart(): StoredCart | null {
-  try {
-    const raw = localStorage.getItem(CART_STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw) as StoredCart
-  } catch {
-    return null
-  }
-}
-
-function getItemLink(item: FavoriteItem): string {
+function getItemLink(item: { id: string; type: string }): string {
   if (item.type === 'experience') return `/experiencia/${item.id}`
   if (item.type === 'product') return `/produto/${item.id}`
-  return '/'
+  return '/aula/iniciante'
 }
 
-function getItemTypeLabel(type: FavoriteItemType, t: any): string {
+function getItemTypeLabel(type: CartItemType, t: any): string {
   if (type === 'experience') return t.expLabel || 'Experiência'
   if (type === 'product') return t.prodCategoryTitle || 'Produto'
   return t.customerTypeClass || 'Aula'
 }
 
+const formatBRL = (v: number) =>
+  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+
 export default function CartCheckout() {
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const { favorites, removeFavorite } = useFavorites()
-  const { addItem, items, checkIn, checkOut, setCheckIn, setCheckOut, clearCart } = useCart()
+  const { items, removeItem, updateQuantity, clearCart, getSubtotal } = useCart()
 
-  const [schedulingItem, setSchedulingItem] = useState<FavoriteItem | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const [loaded, setLoaded] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [sessionUserId, setSessionUserId] = useState<string | null>(null)
   const [sessionEmail, setSessionEmail] = useState<string | null>(null)
@@ -60,47 +40,13 @@ export default function CartCheckout() {
   const [checkoutWhatsApp, setCheckoutWhatsApp] = useState('')
 
   useEffect(() => {
-    async function init() {
-      const { data: { session } } = await supabase.auth.getSession()
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setSessionUserId(session.user.id)
         setSessionEmail(session.user.email || null)
       }
-      const stored = loadCart()
-      if (stored && items.length === 0) {
-        stored.items.forEach((item) => addItem({ ...item, type: item.type as CartItemType }))
-        if (stored.checkIn) setCheckIn(stored.checkIn)
-        if (stored.checkOut) setCheckOut(stored.checkOut)
-      }
-      setLoaded(true)
-    }
-    init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => { loaded && localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items, checkIn, checkOut })) }, [items, checkIn, checkOut, loaded])
-
-  function handleSchedule(item: FavoriteItem) {
-    setSchedulingItem(item)
-  }
-
-  function confirmSchedule() {
-    if (!schedulingItem) return
-    addItem({
-      id: schedulingItem.id,
-      type: schedulingItem.type,
-      title: schedulingItem.title,
-      price: schedulingItem.price,
-      image_url: schedulingItem.image_url,
     })
-    setSchedulingItem(null)
-    setToast({ message: `${schedulingItem.title} adicionado! Escolha as datas abaixo.`, type: 'success' })
-  }
-
-  function handleRemove(id: string, type: FavoriteItemType) {
-    removeFavorite(id, type)
-    setToast({ message: 'Item removido dos favoritos', type: 'success' })
-  }
+  }, [])
 
   async function handleGoogleLogin() {
     setAuthLoading(true)
@@ -146,7 +92,7 @@ export default function CartCheckout() {
 
   function handleProceedToCheckout() {
     if (items.length === 0) {
-      setToast({ message: 'Agende pelo menos um item primeiro', type: 'error' })
+      setToast({ message: 'Adicione um item ao carrinho primeiro', type: 'error' })
       return
     }
     if (!checkoutWhatsApp.trim()) {
@@ -165,10 +111,10 @@ export default function CartCheckout() {
     setShowPaymentModal(false)
 
     const userId = sessionUserId
-    const bookingDate = checkIn || new Date().toISOString().slice(0, 10)
+    const bookingDate = items[0]?.booking_date || new Date().toISOString().slice(0, 10)
 
     const notes = JSON.stringify({
-      items: items.map((i) => ({ id: i.id, type: i.type, title: i.title, price: i.price, quantity: i.quantity })),
+      items: items.map((i) => ({ id: i.id, type: i.type, title: i.title, price: i.price, quantity: i.quantity, booking_date: i.booking_date })),
       contact_whatsapp: checkoutWhatsApp.trim(),
       payment_confirmed: true,
       payment_method: 'simulated',
@@ -181,7 +127,7 @@ export default function CartCheckout() {
         item_type: item.type,
         item_id: item.id,
         status: 'confirmed',
-        booking_date: bookingDate,
+        booking_date: item.booking_date || bookingDate,
         notes,
       }).select('id')
     )
@@ -200,13 +146,9 @@ export default function CartCheckout() {
     } else {
       setSuccessIds(ids)
       clearCart()
-      localStorage.removeItem(CART_STORAGE_KEY)
     }
     setPaymentProcessing(false)
   }
-
-  const formatBRL = (v: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
   if (successIds.length > 0) {
     return (
@@ -287,21 +229,21 @@ export default function CartCheckout() {
               <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
               {t.checkoutLoggedInAs} {sessionEmail}
             </span>
-          ) : favorites.length > 0 ? `${favorites.length} ${t.cartItemCount}` : t.cartEmpty}
+          ) : items.length > 0 ? `${items.length} ${t.cartItemCount}` : t.cartEmpty}
         </p>
       </div>
 
-      {favorites.length === 0 ? (
+      {items.length === 0 ? (
         /* Empty State */
         <div className="text-center py-16">
           <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-gray-300 dark:text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
             </svg>
           </div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t.cartEmpty}</h2>
           <p className="text-sm text-gray-400 dark:text-white/30 mb-6 max-w-sm mx-auto">
-            Explore nossas experiências, produtos e aulas e salve seus favoritos aqui.
+            Explore nossas experiências, produtos e aulas e adicione itens ao carrinho para reservar.
           </p>
           <div className="flex gap-3 justify-center">
             <Link to="/experiencias" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors">
@@ -314,9 +256,9 @@ export default function CartCheckout() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Favorites List */}
+          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-3">
-            {favorites.map((item) => (
+            {items.map((item) => (
               <div
                 key={`${item.type}-${item.id}`}
                 className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 flex gap-4 items-center hover:shadow-md transition-shadow"
@@ -342,135 +284,105 @@ export default function CartCheckout() {
                   <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">
                     {getItemTypeLabel(item.type, t)}
                   </p>
-                  <p className="text-sm font-bold text-amz-dourado mt-1">
-                    {formatBRL(item.price)}
-                  </p>
+                  {item.booking_date && (
+                    <p className="text-xs text-amz-dourado mt-1">
+                      📅 {new Date(item.booking_date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-3 mt-2">
+                    <p className="text-sm font-bold text-amz-dourado">
+                      {formatBRL(item.price)}
+                    </p>
+                    <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/5 rounded-lg px-2 py-1">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.type, item.quantity - 1)}
+                        className="w-6 h-6 flex items-center justify-center text-gray-500 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/70 text-sm font-bold"
+                      >
+                        −
+                      </button>
+                      <span className="text-xs font-semibold text-gray-900 dark:text-white w-5 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.type, item.quantity + 1)}
+                        className="w-6 h-6 flex items-center justify-center text-gray-500 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/70 text-sm font-bold"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-col gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => handleSchedule(item)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors whitespace-nowrap"
-                  >
-                    Agendar
-                  </button>
-                  <button
-                    onClick={() => handleRemove(item.id, item.type)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-gray-200 dark:border-white/10 text-gray-500 dark:text-white/40 hover:border-red-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors whitespace-nowrap"
-                  >
-                    Remover
-                  </button>
-                </div>
+                {/* Remove */}
+                <button
+                  onClick={() => { removeItem(item.id, item.type); setToast({ message: 'Item removido do carrinho', type: 'success' }) }}
+                  className="flex-shrink-0 p-2 rounded-xl text-gray-400 dark:text-white/30 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </div>
             ))}
           </div>
 
-          {/* Sidebar: Scheduled Items & Checkout */}
+          {/* Sidebar: Checkout Summary */}
           <div className="space-y-4">
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 sticky top-24 space-y-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Agendados</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Resumo da Reserva</h3>
 
-              {items.length === 0 ? (
-                <p className="text-xs text-gray-400 dark:text-white/30 text-center py-4">
-                  Nenhum item agendado ainda. Clique "Agendar" em um favorito.
-                </p>
-              ) : (
-                <>
-                  <div className="space-y-3">
-                    {items.map((item) => (
-                      <div key={`${item.type}-${item.id}`} className="flex items-center gap-3">
-                        {item.image_url && <img src={item.image_url} alt="" className="w-10 h-10 rounded-lg object-cover" />}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{item.title}</p>
-                          <p className="text-[10px] text-gray-400 dark:text-white/30">{formatBRL(item.price)}</p>
-                        </div>
-                      </div>
-                    ))}
+              <div className="space-y-2">
+                {items.map((item) => (
+                  <div key={`${item.type}-${item.id}`} className="flex justify-between text-xs">
+                    <span className="text-gray-500 dark:text-white/40 truncate max-w-[180px]">
+                      {item.title} {item.quantity > 1 ? `x${item.quantity}` : ''}
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-white">{formatBRL(item.price * item.quantity)}</span>
                   </div>
+                ))}
+              </div>
 
-                  <div className="pt-3 border-t border-gray-100 dark:border-white/[0.06]">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                      <span className="font-bold text-amz-dourado">
-                        {formatBRL(items.reduce((sum, i) => sum + i.price * i.quantity, 0))}
-                      </span>
-                    </div>
-                  </div>
+              <div className="pt-3 border-t border-gray-100 dark:border-white/[0.06]">
+                <div className="flex justify-between text-sm">
+                  <span className="font-bold text-gray-900 dark:text-white">Total</span>
+                  <span className="font-bold text-amz-dourado">{formatBRL(getSubtotal())}</span>
+                </div>
+              </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-1.5">
-                      WhatsApp para contato <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={checkoutWhatsApp}
-                      onChange={(e) => setCheckoutWhatsApp(e.target.value)}
-                      placeholder="(00) 00000-0000"
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
-                    />
-                  </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-1.5">
+                  WhatsApp para contato <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={checkoutWhatsApp}
+                  onChange={(e) => setCheckoutWhatsApp(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                  className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                />
+              </div>
 
-                  <button
-                    onClick={handleProceedToCheckout}
-                    disabled={paymentProcessing}
-                    className="w-full py-3 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50"
-                  >
-                    {paymentProcessing ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        {t.checkoutProcessing}
-                      </span>
-                    ) : !sessionUserId ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                        {t.checkoutLoginTitle}
-                      </span>
-                    ) : (
-                      t.cartCheckout
-                    )}
-                  </button>
-                </>
-              )}
+              <button
+                onClick={handleProceedToCheckout}
+                disabled={paymentProcessing}
+                className="w-full py-3 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50"
+              >
+                {paymentProcessing ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    {t.checkoutProcessing}
+                  </span>
+                ) : !sessionUserId ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                    {t.checkoutLoginTitle}
+                  </span>
+                ) : (
+                  t.cartCheckout
+                )}
+              </button>
 
               <button onClick={() => navigate(-1)} className="w-full py-2 text-xs font-semibold text-gray-400 hover:text-gray-600 dark:hover:text-white/60 transition-colors">
                 ← {t.adminBack}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Scheduling Modal */}
-      {schedulingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSchedulingItem(null)}>
-          <div className="bg-white dark:bg-[#1a0f08] rounded-2xl shadow-2xl border border-gray-100 dark:border-white/[0.06] w-full max-w-md p-6 space-y-5" onClick={(e) => e.stopPropagation()}>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl bg-amz-dourado/10 flex items-center justify-center mx-auto mb-4">
-                {schedulingItem.image_url ? (
-                  <img src={schedulingItem.image_url} alt="" className="w-full h-full object-cover rounded-2xl" />
-                ) : (
-                  <svg className="w-8 h-8 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                )}
-              </div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Agendar Item</h2>
-              <p className="text-sm text-gray-500 dark:text-white/40 mt-1">{schedulingItem.title}</p>
-              <p className="text-sm font-bold text-amz-dourado mt-1">{formatBRL(schedulingItem.price)}</p>
-            </div>
-
-            <div className="bg-gray-50 dark:bg-white/[0.03] rounded-xl p-4">
-              <TripCalendar checkIn={checkIn} checkOut={checkOut} onCheckInChange={setCheckIn} onCheckOutChange={setCheckOut} />
-            </div>
-
-            <div className="flex gap-3">
-              <button onClick={() => setSchedulingItem(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-semibold text-gray-600 dark:text-white/40 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                Cancelar
-              </button>
-              <button onClick={confirmSchedule} className="flex-1 py-2.5 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-colors">
-                Confirmar Agendamento
               </button>
             </div>
           </div>
@@ -489,7 +401,7 @@ export default function CartCheckout() {
               </div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Confirmar Pagamento</h2>
               <p className="text-sm text-gray-500 dark:text-white/40 mt-2">
-                Valor total: <span className="font-bold text-amz-dourado">{formatBRL(items.reduce((sum, i) => sum + i.price * i.quantity, 0))}</span>
+                Valor total: <span className="font-bold text-amz-dourado">{formatBRL(getSubtotal())}</span>
               </p>
               <p className="text-xs text-gray-400 dark:text-white/30 mt-1">
                 Pagamento simulado para fins de demonstração
@@ -504,7 +416,7 @@ export default function CartCheckout() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-white/40">Total:</span>
-                  <span className="font-bold text-amz-dourado">{formatBRL(items.reduce((sum, i) => sum + i.price * i.quantity, 0))}</span>
+                  <span className="font-bold text-amz-dourado">{formatBRL(getSubtotal())}</span>
                 </div>
               </div>
 

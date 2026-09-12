@@ -68,6 +68,7 @@ export default function KiteCoursePage() {
       title: `${t.customerTypeClass}: ${t.ksBeginner} — Módulo Completo (10 aulas)`,
       price: COURSE_PRICE,
       image_url: schoolImages[0]?.src || null,
+      booking_date: checkIn,
     })
     navigate('/checkout')
   }

@@ -20,6 +20,7 @@ import BottomNav from './components/BottomNav'
 import GaleriaPage from './pages/GaleriaPage'
 import ExperienciasPage from './pages/ExperienciasPage'
 import KiteCoursePage from './pages/KiteCoursePage'
+import WishlistPage from './pages/WishlistPage'
 import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
               <Route path="/perfil" element={<UserProfile />} />
               <Route path="/experiencia/:id" element={<ExperienceDetail />} />
               <Route path="/aula/iniciante" element={<KiteCoursePage />} />
+              <Route path="/favoritos" element={<WishlistPage />} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
