@@ -6,6 +6,7 @@ import { CartProvider } from './contexts/CartContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import SplashScreen from './components/SplashScreen'
 import InstallAppBanner from './components/InstallAppBanner'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import { AdminDashboard } from './pages/AdminDashboard'
@@ -65,7 +66,7 @@ export default function App() {
               <Route path="/galeria" element={<GaleriaPage />} />
               <Route path="/experiencias" element={<ExperienciasPage />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />
               <Route path="/perfil" element={<UserProfile />} />
               <Route path="/experiencia/:id" element={<ExperienceDetail />} />
