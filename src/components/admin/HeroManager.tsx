@@ -70,7 +70,7 @@ function mergeWithOfficial(dbSlides: HeroSlide[]): HeroSlide[] {
 
 export function HeroManager() {
   const [slides, setSlides] = useState<HeroSlide[]>(OFFICIAL_HERO_SLIDES)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null)
   const [formData, setFormData] = useState<SlideFormData>(INITIAL_FORM)

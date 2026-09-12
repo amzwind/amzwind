@@ -35,6 +35,10 @@ export default function KiteSchool() {
   ]
 
   function handleSchedule(aula: typeof aulas[number]) {
+    if (aula.titulo === t.ksBeginner) {
+      navigate('/aula/iniciante')
+      return
+    }
     addItem({
       id: `class-${aula.titulo}`,
       type: 'class',

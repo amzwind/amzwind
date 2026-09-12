@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase, type Tables } from '../../services/supabase'
 import { useLanguage } from '../../contexts/LanguageContext'
-import { StatusBadge, EmptyState, Toast, ConfirmModal } from './SharedUI'
+import { StatusBadge, EmptyState, Toast, ConfirmModal, ModalShell, FormField, Input, PrimaryButton, GhostButton } from './SharedUI'
 
 type Booking = Tables<'bookings'>
 type Filter = 'all' | 'pending' | 'confirmed' | 'cancelled'
@@ -18,6 +18,12 @@ export function BookingsManager() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [confirmAction, setConfirmAction] = useState<{ id: string; status: 'confirmed' | 'cancelled' } | null>(null)
 
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [editForm, setEditForm] = useState({ status: '', booking_date: '', notes: '' })
+  const [saving, setSaving] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<Booking | null>(null)
+
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
@@ -32,6 +38,53 @@ export function BookingsManager() {
     setConfirmAction(null)
   }
 
+  function openDetail(booking: Booking) {
+    setSelectedBooking(booking)
+    setEditForm({
+      status: booking.status,
+      booking_date: booking.booking_date,
+      notes: booking.notes || '',
+    })
+    setEditModalOpen(true)
+  }
+
+  async function handleSaveEdit() {
+    if (!selectedBooking) return
+    setSaving(true)
+    const { error } = await supabase
+      .from('bookings')
+      .update({
+        status: editForm.status as Booking['status'],
+        booking_date: editForm.booking_date,
+        notes: editForm.notes || null,
+      })
+      .eq('id', selectedBooking.id)
+
+    if (error) {
+      setToast({ message: error.message, type: 'error' })
+    } else {
+      setToast({ message: 'Reserva atualizada com sucesso!', type: 'success' })
+      setEditModalOpen(false)
+      setSelectedBooking(null)
+      await loadData()
+    }
+    setSaving(false)
+  }
+
+  async function handleDeleteBooking() {
+    if (!deleteTarget) return
+    const { error } = await supabase.from('bookings').delete().eq('id', deleteTarget.id)
+    if (error) {
+      setToast({ message: error.message, type: 'error' })
+    } else {
+      setToast({ message: 'Reserva excluída.', type: 'success' })
+      setEditModalOpen(false)
+      setSelectedBooking(null)
+      await loadData()
+    }
+    setDeleteTarget(null)
+  }
+
   const filtered = bookings.filter((b) => filter === 'all' || b.status === filter)
 
   const filters: { key: Filter; label: string; count: number }[] = [
@@ -43,6 +96,18 @@ export function BookingsManager() {
 
   const typeIcon = (type: string) => type === 'experience' ? '🌊' : type === 'class' ? '🎓' : '📦'
   const typeName = (type: string) => type === 'experience' ? 'Experiência' : type === 'class' ? 'Aula' : 'Produto'
+
+  const extractClientInfo = (booking: Booking) => {
+    const notes = parseNotes(booking.notes)
+    return {
+      name: notes?.contact?.name || notes?.contact_name || null,
+      email: notes?.contact?.email || notes?.contact_email || null,
+      whatsapp: notes?.contact_whatsapp || notes?.whatsapp || null,
+      phone: notes?.contact_phone || notes?.contact_phone || null,
+      items: notes?.items || [],
+      paymentConfirmed: notes?.payment_confirmed || false,
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -93,17 +158,16 @@ export function BookingsManager() {
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-white/[0.03]">
                   {filtered.map((b) => {
-                    const notes = parseNotes(b.notes)
-                    const clientName = notes?.contact?.name || notes?.contact_name || null
+                    const info = extractClientInfo(b)
                     return (
-                      <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
+                      <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer" onClick={() => openDetail(b)}>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amz-dourado/10 text-amz-dourado">
                             {typeIcon(b.item_type)} {typeName(b.item_type)}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-gray-700 dark:text-white/60 text-xs">
-                          {clientName || (b.user_id ? `${b.user_id.slice(0, 8)}...` : 'Guest')}
+                          {info.name || (b.user_id ? `${b.user_id.slice(0, 8)}...` : 'Guest')}
                         </td>
                         <td className="px-4 py-3 text-gray-500 dark:text-white/40 text-xs">
                           {new Date(b.booking_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -111,7 +175,7 @@ export function BookingsManager() {
                         <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
                         <td className="px-4 py-3 text-right">
                           {b.status === 'pending' && (
-                            <div className="flex gap-1 justify-end">
+                            <div className="flex gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                               <button onClick={() => setConfirmAction({ id: b.id, status: 'confirmed' })} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors">{t.adminBookConfirm}</button>
                               <button onClick={() => setConfirmAction({ id: b.id, status: 'cancelled' })} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">{t.adminBookCancel}</button>
                             </div>
@@ -128,11 +192,9 @@ export function BookingsManager() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {filtered.map((b) => {
-              const notes = parseNotes(b.notes)
-              const clientName = notes?.contact?.name || notes?.contact_name || null
-              const paymentConfirmed = notes?.payment_confirmed || false
+              const info = extractClientInfo(b)
               return (
-                <div key={b.id} className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-3">
+                <div key={b.id} onClick={() => openDetail(b)} className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-3 cursor-pointer active:scale-[0.98] transition-transform">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{typeIcon(b.item_type)}</span>
@@ -143,12 +205,15 @@ export function BookingsManager() {
                     </div>
                     <StatusBadge status={b.status} />
                   </div>
-                  {clientName && (
+                  {info.name && (
                     <p className="text-xs text-gray-500 dark:text-white/40">
-                      <span className="font-medium text-gray-700 dark:text-white/60">{clientName}</span>
+                      <span className="font-medium text-gray-700 dark:text-white/60">{info.name}</span>
                     </p>
                   )}
-                  {paymentConfirmed && (
+                  {info.whatsapp && (
+                    <p className="text-xs text-gray-400 dark:text-white/30">📱 {info.whatsapp}</p>
+                  )}
+                  {info.paymentConfirmed && (
                     <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -157,7 +222,7 @@ export function BookingsManager() {
                     </div>
                   )}
                   {b.status === 'pending' && (
-                    <div className="flex gap-2 pt-1">
+                    <div className="flex gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => setConfirmAction({ id: b.id, status: 'confirmed' })} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 active:scale-[0.97] transition-all">
                         {t.adminBookConfirm}
                       </button>
@@ -171,6 +236,118 @@ export function BookingsManager() {
             })}
           </div>
         </>
+      )}
+
+      {/* Detail/Edit Modal */}
+      {editModalOpen && selectedBooking && (
+        <ModalShell onClose={() => { setEditModalOpen(false); setSelectedBooking(null) }} title="Detalhes da Reserva">
+          <div className="space-y-4">
+            {/* Client Info */}
+            <div className="bg-gray-50 dark:bg-white/[0.03] rounded-xl p-4 space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">Informações do Cliente</h4>
+              {(() => {
+                const info = extractClientInfo(selectedBooking)
+                return (
+                  <div className="space-y-1.5 text-sm">
+                    {info.name && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Nome:</span> {info.name}</p>}
+                    {info.email && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Email:</span> {info.email}</p>}
+                    {info.whatsapp && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">WhatsApp:</span> {info.whatsapp}</p>}
+                    {info.phone && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Telefone:</span> {info.phone}</p>}
+                    {!info.name && !info.email && !info.whatsapp && !info.phone && (
+                      <p className="text-gray-400 dark:text-white/30 text-xs italic">Nenhuma informação de contato registrada</p>
+                    )}
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Booking Details */}
+            <div className="bg-gray-50 dark:bg-white/[0.03] rounded-xl p-4 space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">Detalhes da Reserva</h4>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-gray-400 dark:text-white/30 text-xs">Tipo</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{typeIcon(selectedBooking.item_type)} {typeName(selectedBooking.item_type)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 dark:text-white/30 text-xs">ID do Item</p>
+                  <p className="text-gray-900 dark:text-white font-mono text-xs">{selectedBooking.item_id?.slice(0, 12) || '—'}</p>
+                </div>
+              </div>
+              {(() => {
+                const info = extractClientInfo(selectedBooking)
+                if (info.items.length === 0) return null
+                return (
+                  <div className="mt-2">
+                    <p className="text-gray-400 dark:text-white/30 text-xs mb-1">Itens Reservados</p>
+                    {info.items.map((item: any, i: number) => (
+                      <div key={i} className="flex justify-between text-xs py-1">
+                        <span className="text-gray-700 dark:text-white/60">{item.title}</span>
+                        <span className="text-amz-dourado font-semibold">R$ {Number(item.price).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Editable Fields */}
+            <FormField label="Status">
+              <select
+                value={editForm.status}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, status: e.target.value }))}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+              >
+                <option value="pending">Pendente</option>
+                <option value="confirmed">Confirmada</option>
+                <option value="cancelled">Cancelada</option>
+              </select>
+            </FormField>
+
+            <FormField label="Data da Reserva">
+              <Input
+                type="date"
+                value={editForm.booking_date}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, booking_date: e.target.value }))}
+              />
+            </FormField>
+
+            <FormField label="Notas / Observações">
+              <textarea
+                rows={3}
+                value={editForm.notes}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, notes: e.target.value }))}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors resize-none"
+              />
+            </FormField>
+
+            <div className="flex gap-3 pt-2">
+              <GhostButton onClick={() => { setEditModalOpen(false); setSelectedBooking(null) }} className="flex-1">
+                Cancelar
+              </GhostButton>
+              <button
+                onClick={() => setDeleteTarget(selectedBooking)}
+                className="px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              >
+                Excluir
+              </button>
+              <PrimaryButton onClick={handleSaveEdit} disabled={saving} className="flex-1">
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
+              </PrimaryButton>
+            </div>
+          </div>
+        </ModalShell>
+      )}
+
+      {/* Delete Confirmation */}
+      {deleteTarget && (
+        <ConfirmModal
+          title="Excluir Reserva"
+          message={`Tem certeza que deseja excluir esta reserva? Esta ação não pode ser desfeita.`}
+          onConfirm={handleDeleteBooking}
+          onCancel={() => setDeleteTarget(null)}
+          danger
+        />
       )}
     </div>
   )

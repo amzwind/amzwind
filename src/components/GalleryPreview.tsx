@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useState, useCallback } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allMedia } from '../data/media'
+import Lightbox from './Lightbox'
 
 const PREVIEW_COUNT = 8
 
@@ -8,11 +9,21 @@ const curatedIndices = [0, 5, 12, 22, 35, 42, 50, 58]
 
 export default function GalleryPreview() {
   const { t } = useLanguage()
+  const [lightboxIndex, setLightboxIndex] = useState(-1)
 
   const previewMedia = curatedIndices
     .map((i) => allMedia[i])
     .filter(Boolean)
     .slice(0, PREVIEW_COUNT)
+
+  const handleNav = useCallback((dir: -1 | 1) => {
+    setLightboxIndex((prev) => {
+      const next = prev + dir
+      if (next < 0) return previewMedia.length - 1
+      if (next >= previewMedia.length) return 0
+      return next
+    })
+  }, [previewMedia.length])
 
   return (
     <section id="galeria" className="py-16 md:py-24 px-4 bg-white dark:bg-[#2A1508] transition-colors duration-500">
@@ -31,6 +42,7 @@ export default function GalleryPreview() {
             <div
               key={`${media.src}-preview-${i}`}
               className="group relative overflow-hidden rounded-2xl cursor-pointer"
+              onClick={() => setLightboxIndex(i)}
             >
               <div className={`${i % 5 === 0 ? 'row-span-2' : ''} overflow-hidden`}>
                 <img
@@ -51,17 +63,26 @@ export default function GalleryPreview() {
 
         {/* CTA Button */}
         <div className="text-center fade-up">
-          <Link
-            to="/galeria"
+          <a
+            href="/galeria"
             className="inline-flex items-center gap-2 btn-primary py-3.5 px-8 text-sm font-bold uppercase tracking-wider rounded-full shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             {t.galleryViewFull}
-          </Link>
+          </a>
         </div>
       </div>
+
+      {lightboxIndex >= 0 && (
+        <Lightbox
+          images={previewMedia}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(-1)}
+          onNav={handleNav}
+        />
+      )}
     </section>
   )
 }

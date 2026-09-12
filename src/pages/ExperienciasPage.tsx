@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase, type Tables } from '../services/supabase'
 import { useEffect, useState, useMemo } from 'react'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 import FavoriteButton from '../components/FavoriteButton'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 type Experience = Tables<'experiences'>
 type Category = Tables<'categories'>
@@ -19,6 +21,7 @@ function getExpFallback(id: string): string {
 
 export default function ExperienciasPage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('all')
@@ -57,19 +60,34 @@ export default function ExperienciasPage() {
 
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark">
+      <Header />
+
       {/* Hero Header */}
-      <div className="relative bg-gradient-to-br from-amz-terra to-amz-terra-dark text-white pt-20 pb-12 px-4">
+      <div className="relative bg-gradient-to-br from-amz-terra to-amz-terra-dark text-white pt-28 pb-12 px-4">
         <div className="absolute inset-0 bg-patterns opacity-10 pointer-events-none" />
-        <div className="relative max-w-4xl mx-auto text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-amz-dourado mb-3">
-            {t.expLabel}
-          </p>
-          <h1 className="text-3xl md:text-4xl font-maybug mb-4">
-            {t.expTitle}
-          </h1>
-          <p className="text-sm text-white/60 max-w-md mx-auto">
-            {t.expSubtitle}
-          </p>
+        <div className="relative max-w-4xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium mb-6 transition-colors group"
+          >
+            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            {t.navHome}
+          </button>
+
+          <div className="text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest text-amz-dourado mb-3">
+              {t.expLabel}
+            </p>
+            <h1 className="text-3xl md:text-4xl font-maybug mb-4">
+              {t.expTitle}
+            </h1>
+            <p className="text-sm text-white/60 max-w-md mx-auto">
+              {t.expSubtitle}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -192,6 +210,8 @@ export default function ExperienciasPage() {
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   )
 }

@@ -57,6 +57,7 @@ export default function CartCheckout() {
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [paymentProcessing, setPaymentProcessing] = useState(false)
   const [successIds, setSuccessIds] = useState<string[]>([])
+  const [checkoutWhatsApp, setCheckoutWhatsApp] = useState('')
 
   useEffect(() => {
     async function init() {
@@ -148,6 +149,10 @@ export default function CartCheckout() {
       setToast({ message: 'Agende pelo menos um item primeiro', type: 'error' })
       return
     }
+    if (!checkoutWhatsApp.trim()) {
+      setToast({ message: 'Informe seu WhatsApp para contato.', type: 'error' })
+      return
+    }
     if (!sessionUserId) {
       setShowAuthModal(true)
       return
@@ -164,6 +169,7 @@ export default function CartCheckout() {
 
     const notes = JSON.stringify({
       items: items.map((i) => ({ id: i.id, type: i.type, title: i.title, price: i.price, quantity: i.quantity })),
+      contact_whatsapp: checkoutWhatsApp.trim(),
       payment_confirmed: true,
       payment_method: 'simulated',
       payment_date: new Date().toISOString(),
@@ -390,6 +396,20 @@ export default function CartCheckout() {
                         {formatBRL(items.reduce((sum, i) => sum + i.price * i.quantity, 0))}
                       </span>
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-1.5">
+                      WhatsApp para contato <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={checkoutWhatsApp}
+                      onChange={(e) => setCheckoutWhatsApp(e.target.value)}
+                      placeholder="(00) 00000-0000"
+                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                    />
                   </div>
 
                   <button

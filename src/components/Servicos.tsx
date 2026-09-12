@@ -31,6 +31,7 @@ export default function Servicos() {
   const [formName, setFormName] = useState('')
   const [formEmail, setFormEmail] = useState('')
   const [formPhone, setFormPhone] = useState('')
+  const [formWhatsApp, setFormWhatsApp] = useState('')
   const [formCheckIn, setFormCheckIn] = useState('')
   const [formCheckOut, setFormCheckOut] = useState('')
   const [formMsg, setFormMsg] = useState('')
@@ -103,6 +104,7 @@ export default function Servicos() {
     setFormName('')
     setFormEmail('')
     setFormPhone('')
+    setFormWhatsApp('')
     setFormCheckIn('')
     setFormCheckOut('')
     setFormMsg('')
@@ -118,6 +120,10 @@ export default function Servicos() {
     e.preventDefault()
     if (!formName.trim() || !formEmail.trim()) {
       setError(t.svcRequired)
+      return
+    }
+    if (!formWhatsApp.trim()) {
+      setError('Informe o número de WhatsApp para contato.')
       return
     }
 
@@ -145,6 +151,7 @@ export default function Servicos() {
       contact_name: formName.trim(),
       contact_email: formEmail.trim(),
       contact_phone: formPhone.trim(),
+      contact_whatsapp: formWhatsApp.trim(),
       message: formMsg.trim(),
     }
 
@@ -324,6 +331,21 @@ export default function Servicos() {
                       type="tel"
                       value={formPhone}
                       onChange={(e) => setFormPhone(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
+                    />
+                  </div>
+
+                  {/* WhatsApp */}
+                  <div>
+                    <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
+                      WhatsApp <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={formWhatsApp}
+                      onChange={(e) => setFormWhatsApp(e.target.value)}
+                      placeholder="(00) 00000-0000"
                       className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
                     />
                   </div>
