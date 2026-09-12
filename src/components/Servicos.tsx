@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useProfile } from '../hooks/useProfile'
 import { sailingImages, lifestyleImages } from '../data/media'
 
 const PLACEHOLDER_ID = '00000000-0000-0000-0000-000000000000'
@@ -35,6 +36,14 @@ export default function Servicos() {
   const [formCheckIn, setFormCheckIn] = useState('')
   const [formCheckOut, setFormCheckOut] = useState('')
   const [formMsg, setFormMsg] = useState('')
+
+  const { profile, saveWhatsApp } = useProfile()
+
+  useEffect(() => {
+    if (profile?.whatsapp) {
+      setFormWhatsApp(profile.whatsapp)
+    }
+  }, [profile])
 
   const services: ServiceItem[] = [
     {
@@ -122,7 +131,7 @@ export default function Servicos() {
       setError(t.svcRequired)
       return
     }
-    if (!formWhatsApp.trim()) {
+    if (!formWhatsApp.trim() && !profile?.whatsapp) {
       setError('Informe o número de WhatsApp para contato.')
       return
     }
@@ -141,6 +150,12 @@ export default function Servicos() {
     setSending(true)
     setError('')
 
+    const whatsappValue = formWhatsApp.trim() || profile?.whatsapp || ''
+
+    if (whatsappValue && profile) {
+      await saveWhatsApp(whatsappValue)
+    }
+
     const serviceTitle =
       activeService === 'transfer' ? t.svc3Title :
       activeService === 'hospedagem' ? t.svc4Title : ''
@@ -151,7 +166,7 @@ export default function Servicos() {
       contact_name: formName.trim(),
       contact_email: formEmail.trim(),
       contact_phone: formPhone.trim(),
-      contact_whatsapp: formWhatsApp.trim(),
+      contact_whatsapp: whatsappValue,
       message: formMsg.trim(),
     }
 
@@ -338,14 +353,15 @@ export default function Servicos() {
                   {/* WhatsApp */}
                   <div>
                     <label className="block text-sm font-medium text-amz-terra dark:text-amz-areia mb-1.5">
-                      WhatsApp <span className="text-red-500">*</span>
+                      WhatsApp {!profile?.whatsapp && <span className="text-red-500">*</span>}
+                      {profile?.whatsapp && <span className="text-emerald-500 text-xs ml-1">(preenchido)</span>}
                     </label>
                     <input
                       type="tel"
-                      required
+                      required={!profile?.whatsapp}
                       value={formWhatsApp}
                       onChange={(e) => setFormWhatsApp(e.target.value)}
-                      placeholder="(00) 00000-0000"
+                      placeholder={profile?.whatsapp || "(00) 00000-0000"}
                       className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
                     />
                   </div>

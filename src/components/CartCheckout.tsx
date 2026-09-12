@@ -4,6 +4,7 @@ import { supabase } from '../services/supabase'
 import { useCart, type CartItemType } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
+import { useProfile } from '../hooks/useProfile'
 import { Toast } from './admin/SharedUI'
 
 type PaymentMethod = 'pix' | 'card' | 'paypal'
@@ -60,6 +61,8 @@ export default function CartCheckout() {
   const [pixCopied, setPixCopied] = useState(false)
   const [pixKey] = useState('amzwind@amazonwind.com.br')
 
+  const { profile, saveWhatsApp } = useProfile()
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -68,6 +71,12 @@ export default function CartCheckout() {
       }
     })
   }, [])
+
+  useEffect(() => {
+    if (profile?.whatsapp) {
+      setCheckoutWhatsApp(profile.whatsapp)
+    }
+  }, [profile])
 
   async function handleGoogleLogin() {
     setAuthLoading(true)
@@ -116,7 +125,7 @@ export default function CartCheckout() {
       setToast({ message: 'Adicione um item ao carrinho primeiro', type: 'error' })
       return
     }
-    if (!checkoutWhatsApp.trim()) {
+    if (!checkoutWhatsApp.trim() && !profile?.whatsapp) {
       setToast({ message: 'Informe seu WhatsApp para contato.', type: 'error' })
       return
     }
@@ -133,9 +142,15 @@ export default function CartCheckout() {
     const userId = sessionUserId
     const bookingDate = items[0]?.booking_date || new Date().toISOString().slice(0, 10)
 
+    const whatsappValue = checkoutWhatsApp.trim() || profile?.whatsapp || ''
+
+    if (whatsappValue && profile) {
+      await saveWhatsApp(whatsappValue)
+    }
+
     const notes = JSON.stringify({
       items: items.map((i) => ({ id: i.id, type: i.type, title: i.title, price: i.price, quantity: i.quantity, booking_date: i.booking_date })),
-      contact_whatsapp: checkoutWhatsApp.trim(),
+      contact_whatsapp: whatsappValue,
       payment_confirmed: true,
       payment_method: paymentMethod,
       payment_date: new Date().toISOString(),
@@ -461,7 +476,8 @@ export default function CartCheckout() {
                 {/* WhatsApp */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-1.5">
-                    WhatsApp para contato <span className="text-red-500">*</span>
+                    WhatsApp para contato {!profile?.whatsapp && <span className="text-red-500">*</span>}
+                    {profile?.whatsapp && <span className="text-emerald-500 text-[10px] ml-1">(preenchido)</span>}
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -469,10 +485,10 @@ export default function CartCheckout() {
                     </div>
                     <input
                       type="tel"
-                      required
+                      required={!profile?.whatsapp}
                       value={checkoutWhatsApp}
                       onChange={(e) => setCheckoutWhatsApp(e.target.value)}
-                      placeholder="(00) 00000-0000"
+                      placeholder={profile?.whatsapp || "(00) 00000-0000"}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
                     />
                   </div>
