@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase, type Tables } from '../services/supabase'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 import FavoriteButton from '../components/FavoriteButton'
 
 type Experience = Tables<'experiences'>
+type Category = Tables<'categories'>
 
 const FALLBACK_IMAGES = [
   portraitImages[0]?.src, portraitImages[5]?.src, portraitImages[10]?.src, portraitImages[15]?.src, portraitImages[20]?.src,
@@ -19,6 +20,8 @@ function getExpFallback(id: string): string {
 export default function ExperienciasPage() {
   const { t } = useLanguage()
   const [experiences, setExperiences] = useState<Experience[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [activeCategory, setActiveCategory] = useState<string>('all')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -26,10 +29,19 @@ export default function ExperienciasPage() {
   }, [])
 
   async function loadExperiences() {
-    const { data } = await supabase.from('experiences').select('*').order('title')
-    if (data) setExperiences(data)
+    const [expRes, catRes] = await Promise.all([
+      supabase.from('experiences').select('*').order('title'),
+      supabase.from('categories').select('*').eq('type', 'experience').order('name'),
+    ])
+    if (expRes.data) setExperiences(expRes.data)
+    if (catRes.data) setCategories(catRes.data)
     setLoading(false)
   }
+
+  const filtered = useMemo(() => {
+    if (activeCategory === 'all') return experiences
+    return experiences.filter((exp) => exp.category_id === activeCategory)
+  }, [experiences, activeCategory])
 
   const getExperienceImage = (exp: Experience) => {
     if (exp.image_url) return exp.image_url
@@ -63,6 +75,35 @@ export default function ExperienciasPage() {
 
       {/* Experiences Grid */}
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Category Filters */}
+        {!loading && categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8 justify-center">
+            <button
+              onClick={() => setActiveCategory('all')}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                activeCategory === 'all'
+                  ? 'bg-amz-dourado text-white shadow-md'
+                  : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
+              }`}
+            >
+              Todas
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  activeCategory === cat.id
+                    ? 'bg-amz-dourado text-white shadow-md'
+                    : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        )}
+
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((i) => (
@@ -76,7 +117,7 @@ export default function ExperienciasPage() {
               </div>
             ))}
           </div>
-        ) : experiences.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4 text-gray-300 dark:text-white/20">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,11 +125,15 @@ export default function ExperienciasPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <p className="text-gray-500 dark:text-white/40">Nenhuma experiência disponível no momento.</p>
+            <p className="text-gray-500 dark:text-white/40">
+              {activeCategory === 'all'
+                ? 'Nenhuma experiência disponível no momento.'
+                : 'Nenhuma experiência encontrada nesta categoria.'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {experiences.map((exp) => (
+            {filtered.map((exp) => (
               <Link
                 key={exp.id}
                 to={`/experiencia/${exp.id}`}

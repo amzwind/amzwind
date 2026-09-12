@@ -275,6 +275,18 @@ export default function ExperienciasCarousel() {
               />
             ))}
           </div>
+
+          <div className="flex justify-center mt-6">
+            <Link
+              to="/experiencias"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amz-terra dark:bg-amz-dourado text-white font-semibold text-sm hover:bg-amz-terra-dark dark:hover:bg-amber-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97]"
+            >
+              {t.expTitle}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
     </section>
