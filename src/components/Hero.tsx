@@ -101,6 +101,7 @@ export default function Hero() {
   const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [prevSlide, setPrevSlide] = useState<number | null>(null)
+  const [dbLoaded, setDbLoaded] = useState(false)
 
   const heroRef = useRef<HTMLDivElement>(null)
   const currentLayerRef = useRef<HTMLDivElement>(null)
@@ -108,6 +109,8 @@ export default function Hero() {
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    const controller = new AbortController()
+
     async function fetchHeroSlides() {
       try {
         const { data, error } = await supabase
@@ -115,15 +118,27 @@ export default function Hero() {
           .select('*')
           .order('display_order', { ascending: true })
 
+        if (controller.signal.aborted) return
+
         if (error) throw error
         if (data && data.length > 0) {
           setSlides(data as unknown as HeroSlide[])
+          setCurrentSlide(0)
+          setPrevSlide(null)
         }
       } catch (err) {
-        console.error('Usando slides padrão da Hero:', err)
+        if (!controller.signal.aborted) {
+          console.error('Usando slides padrao da Hero:', err)
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setDbLoaded(true)
+        }
       }
     }
     fetchHeroSlides()
+
+    return () => controller.abort()
   }, [])
 
   useEffect(() => {
@@ -171,7 +186,7 @@ export default function Hero() {
     }, heroRef)
 
     return () => ctx.revert()
-  }, [currentSlide, slides])
+  }, [currentSlide, dbLoaded])
 
   const slide = slides[currentSlide] || slides[0]
 
