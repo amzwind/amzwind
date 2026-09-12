@@ -17,6 +17,7 @@ import UserProfile from './pages/UserProfile'
 import CartCheckout from './components/CartCheckout'
 import BottomNav from './components/BottomNav'
 import GaleriaPage from './pages/GaleriaPage'
+import ExperienciasPage from './pages/ExperienciasPage'
 import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
@@ -58,6 +59,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/galeria" element={<GaleriaPage />} />
+              <Route path="/experiencias" element={<ExperienciasPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/minha-conta" element={<CustomerDashboard />} />

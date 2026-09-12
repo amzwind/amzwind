@@ -91,7 +91,7 @@ export function ReviewsManager() {
         <div className="space-y-3">
           {filtered.map((review) => (
             <div key={review.id}
-              className={`bg-white dark:bg-white/[0.03] rounded-2xl border p-4 sm:p-5 transition-all ${
+              className={`bg-white dark:bg-white/[0.03] rounded-2xl border p-4 transition-all ${
                 review.status === 'pending' ? 'border-amz-dourado/30' : review.status === 'approved' ? 'border-green-500/20' : 'border-red-500/20 opacity-60'
               }`}>
               {/* Top: stars + status badge */}

@@ -28,6 +28,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       root.classList.remove('dark')
     }
+
+    // Update PWA theme-color meta tag dynamically
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', theme === 'dark' ? '#1a0f08' : '#f5f2eb')
+    }
   }, [theme])
 
   return (

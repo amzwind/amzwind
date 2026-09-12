@@ -130,6 +130,7 @@ export function BookingsManager() {
             {filtered.map((b) => {
               const notes = parseNotes(b.notes)
               const clientName = notes?.contact?.name || notes?.contact_name || null
+              const paymentConfirmed = notes?.payment_confirmed || false
               return (
                 <div key={b.id} className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -147,10 +148,22 @@ export function BookingsManager() {
                       <span className="font-medium text-gray-700 dark:text-white/60">{clientName}</span>
                     </p>
                   )}
+                  {paymentConfirmed && (
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Pagamento confirmado
+                    </div>
+                  )}
                   {b.status === 'pending' && (
                     <div className="flex gap-2 pt-1">
-                      <button onClick={() => setConfirmAction({ id: b.id, status: 'confirmed' })} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">{t.adminBookConfirm}</button>
-                      <button onClick={() => setConfirmAction({ id: b.id, status: 'cancelled' })} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400">{t.adminBookCancel}</button>
+                      <button onClick={() => setConfirmAction({ id: b.id, status: 'confirmed' })} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 active:scale-[0.97] transition-all">
+                        {t.adminBookConfirm}
+                      </button>
+                      <button onClick={() => setConfirmAction({ id: b.id, status: 'cancelled' })} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 active:scale-[0.97] transition-all">
+                        {t.adminBookCancel}
+                      </button>
                     </div>
                   )}
                 </div>

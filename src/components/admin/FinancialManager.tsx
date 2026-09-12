@@ -131,43 +131,45 @@ export function FinancialManager() {
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {[
           { label: 'A Receber', value: totals.receivable, color: 'emerald' },
           { label: 'A Pagar', value: totals.payable, color: 'red' },
           { label: 'Recebido', value: totals.paidReceivable, color: 'emerald' },
           { label: 'Pago', value: totals.paidPayable, color: 'red' },
         ].map((card) => (
-          <div key={card.label} className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-white/[0.06]">
-            <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">{card.label}</p>
-            <p className={`text-lg sm:text-2xl font-bold text-${card.color}-600 dark:text-${card.color}-400`}>{formatCurrency(card.value)}</p>
+          <div key={card.label} className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06]">
+            <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/40 font-medium mb-1">{card.label}</p>
+            <p className={`text-lg font-bold text-${card.color}-600 dark:text-${card.color}-400`}>{formatCurrency(card.value)}</p>
           </div>
         ))}
       </div>
 
       {/* Chart + Filters */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2"><BalanceChart /></div>
-        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] space-y-4">
+      <div className="space-y-4">
+        <BalanceChart />
+        <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-4 border border-gray-100 dark:border-white/[0.06] space-y-3">
           <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider">Filtros</h3>
-          <Select value={filterType} onChange={(e) => setFilterType(e.target.value as typeof filterType)}>
-            <option value="all">Todos os Tipos</option>
-            <option value="payable">A Pagar</option>
-            <option value="receivable">A Receber</option>
-          </Select>
-          <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}>
-            <option value="all">Todos os Status</option>
-            <option value="pending">Pendente</option>
-            <option value="paid">Pago</option>
-            <option value="overdue">Atrasado</option>
-          </Select>
+          <div className="grid grid-cols-2 gap-3">
+            <Select value={filterType} onChange={(e) => setFilterType(e.target.value as typeof filterType)}>
+              <option value="all">Todos os Tipos</option>
+              <option value="payable">A Pagar</option>
+              <option value="receivable">A Receber</option>
+            </Select>
+            <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as typeof filterStatus)}>
+              <option value="all">Todos os Status</option>
+              <option value="pending">Pendente</option>
+              <option value="paid">Pago</option>
+              <option value="overdue">Atrasado</option>
+            </Select>
+          </div>
           <PrimaryButton onClick={openNew} className="w-full">+ Nova Conta</PrimaryButton>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden max-w-full">
-        <div className="px-4 sm:px-6 py-4 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
+      <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100 dark:border-white/[0.06] flex items-center justify-between">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Lançamentos</h3>
           <span className="text-xs text-gray-400 dark:text-white/30">{filtered.length} itens</span>
         </div>
@@ -179,29 +181,29 @@ export function FinancialManager() {
         ) : (
           <>
             {/* Desktop table */}
-            <div className="hidden md:block overflow-x-auto max-w-full" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div className="hidden md:block overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-white/[0.06]">
                     {['Descrição', 'Tipo', 'Categoria', 'Valor', 'Vencimento', 'Status', 'Ações'].map((h, i) => (
-                      <th key={h} className={`${i === 0 ? 'text-left px-4 sm:px-6' : i === 6 ? 'text-right px-4 sm:px-6' : i === 3 ? 'text-right px-4' : i === 5 ? 'text-center px-4' : 'text-left px-4'} py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30`}>{h}</th>
+                      <th key={h} className={`${i === 0 ? 'text-left px-4' : i === 6 ? 'text-right px-4' : i === 3 ? 'text-right px-4' : i === 5 ? 'text-center px-4' : 'text-left px-4'} py-3 text-[10px] uppercase tracking-wider font-semibold text-gray-400 dark:text-white/30`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-white/[0.03]">
                   {filtered.map((acc) => (
                     <tr key={acc.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
-                      <td className="px-4 sm:px-6 py-3.5 font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{acc.description}</td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{acc.description}</td>
+                      <td className="px-4 py-3">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${acc.account_type === 'receivable' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400'}`}>{TYPE_LABELS[acc.account_type]}</span>
                       </td>
-                      <td className="px-4 py-3.5 text-gray-500 dark:text-white/40 text-xs">{acc.category}</td>
-                      <td className={`px-4 py-3.5 text-right font-semibold ${acc.account_type === 'receivable' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(acc.amount)}</td>
-                      <td className="px-4 py-3.5 text-gray-500 dark:text-white/40 text-xs">{formatDate(acc.due_date)}</td>
-                      <td className="px-4 py-3.5 text-center">
+                      <td className="px-4 py-3 text-gray-500 dark:text-white/40 text-xs">{acc.category}</td>
+                      <td className={`px-4 py-3 text-right font-semibold ${acc.account_type === 'receivable' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(acc.amount)}</td>
+                      <td className="px-4 py-3 text-gray-500 dark:text-white/40 text-xs">{formatDate(acc.due_date)}</td>
+                      <td className="px-4 py-3 text-center">
                         <button onClick={() => togglePaid(acc)} className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide cursor-pointer transition-all hover:scale-105 ${STATUS_COLORS[acc.status]}`}>{STATUS_LABELS[acc.status]}</button>
                       </td>
-                      <td className="px-4 sm:px-6 py-3.5 text-right">
+                      <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button onClick={() => openEdit(acc)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-gray-400 hover:text-gray-600 dark:hover:text-white/60 transition-colors">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -218,7 +220,7 @@ export function FinancialManager() {
             </div>
 
             {/* Mobile cards */}
-            <div className="md:hidden p-3 sm:p-4 space-y-3 max-w-full">
+            <div className="md:hidden p-3 space-y-3">
               {filtered.map((acc) => (
                 <div key={acc.id} className="rounded-xl border border-gray-100 dark:border-white/[0.06] p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -236,8 +238,8 @@ export function FinancialManager() {
                     <p className={`text-sm font-bold ${acc.account_type === 'receivable' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(acc.amount)}</p>
                   </div>
                   <div className="flex gap-2 pt-1">
-                    <button onClick={() => openEdit(acc)} className="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40">Editar</button>
-                    <button onClick={() => setDeleteTarget(acc)} className="py-2 px-3 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-red-500 dark:text-red-400">Excluir</button>
+                    <button onClick={() => openEdit(acc)} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40 active:scale-[0.97] transition-all">Editar</button>
+                    <button onClick={() => setDeleteTarget(acc)} className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-red-500 dark:text-red-400 active:scale-[0.97] transition-all">Excluir</button>
                   </div>
                 </div>
               ))}

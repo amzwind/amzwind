@@ -47,7 +47,6 @@ export default function CartCheckout() {
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
-  const [submitting, setSubmitting] = useState(false)
   const [activePicker, setActivePicker] = useState<'none' | 'experience' | 'product'>('none')
   const [loaded, setLoaded] = useState(false)
   const [catalogLoading, setCatalogLoading] = useState(true)
@@ -62,11 +61,9 @@ export default function CartCheckout() {
   const [authError, setAuthError] = useState('')
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
 
-  const [guestName, setGuestName] = useState('')
-  const [guestEmail, setGuestEmail] = useState('')
-  const [guestPhone, setGuestPhone] = useState('')
-  const [guestMsg, setGuestMsg] = useState('')
   const [successIds, setSuccessIds] = useState<string[]>([])
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [paymentProcessing, setPaymentProcessing] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -150,26 +147,16 @@ export default function CartCheckout() {
     setAuthLoading(false)
   }
 
-  function handleGuestCheckout() {
-    setShowAuthModal(false)
-  }
-
-  const isGuest = !sessionUserId
-
   function validate(): string | null {
     if (items.length === 0) return t.cartEmpty
     const hasInvalidId = items.some((item) => !isValidUUID(item.id))
     if (hasInvalidId) return 'Some items have invalid IDs. Please remove and re-add them.'
-    if (isGuest) {
-      if (!guestName.trim()) return t.checkoutNameRequired
-      if (!guestEmail.trim()) return t.checkoutEmailRequired
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail.trim())) return t.checkoutEmailInvalid
-    }
+    if (!sessionUserId) return 'É necessário estar logado para finalizar a reserva.'
     return null
   }
 
   async function handleCheckout() {
-    if (isGuest && !showAuthModal && items.length > 0) {
+    if (!sessionUserId) {
       setShowAuthModal(true)
       return
     }
@@ -177,8 +164,15 @@ export default function CartCheckout() {
     const err = validate()
     if (err) { setToast({ message: err, type: 'error' }); return }
 
-    setSubmitting(true)
-    const userId = sessionUserId || null
+    setShowPaymentModal(true)
+  }
+
+  async function handlePaymentConfirm() {
+    setPaymentProcessing(true)
+    setShowPaymentModal(false)
+
+    const userId = sessionUserId
+    const bookingDate = checkIn || new Date().toISOString().slice(0, 10)
 
     const accommodation = nights > 0 ? {
       check_in: checkIn,
@@ -186,13 +180,6 @@ export default function CartCheckout() {
       nights,
       base_price_per_night: basePricePerNight,
       total: getAccommodationTotal(),
-    } : null
-
-    const contact = isGuest ? {
-      name: guestName.trim(),
-      email: guestEmail.trim(),
-      phone: guestPhone.trim(),
-      message: guestMsg.trim(),
     } : null
 
     const notes = JSON.stringify({
@@ -204,19 +191,19 @@ export default function CartCheckout() {
         quantity: i.quantity,
       })),
       accommodation,
-      contact,
+      payment_confirmed: true,
+      payment_method: 'simulated',
+      payment_date: new Date().toISOString(),
       subtotal: getSubtotal(),
       total: getTotal(),
     })
-
-    const bookingDate = checkIn || new Date().toISOString().slice(0, 10)
 
     const bookingPromises = items.map((item) =>
       supabase.from('bookings').insert({
         user_id: userId,
         item_type: item.type,
         item_id: isValidUUID(item.id) ? item.id : null,
-        status: 'pending',
+        status: 'confirmed',
         booking_date: bookingDate,
         notes,
       }).select('id')
@@ -249,7 +236,7 @@ export default function CartCheckout() {
           description: `Reserva - ${item.title}`,
           amount: item.price * item.quantity,
           due_date: bookingDate,
-          status: 'pending',
+          status: 'paid',
         })
       )
       const finResults = await Promise.all(financialPromises)
@@ -259,7 +246,7 @@ export default function CartCheckout() {
       clearCart()
       localStorage.removeItem(CART_STORAGE_KEY)
     }
-    setSubmitting(false)
+    setPaymentProcessing(false)
   }
 
   const formatBRL = (v: number) =>
@@ -332,9 +319,11 @@ export default function CartCheckout() {
               </button>
             </form>
 
-            <button onClick={handleGuestCheckout} className="w-full py-2 text-xs font-semibold text-gray-400 dark:text-white/30 hover:text-gray-600 dark:hover:text-white/60 transition-colors">
-              {t.checkoutGuest}
-            </button>
+            <div className="text-center">
+              <p className="text-xs text-gray-400 dark:text-white/30">
+                {t.checkoutGuest}
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -422,34 +411,6 @@ export default function CartCheckout() {
               ))}
             </div>
           )}
-
-          {isGuest && items.length > 0 && (
-            <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5 space-y-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{t.checkoutContactInfo}</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutName} <span className="text-red-500">*</span></label>
-                  <input type="text" required value={guestName} onChange={(e) => setGuestName(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutEmail} <span className="text-red-500">*</span></label>
-                  <input type="email" required value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutPhone}</label>
-                  <input type="tel" value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-white/60 mb-1.5">{t.checkoutMessage}</label>
-                  <input type="text" value={guestMsg} onChange={(e) => setGuestMsg(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors" />
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right: Summary */}
@@ -509,15 +470,15 @@ export default function CartCheckout() {
 
             <button
               onClick={handleCheckout}
-              disabled={items.length === 0 || submitting}
+              disabled={items.length === 0 || paymentProcessing}
               className="w-full py-3 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? (
+              {paymentProcessing ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   {t.checkoutProcessing}
                 </span>
-              ) : isGuest ? (
+              ) : !sessionUserId ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
                   {t.checkoutLoginTitle}
@@ -533,6 +494,57 @@ export default function CartCheckout() {
           </div>
         </div>
       </div>
+
+      {/* Payment Confirmation Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setShowPaymentModal(false)}>
+          <div className="bg-white dark:bg-[#1a0f08] rounded-2xl shadow-2xl border border-gray-100 dark:border-white/[0.06] w-full max-w-md p-6 sm:p-8 space-y-5" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl bg-amz-dourado/10 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Confirmar Pagamento</h2>
+              <p className="text-sm text-gray-500 dark:text-white/40 mt-2">
+                Valor total: <span className="font-bold text-amz-dourado">{formatBRL(getTotal())}</span>
+              </p>
+              <p className="text-xs text-gray-400 dark:text-white/30 mt-1">
+                Pagamento simulado para fins de demonstração
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="p-4 bg-gray-50 dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06]">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-500 dark:text-white/40">Itens:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{items.length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500 dark:text-white/40">Total:</span>
+                  <span className="font-bold text-amz-dourado">{formatBRL(getTotal())}</span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setShowPaymentModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-semibold text-gray-600 dark:text-white/40 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                  Cancelar
+                </button>
+                <button onClick={handlePaymentConfirm} disabled={paymentProcessing} className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition-all disabled:opacity-50">
+                  {paymentProcessing ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Processando...
+                    </span>
+                  ) : (
+                    'Confirmar Pagamento'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
