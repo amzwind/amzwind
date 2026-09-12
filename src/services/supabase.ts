@@ -438,12 +438,98 @@ export type Database = {
           updated_at?: string
         }
       }
+      posts: {
+        Row: {
+          id: string
+          user_id: string
+          content: string | null
+          media_url: string | null
+          likes_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          content?: string | null
+          media_url?: string | null
+          likes_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          content?: string | null
+          media_url?: string | null
+          likes_count?: number
+          created_at?: string
+        }
+      }
+      post_likes: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          created_at?: string
+        }
+      }
+      post_comments: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          content?: string
+          created_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {
       is_admin: {
         Args: Record<string, never>
         Returns: boolean
+      }
+      toggle_post_like: {
+        Args: { p_post_id: string }
+        Returns: boolean
+      }
+      get_posts_feed: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: Array<{
+          id: string
+          user_id: string
+          content: string | null
+          media_url: string | null
+          likes_count: number
+          comments_count: number
+          liked_by_me: boolean
+          created_at: string
+        }>
       }
     }
   }
