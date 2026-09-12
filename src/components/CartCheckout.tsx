@@ -5,6 +5,7 @@ import { useCart, type CartItemType } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { useProfile } from '../hooks/useProfile'
+import { isValidUUID, FALLBACK_UUID } from '../lib/uuid'
 import { Toast } from './admin/SharedUI'
 
 type PaymentMethod = 'pix' | 'card' | 'paypal'
@@ -156,16 +157,20 @@ export default function CartCheckout() {
       payment_date: new Date().toISOString(),
     })
 
-    const bookingPromises = items.map((item) =>
-      supabase.from('bookings').insert({
+    const bookingPromises = items.map((item) => {
+      const normalizedId = isValidUUID(item.id) ? item.id : FALLBACK_UUID
+      return supabase.from('bookings').insert({
         user_id: userId,
         item_type: item.type,
-        item_id: item.id,
+        item_id: normalizedId,
         status: 'confirmed',
         booking_date: item.booking_date || bookingDate,
-        notes,
+        notes: isValidUUID(item.id) ? notes : JSON.stringify({
+          ...JSON.parse(notes),
+          original_item_id: item.id,
+        }),
       }).select('id')
-    )
+    })
 
     const results = await Promise.all(bookingPromises)
     const errors: string[] = []
