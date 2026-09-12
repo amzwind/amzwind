@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import { heroVideo, heroDesktopFallback, portraitImages } from '../data/media'
 
@@ -25,7 +24,7 @@ function getYouTubeEmbedUrl(url: string): string {
   return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&loop=1&playlist=${id}&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`
 }
 
-const fallbackSlides: HeroSlide[] = [
+const SLIDES: HeroSlide[] = [
   {
     id: 'default-video',
     title: 'Expedições. Downwinds. Experiências na Amazônia Atlântica.',
@@ -98,10 +97,8 @@ function MediaLayer({ slide, layerRef }: { slide: HeroSlide; layerRef: React.Ref
 
 export default function Hero() {
   useLanguage()
-  const [slides, setSlides] = useState<HeroSlide[]>(fallbackSlides)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [prevSlide, setPrevSlide] = useState<number | null>(null)
-  const [dbLoaded, setDbLoaded] = useState(false)
 
   const heroRef = useRef<HTMLDivElement>(null)
   const currentLayerRef = useRef<HTMLDivElement>(null)
@@ -109,48 +106,15 @@ export default function Hero() {
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const controller = new AbortController()
-
-    async function fetchHeroSlides() {
-      try {
-        const { data, error } = await supabase
-          .from('hero_slides' as any)
-          .select('*')
-          .order('display_order', { ascending: true })
-
-        if (controller.signal.aborted) return
-
-        if (error) throw error
-        if (data && data.length > 0) {
-          setSlides(data as unknown as HeroSlide[])
-          setCurrentSlide(0)
-          setPrevSlide(null)
-        }
-      } catch (err) {
-        if (!controller.signal.aborted) {
-          console.error('Usando slides padrao da Hero:', err)
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setDbLoaded(true)
-        }
-      }
-    }
-    fetchHeroSlides()
-
-    return () => controller.abort()
-  }, [])
-
-  useEffect(() => {
-    if (slides.length <= 1) return
+    if (SLIDES.length <= 1) return
     const timer = setInterval(() => {
       setCurrentSlide((prev) => {
         setPrevSlide(prev)
-        return (prev + 1) % slides.length
+        return (prev + 1) % SLIDES.length
       })
     }, 5000)
     return () => clearInterval(timer)
-  }, [slides.length])
+  }, [])
 
   useEffect(() => {
     if (!currentLayerRef.current) return
@@ -186,14 +150,14 @@ export default function Hero() {
     }, heroRef)
 
     return () => ctx.revert()
-  }, [currentSlide, dbLoaded])
+  }, [currentSlide])
 
-  const slide = slides[currentSlide] || slides[0]
+  const slide = SLIDES[currentSlide] || SLIDES[0]
 
   return (
     <div ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {prevSlide !== null && slides[prevSlide] && (
-        <MediaLayer slide={slides[prevSlide]} layerRef={prevLayerRef} />
+      {prevSlide !== null && SLIDES[prevSlide] && (
+        <MediaLayer slide={SLIDES[prevSlide]} layerRef={prevLayerRef} />
       )}
       <MediaLayer slide={slide} layerRef={currentLayerRef} />
 
