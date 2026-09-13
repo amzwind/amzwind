@@ -68,8 +68,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
               const { data: friendship } = await supabase
                 .from('friendships')
                 .select('id')
-                .or(`and(sender_id.eq.${currentUserId},receiver_id.eq.${newPost.user_id}),and(sender_id.eq.${newPost.user_id},receiver_id.eq.${currentUserId})`)
-                .eq('status', 'accepted')
+                .or(`and(user_id.eq.${currentUserId},friend_id.eq.${newPost.user_id}),and(user_id.eq.${newPost.user_id},friend_id.eq.${currentUserId})`)
                 .limit(1)
                 .maybeSingle()
               if (!friendship) return
