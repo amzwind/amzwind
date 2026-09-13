@@ -18,6 +18,7 @@ export interface PostFeedItem {
   liked_by_me: boolean
   created_at: string
   updated_at: string
+  trip_id: string | null
 }
 
 export interface PostAuthor {
@@ -60,7 +61,8 @@ async function uploadMedia(file: File, userId: string): Promise<string | null> {
 export async function createPost(
   userId: string,
   content: string,
-  mediaFile?: File | null
+  mediaFile?: File | null,
+  tripId?: string | null
 ): Promise<Post> {
   let mediaUrl: string | null = null
 
@@ -72,6 +74,7 @@ export async function createPost(
     user_id: userId,
     content: content.trim() || null,
     media_url: mediaUrl,
+    trip_id: tripId ?? null,
   }
 
   const { data, error } = await supabase

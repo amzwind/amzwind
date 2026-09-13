@@ -1002,6 +1002,7 @@ export type Database = {
           liked_by_me: boolean
           created_at: string
           updated_at: string
+          trip_id: string | null
         }>
       }
       get_friends_feed: {
@@ -1017,6 +1018,7 @@ export type Database = {
           liked_by_me: boolean
           created_at: string
           updated_at: string
+          trip_id: string | null
         }>
       }
       get_or_create_direct_conversation: {
@@ -1183,6 +1185,92 @@ export type Database = {
           p_max_participants?: number | null
         }
         Returns: string
+      }
+      update_trip: {
+        Args: {
+          p_trip_id: string
+          p_title?: string | null
+          p_description?: string | null
+          p_destination?: string | null
+          p_start_date?: string | null
+          p_end_date?: string | null
+          p_max_participants?: number | null
+          p_cover_url?: string | null
+          p_status?: string | null
+        }
+        Returns: void
+      }
+      create_trip_conversation: {
+        Args: { p_trip_id: string }
+        Returns: string
+      }
+      get_trip_conversation: {
+        Args: { p_trip_id: string }
+        Returns: Array<{
+          conversation_id: string
+          conversation_name: string | null
+          member_count: number
+          is_member: boolean
+        }>
+      }
+      join_trip_with_group: {
+        Args: { p_trip_id: string }
+        Returns: string | null
+      }
+      leave_trip_with_group: {
+        Args: { p_trip_id: string }
+        Returns: void
+      }
+      invite_to_trip: {
+        Args: { p_trip_id: string; p_friend_id: string }
+        Returns: string
+      }
+      respond_trip_invite: {
+        Args: { p_trip_id: string; p_accept: boolean }
+        Returns: void
+      }
+      remove_trip_participant: {
+        Args: { p_trip_id: string; p_user_id: string }
+        Returns: void
+      }
+      get_trip_feed: {
+        Args: { p_trip_id: string; p_limit?: number; p_offset?: number }
+        Returns: Array<{
+          id: string
+          user_id: string
+          content: string | null
+          media_url: string | null
+          likes_count: number
+          comments_count: number
+          shares_count: number
+          liked_by_me: boolean
+          created_at: string
+          updated_at: string
+        }>
+      }
+      get_trip_invitable_friends: {
+        Args: { p_trip_id: string }
+        Returns: Array<{
+          id: string
+          full_name: string | null
+          avatar_url: string | null
+        }>
+      }
+      list_user_trips: {
+        Args: { p_user_id?: string | null; p_limit?: number; p_offset?: number }
+        Returns: Array<{
+          id: string
+          title: string
+          slug: string | null
+          destination: string | null
+          start_date: string | null
+          end_date: string | null
+          cover_url: string | null
+          status: string
+          participant_count: number
+          role: string
+          created_at: string
+        }>
       }
     }
   }

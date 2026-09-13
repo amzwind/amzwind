@@ -8,6 +8,8 @@ interface CreatePostProps {
   userName: string | null
   avatarUrl: string | null
   onPostCreated: (post: PostFeedItem) => void
+  tripId?: string | null
+  tripName?: string | null
 }
 
 function getInitials(name: string | null | undefined): string {
@@ -19,7 +21,7 @@ function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|ogg)$/i.test(url) || url.includes('video')
 }
 
-export default function CreatePost({ userId, userName, avatarUrl, onPostCreated }: CreatePostProps) {
+export default function CreatePost({ userId, userName, avatarUrl, onPostCreated, tripId, tripName }: CreatePostProps) {
   const [content, setContent] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaPreview, setMediaPreview] = useState<string | null>(null)
@@ -48,13 +50,14 @@ export default function CreatePost({ userId, userName, avatarUrl, onPostCreated 
     setErrorMessage('')
 
     try {
-      const post = await createPost(userId, content, mediaFile)
+      const post = await createPost(userId, content, mediaFile, tripId)
       onPostCreated({
         ...post,
         comments_count: 0,
         shares_count: 0,
         liked_by_me: false,
         updated_at: post.created_at,
+        trip_id: tripId ?? null,
       })
       setContent('')
       removeMedia()
@@ -84,7 +87,7 @@ export default function CreatePost({ userId, userName, avatarUrl, onPostCreated 
             rows={3}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Compartilhe sua session de kite... 🪁"
+            placeholder={tripName ? `Postar na trip "${tripName}"...` : 'Compartilhe sua session de kite... 🪁'}
             disabled={isBusy}
             className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm resize-none disabled:opacity-50"
           />

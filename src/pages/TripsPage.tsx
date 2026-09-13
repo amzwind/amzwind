@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import { supabase } from '../services/supabase'
 import { listTrips, type TripListItem } from '../services/trips'
 
 function formatDate(dateStr: string | null): string {
@@ -14,6 +15,11 @@ export default function TripsPage() {
   const [trips, setTrips] = useState<TripListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setIsAuthenticated(!!data.user))
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -61,6 +67,12 @@ export default function TripsPage() {
         <h1 className="text-xl font-bold text-amz-terra dark:text-amz-areia">
           {t.tripsTitle || 'Trips'}
         </h1>
+        {isAuthenticated && (
+          <button onClick={() => navigate('/trips/new')}
+            className="ml-auto px-3 py-1.5 rounded-lg bg-amz-dourado text-white text-xs font-semibold hover:bg-amz-dourado/90 transition-colors">
+            {t.tripCreate || '+ Nova'}
+          </button>
+        )}
       </header>
 
       <main className="px-4 py-4 max-w-2xl mx-auto">

@@ -523,6 +523,46 @@ export type TranslationKeys = {
   tripStatusCancelled: string
   tripStatusCompleted: string
   tripStatusDraft: string
+  tripCreate: string
+  tripCreateButton: string
+  tripCreateSuccess: string
+  tripEdit: string
+  tripSave: string
+  tripSaving: string
+  tripSaveSuccess: string
+  tripUploading: string
+  tripCoverLabel: string
+  tripCoverUpload: string
+  tripCoverTooLarge: string
+  tripTitleLabel: string
+  tripTitlePlaceholder: string
+  tripDescriptionLabel: string
+  tripDescriptionPlaceholder: string
+  tripDestinationLabel: string
+  tripDestinationPlaceholder: string
+  tripStartDate: string
+  tripEndDate: string
+  tripDateError: string
+  tripMaxParticipantsLabel: string
+  tripMaxParticipantsPlaceholder: string
+  tripMaxParticipantsError: string
+  tripStatusLabel: string
+  tripInvite: string
+  tripInviteFriends: string
+  tripInviteButton: string
+  tripInvited: string
+  tripNoFriendsToInvite: string
+  tripChat: string
+  tripTabInfo: string
+  tripTabParticipants: string
+  tripTabFeed: string
+  tripNoParticipants: string
+  tripRoleOrganizer: string
+  tripRoleParticipant: string
+  tripPending: string
+  tripRemoveConfirm: string
+  tripFeedEmpty: string
+  tripFeedJoinFirst: string
 }
 
 const pt: TranslationKeys = {
@@ -1013,6 +1053,46 @@ const pt: TranslationKeys = {
   tripStatusCancelled: 'Cancelada',
   tripStatusCompleted: 'Concluída',
   tripStatusDraft: 'Rascunho',
+  tripCreate: 'Nova Trip',
+  tripCreateButton: 'Criar Trip',
+  tripCreateSuccess: 'Trip criada com sucesso!',
+  tripEdit: 'Editar Trip',
+  tripSave: 'Salvar',
+  tripSaving: 'Salvando...',
+  tripSaveSuccess: 'Salvo com sucesso!',
+  tripUploading: 'Enviando capa...',
+  tripCoverLabel: 'Capa',
+  tripCoverUpload: 'Selecionar imagem',
+  tripCoverTooLarge: 'Imagem muito grande. Limite: 10MB',
+  tripTitleLabel: 'Título',
+  tripTitlePlaceholder: 'Ex: Downwind Maranhão 2026',
+  tripDescriptionLabel: 'Descrição',
+  tripDescriptionPlaceholder: 'Descreva a trip...',
+  tripDestinationLabel: 'Destino',
+  tripDestinationPlaceholder: 'Ex: Maranhão, Brasil',
+  tripStartDate: 'Data início',
+  tripEndDate: 'Data fim',
+  tripDateError: 'Data final deve ser posterior à data inicial',
+  tripMaxParticipantsLabel: 'Máx. participantes',
+  tripMaxParticipantsPlaceholder: 'Ex: 12',
+  tripMaxParticipantsError: 'Mínimo de 2 participantes',
+  tripStatusLabel: 'Status',
+  tripInvite: 'Convidar',
+  tripInviteFriends: 'Convidar Amigos',
+  tripInviteButton: 'Convidar',
+  tripInvited: 'Convidado',
+  tripNoFriendsToInvite: 'Nenhum amigo disponível',
+  tripChat: 'Chat',
+  tripTabInfo: 'Info',
+  tripTabParticipants: 'Pessoas',
+  tripTabFeed: 'Feed',
+  tripNoParticipants: 'Nenhum participante ainda',
+  tripRoleOrganizer: 'Organizador',
+  tripRoleParticipant: 'Participante',
+  tripPending: 'Pendente',
+  tripRemoveConfirm: 'Remover este participante?',
+  tripFeedEmpty: 'Nenhum post ainda',
+  tripFeedJoinFirst: 'Participe da trip para ver o feed',
 }
 
 const en: TranslationKeys = {
@@ -1503,6 +1583,46 @@ const en: TranslationKeys = {
   tripStatusCancelled: 'Cancelled',
   tripStatusCompleted: 'Completed',
   tripStatusDraft: 'Draft',
+  tripCreate: 'New Trip',
+  tripCreateButton: 'Create Trip',
+  tripCreateSuccess: 'Trip created successfully!',
+  tripEdit: 'Edit Trip',
+  tripSave: 'Save',
+  tripSaving: 'Saving...',
+  tripSaveSuccess: 'Saved successfully!',
+  tripUploading: 'Uploading cover...',
+  tripCoverLabel: 'Cover',
+  tripCoverUpload: 'Select image',
+  tripCoverTooLarge: 'Image too large. Limit: 10MB',
+  tripTitleLabel: 'Title',
+  tripTitlePlaceholder: 'Ex: Downwind Maranhão 2026',
+  tripDescriptionLabel: 'Description',
+  tripDescriptionPlaceholder: 'Describe the trip...',
+  tripDestinationLabel: 'Destination',
+  tripDestinationPlaceholder: 'Ex: Maranhão, Brazil',
+  tripStartDate: 'Start date',
+  tripEndDate: 'End date',
+  tripDateError: 'End date must be after start date',
+  tripMaxParticipantsLabel: 'Max participants',
+  tripMaxParticipantsPlaceholder: 'Ex: 12',
+  tripMaxParticipantsError: 'Minimum 2 participants',
+  tripStatusLabel: 'Status',
+  tripInvite: 'Invite',
+  tripInviteFriends: 'Invite Friends',
+  tripInviteButton: 'Invite',
+  tripInvited: 'Invited',
+  tripNoFriendsToInvite: 'No friends available',
+  tripChat: 'Chat',
+  tripTabInfo: 'Info',
+  tripTabParticipants: 'People',
+  tripTabFeed: 'Feed',
+  tripNoParticipants: 'No participants yet',
+  tripRoleOrganizer: 'Organizer',
+  tripRoleParticipant: 'Participant',
+  tripPending: 'Pending',
+  tripRemoveConfirm: 'Remove this participant?',
+  tripFeedEmpty: 'No posts yet',
+  tripFeedJoinFirst: 'Join the trip to see the feed',
 }
 
 const es: TranslationKeys = {
@@ -1993,6 +2113,46 @@ const es: TranslationKeys = {
   tripStatusCancelled: 'Cancelada',
   tripStatusCompleted: 'Completada',
   tripStatusDraft: 'Borrador',
+  tripCreate: 'Nueva Trip',
+  tripCreateButton: 'Crear Trip',
+  tripCreateSuccess: '¡Trip creada con éxito!',
+  tripEdit: 'Editar Trip',
+  tripSave: 'Guardar',
+  tripSaving: 'Guardando...',
+  tripSaveSuccess: '¡Guardado con éxito!',
+  tripUploading: 'Subiendo portada...',
+  tripCoverLabel: 'Portada',
+  tripCoverUpload: 'Seleccionar imagen',
+  tripCoverTooLarge: 'Imagen demasiado grande. Límite: 10MB',
+  tripTitleLabel: 'Título',
+  tripTitlePlaceholder: 'Ex: Downwind Maranhão 2026',
+  tripDescriptionLabel: 'Descripción',
+  tripDescriptionPlaceholder: 'Describe el viaje...',
+  tripDestinationLabel: 'Destino',
+  tripDestinationPlaceholder: 'Ex: Maranhão, Brasil',
+  tripStartDate: 'Fecha inicio',
+  tripEndDate: 'Fecha fin',
+  tripDateError: 'La fecha final debe ser posterior a la fecha inicial',
+  tripMaxParticipantsLabel: 'Máx. participantes',
+  tripMaxParticipantsPlaceholder: 'Ex: 12',
+  tripMaxParticipantsError: 'Mínimo 2 participantes',
+  tripStatusLabel: 'Estado',
+  tripInvite: 'Invitar',
+  tripInviteFriends: 'Invitar Amigos',
+  tripInviteButton: 'Invitar',
+  tripInvited: 'Invitado',
+  tripNoFriendsToInvite: 'Sin amigos disponibles',
+  tripChat: 'Chat',
+  tripTabInfo: 'Info',
+  tripTabParticipants: 'Personas',
+  tripTabFeed: 'Feed',
+  tripNoParticipants: 'Sin participantes aún',
+  tripRoleOrganizer: 'Organizador',
+  tripRoleParticipant: 'Participante',
+  tripPending: 'Pendiente',
+  tripRemoveConfirm: '¿Eliminar este participante?',
+  tripFeedEmpty: 'Sin posts aún',
+  tripFeedJoinFirst: 'Únete al viaje para ver el feed',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }
