@@ -563,6 +563,9 @@ export type TranslationKeys = {
   tripRemoveConfirm: string
   tripFeedEmpty: string
   tripFeedJoinFirst: string
+  tripVisibilityLabel: string
+  tripVisibilityPublic: string
+  tripVisibilityPrivate: string
 }
 
 const pt: TranslationKeys = {
@@ -1093,6 +1096,9 @@ const pt: TranslationKeys = {
   tripRemoveConfirm: 'Remover este participante?',
   tripFeedEmpty: 'Nenhum post ainda',
   tripFeedJoinFirst: 'Participe da trip para ver o feed',
+  tripVisibilityLabel: 'Visibilidade',
+  tripVisibilityPublic: 'Pública — aparece na listagem',
+  tripVisibilityPrivate: 'Privada — só participantes veem',
 }
 
 const en: TranslationKeys = {
@@ -1623,6 +1629,9 @@ const en: TranslationKeys = {
   tripRemoveConfirm: 'Remove this participant?',
   tripFeedEmpty: 'No posts yet',
   tripFeedJoinFirst: 'Join the trip to see the feed',
+  tripVisibilityLabel: 'Visibility',
+  tripVisibilityPublic: 'Public — appears in listing',
+  tripVisibilityPrivate: 'Private — only participants see',
 }
 
 const es: TranslationKeys = {
@@ -2153,6 +2162,9 @@ const es: TranslationKeys = {
   tripRemoveConfirm: '¿Eliminar este participante?',
   tripFeedEmpty: 'Sin posts aún',
   tripFeedJoinFirst: 'Únete al viaje para ver el feed',
+  tripVisibilityLabel: 'Visibilidad',
+  tripVisibilityPublic: 'Pública — aparece en el listado',
+  tripVisibilityPrivate: 'Privada — solo participantes ven',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

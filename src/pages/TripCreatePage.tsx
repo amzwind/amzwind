@@ -15,6 +15,7 @@ export default function TripCreatePage() {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [maxParticipants, setMaxParticipants] = useState('')
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public')
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [status, setStatus] = useState<Status>('idle')
@@ -80,6 +81,7 @@ export default function TripCreatePage() {
         start_date: startDate || undefined,
         end_date: endDate || undefined,
         max_participants: maxP,
+        visibility,
       })
 
       if (coverUrl) {
@@ -237,6 +239,21 @@ export default function TripCreatePage() {
                 {t.tripCoverUpload || 'Selecionar imagem'}
               </label>
             )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia mb-1">
+              {t.tripVisibilityLabel || 'Visibilidade'}
+            </label>
+            <select
+              value={visibility}
+              onChange={(e) => setVisibility(e.target.value as 'public' | 'private')}
+              disabled={isBusy}
+              className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-sm text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 disabled:opacity-50"
+            >
+              <option value="public">{t.tripVisibilityPublic || 'Pública — aparece na listagem'}</option>
+              <option value="private">{t.tripVisibilityPrivate || 'Privada — só participantes veem'}</option>
+            </select>
           </div>
 
           {errorMessage && (

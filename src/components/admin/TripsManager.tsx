@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '../../services/supabase'
 import { Toast } from './SharedUI'
-import { listTrips, type TripListItem } from '../../services/trips'
+import { adminListTrips, adminDeleteTrip, adminUpdateTripStatus, type TripListItem } from '../../services/trips'
 
 type TripStatus = 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
 
@@ -15,7 +14,7 @@ export function TripsManager() {
   const loadTrips = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await listTrips()
+      const data = await adminListTrips()
       setTrips(data)
     } catch (err) {
       console.error('Erro ao carregar trips:', err)
@@ -29,8 +28,7 @@ export function TripsManager() {
   async function handleUpdateStatus(id: string, status: TripStatus) {
     setUpdatingId(id)
     try {
-      const { error } = await supabase.from('trips').update({ status }).eq('id', id)
-      if (error) throw error
+      await adminUpdateTripStatus(id, status)
       setTrips((prev) => prev.map((t) => t.id === id ? { ...t, status } : t))
       setToast({ message: 'Status atualizado!', type: 'success' })
     } catch (err: any) {
@@ -44,8 +42,7 @@ export function TripsManager() {
     if (!window.confirm('Tem certeza que deseja excluir esta trip?')) return
     setUpdatingId(id)
     try {
-      const { error } = await supabase.from('trips').delete().eq('id', id)
-      if (error) throw error
+      await adminDeleteTrip(id)
       setTrips((prev) => prev.filter((t) => t.id !== id))
       setToast({ message: 'Trip excluída!', type: 'success' })
     } catch (err: any) {
@@ -69,6 +66,16 @@ export function TripsManager() {
     full: 'Lotada',
     cancelled: 'Cancelada',
     completed: 'Concluída',
+  }
+
+  const visibilityColors: Record<string, string> = {
+    public: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+    private: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+  }
+
+  const visibilityLabels: Record<string, string> = {
+    public: 'Pública',
+    private: 'Privada',
   }
 
   const filteredTrips = filter === 'all' ? trips : trips.filter((t) => t.status === filter)
@@ -145,6 +152,11 @@ export function TripsManager() {
                       <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${statusColors[trip.status] || statusColors.draft}`}>
                         {statusLabels[trip.status] || trip.status}
                       </span>
+                      {trip.visibility && (
+                        <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${visibilityColors[trip.visibility] || ''}`}>
+                          {visibilityLabels[trip.visibility] || trip.visibility}
+                        </span>
+                      )}
                     </div>
                     {trip.destination && (
                       <p className="text-xs text-gray-500 dark:text-white/40 flex items-center gap-1">

@@ -246,6 +246,11 @@ export default function TripDetailPage() {
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusColors[trip.status] || ''}`}>
             {statusLabels[trip.status] || trip.status}
           </span>
+          {trip.visibility && (
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${trip.visibility === 'private' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'}`}>
+              {trip.visibility === 'private' ? '🔒 Privada' : '🌐 Pública'}
+            </span>
+          )}
           {trip.is_participant && (
             <span className="text-[10px] font-semibold text-amz-oceano bg-amz-oceano/10 px-2 py-0.5 rounded-full">
               {t.tripJoined || 'Participando'}

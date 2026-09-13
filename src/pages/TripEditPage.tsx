@@ -21,6 +21,7 @@ export default function TripEditPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [currentCoverUrl, setCurrentCoverUrl] = useState<string | null>(null)
   const [tripStatus, setTripStatus] = useState('')
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public')
   const [status, setStatus] = useState<Status>('loading')
   const [errorMessage, setErrorMessage] = useState('')
   const [userId, setUserId] = useState<string | null>(null)
@@ -49,6 +50,7 @@ export default function TripEditPage() {
         setMaxParticipants(data.max_participants?.toString() || '')
         setCurrentCoverUrl(data.cover_url)
         setTripStatus(data.status)
+        setVisibility(data.visibility || 'public')
         setStatus('idle')
       } catch {
         if (!cancelled) setStatus('error')
@@ -93,6 +95,16 @@ export default function TripEditPage() {
     try {
       let coverUrl = currentCoverUrl
       if (coverFile) {
+        // Delete old cover from storage if exists
+        if (currentCoverUrl) {
+          try {
+            const oldPath = currentCoverUrl.split('/trip-covers/')[1]
+            if (oldPath) {
+              await supabase.storage.from('trip-covers').remove([oldPath])
+            }
+          } catch { /* non-critical */ }
+        }
+
         const ext = coverFile.name.split('.').pop() || 'jpg'
         const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
         const { error: uploadError } = await supabase.storage
@@ -114,6 +126,7 @@ export default function TripEditPage() {
         max_participants: maxP,
         cover_url: coverUrl ?? undefined,
         status: tripStatus || undefined,
+        visibility,
       })
 
       setStatus('success')
@@ -223,6 +236,15 @@ export default function TripEditPage() {
                 {t.tripCoverUpload || 'Selecionar imagem'}
               </label>
             )}
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia mb-1">{t.tripVisibilityLabel || 'Visibilidade'}</label>
+            <select value={visibility} onChange={(e) => setVisibility(e.target.value as 'public' | 'private')} disabled={isBusy}
+              className="w-full px-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-sm text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 disabled:opacity-50">
+              <option value="public">{t.tripVisibilityPublic || 'Pública — aparece na listagem'}</option>
+              <option value="private">{t.tripVisibilityPrivate || 'Privada — só participantes veem'}</option>
+            </select>
           </div>
 
           {errorMessage && <p className="text-xs text-red-500 font-medium">{errorMessage}</p>}

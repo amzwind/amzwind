@@ -815,6 +815,7 @@ export type Database = {
           end_date: string | null
           cover_url: string | null
           status: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          visibility: 'public' | 'private'
           max_participants: number | null
           created_by: string
           created_at: string
@@ -830,6 +831,7 @@ export type Database = {
           end_date?: string | null
           cover_url?: string | null
           status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          visibility?: 'public' | 'private'
           max_participants?: number | null
           created_by: string
           created_at?: string
@@ -845,6 +847,7 @@ export type Database = {
           end_date?: string | null
           cover_url?: string | null
           status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          visibility?: 'public' | 'private'
           max_participants?: number | null
           created_by?: string
           created_at?: string

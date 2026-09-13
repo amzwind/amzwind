@@ -13,6 +13,7 @@ export interface TripListItem {
   end_date: string | null
   cover_url: string | null
   status: string
+  visibility: 'public' | 'private'
   max_participants: number | null
   created_by: string
   created_at: string
@@ -89,6 +90,7 @@ export async function createTrip(params: {
   start_date?: string
   end_date?: string
   max_participants?: number
+  visibility?: 'public' | 'private'
 }): Promise<string> {
   const { data, error } = await supabase.rpc('create_trip', {
     p_title: params.title,
@@ -97,6 +99,7 @@ export async function createTrip(params: {
     p_start_date: params.start_date ?? null,
     p_end_date: params.end_date ?? null,
     p_max_participants: params.max_participants ?? null,
+    p_visibility: params.visibility ?? 'public',
   })
   if (error) throw new Error('Falha ao criar viagem: ' + error.message)
   return data as string
@@ -111,6 +114,7 @@ export async function updateTrip(tripId: string, params: {
   max_participants?: number
   cover_url?: string
   status?: string
+  visibility?: 'public' | 'private'
 }): Promise<void> {
   const { error } = await supabase.rpc('update_trip', {
     p_trip_id: tripId,
@@ -122,6 +126,7 @@ export async function updateTrip(tripId: string, params: {
     p_max_participants: params.max_participants ?? null,
     p_cover_url: params.cover_url ?? null,
     p_status: params.status ?? null,
+    p_visibility: params.visibility ?? null,
   })
   if (error) throw new Error('Falha ao atualizar viagem: ' + error.message)
 }
@@ -215,4 +220,26 @@ export async function listUserTrips(userId?: string, limit = 20, offset = 0): Pr
   })
   if (error) throw new Error('Falha ao carregar viagens: ' + error.message)
   return (data ?? []) as UserTrip[]
+}
+
+export async function adminListTrips(limit = 50, offset = 0): Promise<TripListItem[]> {
+  const { data, error } = await supabase.rpc('admin_list_trips', {
+    p_limit: limit,
+    p_offset: offset,
+  })
+  if (error) throw new Error('Falha ao carregar trips: ' + error.message)
+  return (data ?? []) as TripListItem[]
+}
+
+export async function adminDeleteTrip(tripId: string): Promise<void> {
+  const { error } = await supabase.rpc('admin_delete_trip', { p_trip_id: tripId })
+  if (error) throw new Error('Falha ao excluir trip: ' + error.message)
+}
+
+export async function adminUpdateTripStatus(tripId: string, status: string): Promise<void> {
+  const { error } = await supabase.rpc('admin_update_trip_status', {
+    p_trip_id: tripId,
+    p_status: status,
+  })
+  if (error) throw new Error('Falha ao atualizar status: ' + error.message)
 }
