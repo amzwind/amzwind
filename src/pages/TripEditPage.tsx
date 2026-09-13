@@ -110,7 +110,7 @@ export default function TripEditPage() {
         const { error: uploadError } = await supabase.storage
           .from('trip-covers')
           .upload(path, coverFile, { contentType: coverFile.type })
-        if (uploadError) throw new Error('Falha no upload: ' + uploadError.message)
+        if (uploadError) throw new Error(t.tripErrorUpload + ' ' + uploadError.message)
         const { data: urlData } = supabase.storage.from('trip-covers').getPublicUrl(path)
         coverUrl = urlData?.publicUrl || null
       }
@@ -132,7 +132,7 @@ export default function TripEditPage() {
       setStatus('success')
       setTimeout(() => navigate(`/trips/${id}`), 800)
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Erro ao salvar')
+      setErrorMessage(err instanceof Error ? err.message : t.tripErrorSave)
       setStatus('error')
     }
   }

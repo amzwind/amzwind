@@ -1,4 +1,5 @@
 import { useFavorites, type FavoriteItemType } from '../contexts/FavoritesContext'
+import { useLanguage } from '../contexts/LanguageContext'
 
 interface FavoriteButtonProps {
   id: string
@@ -11,6 +12,7 @@ interface FavoriteButtonProps {
 }
 
 export default function FavoriteButton({ id, type, title, price, image_url, className = '', size = 'md' }: FavoriteButtonProps) {
+  const { t } = useLanguage()
   const { toggleFavorite, isFavorite } = useFavorites()
   const active = isFavorite(id, type)
 
@@ -32,7 +34,7 @@ export default function FavoriteButton({ id, type, title, price, image_url, clas
           ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-110'
           : 'bg-white/80 dark:bg-black/40 text-gray-400 dark:text-white/40 hover:bg-white dark:hover:bg-black/60 hover:text-red-400 backdrop-blur-sm'
       } ${className}`}
-      aria-label={active ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+      aria-label={active ? t.favRemoveAria : t.favAddAria}
     >
       <svg
         className={iconSize}

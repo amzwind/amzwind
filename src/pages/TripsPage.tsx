@@ -28,7 +28,7 @@ export default function TripsPage() {
         const data = await listTrips()
         if (!cancelled) setTrips(data)
       } catch (err: unknown) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Erro ao carregar viagens')
+        if (!cancelled) setError(err instanceof Error ? err.message : t.tripErrorLoad)
       } finally {
         if (!cancelled) setLoading(false)
       }

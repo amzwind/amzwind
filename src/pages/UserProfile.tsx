@@ -93,7 +93,7 @@ export default function UserProfile() {
     const path = `avatars/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const { error } = await supabase.storage.from('avatars').upload(path, file, { contentType: file.type })
     if (error) {
-      setToast({ message: 'Erro ao enviar avatar: ' + error.message, type: 'error' })
+      setToast({ message: t.profileErrorAvatar + ' ' + error.message, type: 'error' })
     } else {
       const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
       if (urlData?.publicUrl) setAvatarUrl(urlData.publicUrl)
@@ -117,7 +117,7 @@ export default function UserProfile() {
       .eq('id', profile.id)
 
     if (error) {
-      setToast({ message: 'Erro ao salvar: ' + error.message, type: 'error' })
+      setToast({ message: t.profileErrorSave + ' ' + error.message, type: 'error' })
     } else {
       setProfile({
         ...profile,
@@ -127,7 +127,7 @@ export default function UserProfile() {
         whatsapp: whatsapp.trim() || null,
         avatar_url: avatarUrl.trim() || null,
       })
-      setToast({ message: 'Perfil atualizado com sucesso!', type: 'success' })
+      setToast({ message: t.profileSuccessSave, type: 'success' })
     }
     setSaving(false)
   }
@@ -154,7 +154,7 @@ export default function UserProfile() {
     const notes = parseNotes(b.notes)
     if (notes?.items?.[0]?.title) return notes.items[0].title
     if (notes?.service) return notes.service
-    return b.item_type === 'experience' ? 'Experiência' : b.item_type === 'class' ? 'Aula' : 'Produto'
+    return b.item_type === 'experience' ? t.profileBookingTypeExperience : b.item_type === 'class' ? t.profileBookingTypeClass : t.profileBookingTypeProduct
   }
 
   function getBookingDate(b: Booking): string {
@@ -208,7 +208,7 @@ export default function UserProfile() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Voltar
+            {t.profileBack}
           </button>
 
           {/* Portal Header */}
@@ -242,15 +242,15 @@ export default function UserProfile() {
             <div className="relative grid grid-cols-3 gap-3 mt-6">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/10">
                 <p className="text-xl font-bold">{reservaBookings.length}</p>
-                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">Reservas</p>
+                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">{t.profileStatsBookings}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/10">
                 <p className="text-xl font-bold">{reservaBookings.filter((b) => b.status === 'confirmed').length}</p>
-                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">Confirmadas</p>
+                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">{t.profileStatsConfirmed}</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center border border-white/10">
                 <p className="text-xl font-bold">{produtoBookings.length}</p>
-                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">Produtos</p>
+                <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider mt-0.5">{t.profileStatsProducts}</p>
               </div>
             </div>
           </div>
@@ -258,14 +258,14 @@ export default function UserProfile() {
           {/* Tabs */}
           <div className="flex gap-2 mb-8 overflow-x-auto pb-1">
             {([
-              { key: 'portal' as const, icon: '👤', label: 'Perfil' },
-              { key: 'reservas' as const, icon: '🌊', label: 'Minhas Reservas' },
-              { key: 'produtos' as const, icon: '🛍️', label: 'Produtos' },
-              { key: 'galeria' as const, icon: '📸', label: 'Galeria' },
-              { key: 'viagens' as const, icon: '🏔️', label: 'Trips' },
-              { key: 'comunidade' as const, icon: '🏄', label: 'Feed' },
-              { key: 'amigos' as const, icon: '🤝', label: 'Amigos' },
-              { key: 'conversas' as const, icon: '💬', label: 'Chat' },
+              { key: 'portal' as const, icon: '👤', label: t.profileTabProfile },
+              { key: 'reservas' as const, icon: '🌊', label: t.profileTabBookings },
+              { key: 'produtos' as const, icon: '🛍️', label: t.profileTabProducts },
+              { key: 'galeria' as const, icon: '📸', label: t.profileTabGallery },
+              { key: 'viagens' as const, icon: '🏔️', label: t.profileTabTrips },
+              { key: 'comunidade' as const, icon: '🏄', label: t.profileTabFeed },
+              { key: 'amigos' as const, icon: '🤝', label: t.profileTabFriends },
+              { key: 'conversas' as const, icon: '💬', label: t.profileTabChat },
             ]).map((tab) => (
               <button
                 key={tab.key}
@@ -288,34 +288,34 @@ export default function UserProfile() {
               <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5 space-y-5">
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
                   <svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  Dados Pessoais
+                   {t.profilePersonalData}
                 </h3>
 
                 <div>
-                  <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">Nome Completo</label>
+                  <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">{t.profileFullName}</label>
                   <input
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Seu nome completo"
+                    placeholder={t.profileFullNamePlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">Bio do Atleta</label>
+                  <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">{t.profileBio}</label>
                   <textarea
                     rows={3}
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder="Conte sua história: desde quando pratica kitesurf, seus spots favoritos, conquistas..."
+                    placeholder={t.profileBioPlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">E-mail</label>
+                    <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">{t.profileEmail}</label>
                     <input
                       value={userEmail}
                       disabled
@@ -323,11 +323,11 @@ export default function UserProfile() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">Telefone</label>
+                    <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">{t.profilePhone}</label>
                     <input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(92) 99999-0000"
+                      placeholder={t.profilePhonePlaceholder}
                       className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm"
                     />
                   </div>
@@ -336,13 +336,13 @@ export default function UserProfile() {
                 <div>
                   <label className="flex items-center gap-2 text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5 uppercase tracking-wider">
                     <svg className="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    WhatsApp (obrigatório para contato)
+                    {t.profileWhatsAppRequired}
                   </label>
                   <input
                     required
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="(92) 99999-0000"
+                    placeholder={t.profilePhonePlaceholder}
                     className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm"
                   />
                 </div>
@@ -350,13 +350,13 @@ export default function UserProfile() {
 
               <div className="flex items-center gap-4">
                 <button type="submit" disabled={saving} className="btn-primary disabled:opacity-50">
-                  {saving ? 'Salvando...' : 'Salvar Perfil'}
+                  {saving ? t.profileSaving : t.profileSave}
                 </button>
               </div>
 
               {profile?.created_at && (
                 <p className="text-xs text-amz-terra-light dark:text-amz-areia/40">
-                  Membro desde: {new Date(profile.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  {t.profileMemberSince} {new Date(profile.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
                 </p>
               )}
             </form>
@@ -370,14 +370,14 @@ export default function UserProfile() {
                   <svg className="w-5 h-5 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" /><circle cx="12" cy="12" r="10" /></svg>
                   Experiências & Aulas
                 </h3>
-                <span className="text-xs text-amz-terra-light dark:text-amz-areia/40">{reservaBookings.length} reserva(s)</span>
+                <span className="text-xs text-amz-terra-light dark:text-amz-areia/40">{reservaBookings.length} {t.profileStatsReservations}</span>
               </div>
 
               {reservaBookings.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <div className="text-4xl mb-3">🌊</div>
-                  <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma reserva ainda</p>
-                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Suas experiências, aulas e downwinds aparecerão aqui</p>
+                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.profileNoBookings}</p>
+                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">{t.profileNoBookingsHint}</p>
                    <Link to="/#experiencias" className="btn-primary inline-block text-sm">{t.heroCTA1}</Link>
                 </div>
               ) : (
@@ -458,17 +458,17 @@ export default function UserProfile() {
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
                   <svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                  Produtos Físicos
+                   {t.profileProductsPhysical}
                 </h3>
-                <span className="text-xs text-amz-terra-light dark:text-amz-areia/40">{produtoBookings.length} produto(s)</span>
+                <span className="text-xs text-amz-terra-light dark:text-amz-areia/40">{produtoBookings.length} {t.profileProductsCount}</span>
               </div>
 
               {produtoBookings.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <div className="text-4xl mb-3">🛍️</div>
-                  <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhum produto comprado</p>
-                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Lycras, chapéus, acessórios e mais</p>
-                   <Link to="/produtos" className="btn-primary inline-block text-sm">Ir à Loja</Link>
+                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.profileNoProducts}</p>
+                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">{t.profileNoProductsHint}</p>
+                    <Link to="/produtos" className="btn-primary inline-block text-sm">{t.profileGoToShop}</Link>
                 </div>
               ) : (
                 produtoBookings.map((b) => {
@@ -489,7 +489,7 @@ export default function UserProfile() {
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{itemTitle}</p>
                           <p className="text-xs text-amz-terra-light dark:text-amz-areia/40">
-                            Comprado em {new Date(b.created_at).toLocaleDateString('pt-BR')}
+                            {t.profilePurchasedIn} {new Date(b.created_at).toLocaleDateString('pt-BR')}
                           </p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -522,9 +522,9 @@ export default function UserProfile() {
                             </div>
                             <div>
                               <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-                                {b.status === 'confirmed' ? 'Produto entregue' : 'Aguardando confirmação'}
+                                {b.status === 'confirmed' ? t.profileDelivered : t.profilePendingConfirmation}
                               </p>
-                              <p className="text-xs text-emerald-600/70 dark:text-emerald-400/50">Status da entrega</p>
+                               <p className="text-xs text-emerald-600/70 dark:text-emerald-400/50">{t.profileDeliveryStatus}</p>
                             </div>
                           </div>
                         </div>
@@ -541,18 +541,18 @@ export default function UserProfile() {
             <div className="space-y-6">
               <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
                 <svg className="w-5 h-5 text-amz-terra" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                Galeria das Sessions
+                 {t.profileSessionsGallery}
               </h3>
 
               <p className="text-sm text-amz-terra-light dark:text-amz-areia/50">
-                Fotos oficiais tiradas pela equipe da Amazon Wind nas suas sessões. Baixe, comente e conecte-se com outros participantes.
+                 {t.profileSessionsDescription}
               </p>
 
               {reservaBookings.filter((b) => b.status === 'confirmed').length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <div className="text-4xl mb-3">📸</div>
-                  <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma sessão concluída</p>
-                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">Complete uma experiência para acessar as fotos da session</p>
+                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.profileNoSessions}</p>
+                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.profileNoSessionsHint}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -573,7 +573,7 @@ export default function UserProfile() {
                               <p className="text-xs text-amz-terra-light dark:text-amz-areia/40">{bookingDate}</p>
                             </div>
                             <span className="text-[11px] font-bold uppercase tracking-wide px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                              Concluída
+                               {t.profileSessionCompleted}
                             </span>
                           </div>
 
@@ -591,15 +591,15 @@ export default function UserProfile() {
                             </div>
 
                             <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 text-center">
-                              Galeria será disponibilizada pela equipe em breve
+                               {t.profileGallerySoon}
                             </p>
 
                             <div className="bg-amz-areia/30 dark:bg-white/[0.03] rounded-xl p-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <svg className="w-4 h-4 text-amz-oceano" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                                <span className="text-xs font-semibold text-amz-terra dark:text-amz-areia">Comentários da Trip</span>
+                                 <span className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{t.profileTripComments}</span>
                               </div>
-                              <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 italic">"Em breve você poderá comentar e interagir com outros participantes desta sessão!"</p>
+                               <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 italic">"{t.profileTripCommentsSoon}"</p>
                             </div>
                           </div>
                         </div>
@@ -615,18 +615,18 @@ export default function UserProfile() {
             <div className="space-y-4">
               <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
                 <svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                Minhas Trips
+                 {t.profileMyTrips}
               </h3>
               <p className="text-sm text-amz-terra-light dark:text-amz-areia/50">
-                Trips que você organizou ou participa.
+                 {t.profileMyTripsDescription}
               </p>
 
               {userTrips.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <div className="text-4xl mb-3">🏔️</div>
-                  <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma trip ainda</p>
-                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Crie ou participe de uma trip</p>
-                   <Link to="/trips" className="btn-primary inline-block text-sm">Ver Trips</Link>
+                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.profileNoTrips}</p>
+                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">{t.profileNoTripsHint}</p>
+                    <Link to="/trips" className="btn-primary inline-block text-sm">{t.profileViewTrips}</Link>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -639,7 +639,7 @@ export default function UserProfile() {
                       completed: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
                     }
                     const statusLabels: Record<string, string> = {
-                      draft: 'Rascunho', published: 'Publicada', full: 'Lotada', cancelled: 'Cancelada', completed: 'Concluída',
+                      draft: t.profileStatusDraft, published: t.profileStatusPublished, full: t.profileStatusFull, cancelled: t.profileStatusCancelled, completed: t.profileStatusCompleted,
                     }
                     return (
                       <button
@@ -665,7 +665,7 @@ export default function UserProfile() {
                                 {statusLabels[trip.status] || trip.status}
                               </span>
                               <span className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">
-                                {trip.participant_count || 0} participantes
+                                 {trip.participant_count || 0} {t.profileParticipants}
                               </span>
                             </div>
                           </div>
@@ -686,10 +686,10 @@ export default function UserProfile() {
             <div className="space-y-6">
               <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
                 <svg className="w-5 h-5 text-amz-oceano" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                Feed da Comunidade
+                 {t.profileCommunityFeed}
               </h3>
               <p className="text-sm text-amz-terra-light dark:text-amz-areia/50">
-                Conecte-se com outros riders. Compartilhe suas sessões, fotos e conquistas no kitesurf.
+                 {t.profileCommunityFeedDescription}
               </p>
               <Feed
                 currentUserId={profile?.id || ''}

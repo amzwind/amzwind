@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { createPost, type PostFeedItem } from '../../services/feed'
 
 type Status = 'idle' | 'uploading' | 'publishing' | 'success' | 'error'
@@ -21,6 +22,7 @@ function isVideoUrl(url: string): boolean {
 }
 
 export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId, tripName }: CreatePostProps) {
+  const { t } = useLanguage()
   const [content, setContent] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaPreview, setMediaPreview] = useState<string | null>(null)
@@ -63,7 +65,7 @@ export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId,
       setStatus('success')
       setTimeout(() => setStatus('idle'), 1500)
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Erro ao publicar.')
+      setErrorMessage(err instanceof Error ? err.message : t.feedPostError)
       setStatus('error')
     }
   }
@@ -86,7 +88,7 @@ export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId,
             rows={3}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder={tripName ? `Postar na trip "${tripName}"...` : 'Compartilhe sua session de kite... 🪁'}
+            placeholder={tripName ? t.feedPostTripPlaceholder.replace('${tripName}', tripName) : t.feedPostPlaceholder}
             disabled={isBusy}
             className="w-full px-4 py-3 rounded-xl border border-amz-areia-dark/30 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm resize-none disabled:opacity-50"
           />
@@ -114,7 +116,7 @@ export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId,
           )}
 
           {status === 'success' && (
-            <p className="text-xs text-emerald-600 font-medium">Publicado com sucesso!</p>
+            <p className="text-xs text-emerald-600 font-medium">{t.feedPostSuccess}</p>
           )}
 
           <div className="flex items-center justify-between">
@@ -133,7 +135,7 @@ export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId,
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-amz-oceano hover:bg-amz-oceano/10 transition-colors disabled:opacity-40"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                Foto/Vídeo
+                {t.feedPostMedia}
               </button>
             </div>
 
@@ -142,7 +144,7 @@ export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId,
               disabled={isBusy || (!content.trim() && !mediaFile)}
               className="px-5 py-2 rounded-xl bg-amz-dourado text-white text-sm font-semibold hover:bg-amz-dourado/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {isBusy ? (status === 'uploading' ? 'Enviando mídia...' : 'Publicando...') : 'Publicar'}
+              {isBusy ? (status === 'uploading' ? t.feedPostSending : t.feedPostPublishing) : t.feedPostButton}
             </button>
           </div>
         </div>

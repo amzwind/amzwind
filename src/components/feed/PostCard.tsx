@@ -13,9 +13,9 @@ interface PostCardProps {
   onUpdate?: (postId: string, newContent: string) => void
 }
 
-function getTimeAgo(dateStr: string): string {
+function getTimeAgo(dateStr: string, t: Record<string, string>): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 60) return 'agora'
+  if (diff < 60) return t.feedPostNow
   if (diff < 3600) return `${Math.floor(diff / 60)}min`
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`
   if (diff < 604800) return `${Math.floor(diff / 86400)}d`
@@ -45,7 +45,7 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
   const [editError, setEditError] = useState('')
 
   const isOwn = post.user_id === currentUserId
-  const displayName = author?.full_name || 'Rider'
+  const displayName = author?.full_name || t.feedCommentRider
   const isEdited = post.updated_at && post.updated_at !== post.created_at
 
   async function handleLike() {
@@ -58,7 +58,7 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
   }
 
   async function handleDelete() {
-    if (!window.confirm(t.feedConfirmDelete || 'Excluir esta publicação?') || deleting) return
+    if (!window.confirm(t.feedPostDeleteConfirm) || deleting) return
     setDeleting(true)
     try {
       await deletePost(post.id)
@@ -77,7 +77,7 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
       onUpdate?.(post.id, editContent.trim())
       setEditing(false)
     } catch (err: unknown) {
-      setEditError(err instanceof Error ? err.message : 'Erro ao salvar')
+      setEditError(err instanceof Error ? err.message : t.feedPostErrorSave)
     } finally {
       setSaving(false)
     }
@@ -103,22 +103,24 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{displayName}</p>
             <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">
-              {getTimeAgo(post.created_at)}
-              {isEdited && <span className="ml-1 italic">({t.feedEdited || 'editado'})</span>}
+              {getTimeAgo(post.created_at, t as unknown as Record<string, string>)}
+              {isEdited && <span className="ml-1 italic">({t.feedPostEdited})</span>}
             </p>
           </div>
           {isOwn && !editing && (
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setEditing(true)}
-                className="p-1.5 rounded-lg text-amz-oceano hover:bg-amz-oceano/10 transition-colors"
+                aria-label={t.adminEdit}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-lg text-amz-oceano hover:bg-amz-oceano/10 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                aria-label={t.adminDelete}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               </button>
@@ -141,14 +143,14 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
                 disabled={!editContent.trim() || saving}
                 className="px-3 py-1.5 rounded-lg bg-amz-oceano text-white text-xs font-semibold hover:bg-amz-oceano/90 transition-colors disabled:opacity-40"
               >
-                {saving ? (t.feedSaving || 'Salvando...') : (t.feedSave || 'Salvar')}
+                {saving ? t.feedPostSaving : t.feedPostSave}
               </button>
               <button
                 onClick={handleCancelEdit}
                 disabled={saving}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
               >
-                {t.feedCancel || 'Cancelar'}
+                {t.feedCommentCancel}
               </button>
             </div>
           </div>
@@ -186,19 +188,21 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
           </button>
           <button
             onClick={() => setShowComments(!showComments)}
+            aria-label={t.feedPostComment}
             className="flex items-center gap-1.5 text-sm text-amz-terra-light dark:text-amz-areia/40 hover:text-amz-dourado transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
             {post.comments_count > 0 && <span>{post.comments_count}</span>}
-            <span className="hidden sm:inline">{t.feedComment || 'Comentar'}</span>
+            <span className="hidden sm:inline">{t.feedPostComment}</span>
           </button>
           <button
             onClick={() => setShowShareDialog(true)}
+            aria-label={t.feedPostShare}
             className="flex items-center gap-1.5 text-sm text-amz-terra-light dark:text-amz-areia/40 hover:text-emerald-500 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8m-4-6l-4-4m0 0L8 6m4-4v13" /></svg>
             {sharesCount > 0 && <span>{sharesCount}</span>}
-            <span className="hidden sm:inline">{t.feedShare || 'Compartilhar'}</span>
+            <span className="hidden sm:inline">{t.feedPostShare}</span>
           </button>
         </div>
       </div>

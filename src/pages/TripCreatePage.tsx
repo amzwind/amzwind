@@ -61,13 +61,13 @@ export default function TripCreatePage() {
       let coverUrl: string | null = null
       if (coverFile) {
         const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error('Não autenticado')
+        if (!user) throw new Error(t.tripNotAuthenticated)
         const ext = coverFile.name.split('.').pop() || 'jpg'
         const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
         const { error: uploadError } = await supabase.storage
           .from('trip-covers')
           .upload(path, coverFile, { contentType: coverFile.type })
-        if (uploadError) throw new Error('Falha no upload: ' + uploadError.message)
+        if (uploadError) throw new Error(t.tripErrorUpload + ' ' + uploadError.message)
         const { data: urlData } = supabase.storage.from('trip-covers').getPublicUrl(path)
         coverUrl = urlData?.publicUrl || null
       }
@@ -97,7 +97,7 @@ export default function TripCreatePage() {
       setStatus('success')
       setTimeout(() => navigate(`/trips/${tripId}`), 800)
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Erro ao criar viagem')
+      setErrorMessage(err instanceof Error ? err.message : t.tripErrorCreate)
       setStatus('error')
     }
   }

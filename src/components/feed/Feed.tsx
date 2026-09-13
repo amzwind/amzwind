@@ -39,7 +39,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
       }
       setHasMore(result.posts.length === PAGE_SIZE)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar feed.')
+      setError(err instanceof Error ? err.message : t.feedErrorLoading)
     } finally {
       setLoading(false)
       setLoadingMore(false)
@@ -195,7 +195,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
               : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
           }`}
         >
-          {t.feedGlobal || 'Global'}
+          {t.feedGlobal}
         </button>
         <button
           onClick={() => handleFilterChange('friends')}
@@ -205,7 +205,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
               : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
           }`}
         >
-          {t.feedFriends || 'Amigos'}
+          {t.feedFriends}
         </button>
       </div>
 
@@ -213,7 +213,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
         <div className="bg-red-50 dark:bg-red-500/10 rounded-xl p-4 text-center">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           <button onClick={() => { setError(''); fetchPosts(0, feedFilter) }} className="mt-2 text-xs font-semibold text-red-500 hover:text-red-600 underline">
-            {t.feedRetry || 'Tentar novamente'}
+            {t.feedRetry}
           </button>
         </div>
       )}
@@ -221,8 +221,8 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
       {posts.length === 0 && !error ? (
         <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
           <div className="text-4xl mb-3">🏄</div>
-          <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.feedEmpty || 'Nenhuma publicação ainda'}</p>
-          <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.feedEmptyHint || 'Seja o primeiro a compartilhar uma session!'}</p>
+          <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.feedEmpty}</p>
+          <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.feedEmptyHint}</p>
         </div>
       ) : (
         <>
@@ -243,7 +243,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
               disabled={loadingMore}
               className="w-full py-3 rounded-xl text-sm font-semibold text-amz-oceano hover:bg-amz-oceano/10 transition-colors disabled:opacity-40"
             >
-              {loadingMore ? (t.feedLoading || 'Carregando...') : (t.feedLoadMore || 'Carregar mais')}
+              {loadingMore ? t.feedLoading : t.feedLoadMore}
             </button>
           )}
         </>

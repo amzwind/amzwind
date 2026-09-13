@@ -573,6 +573,575 @@ export type TranslationKeys = {
   tripVisibilityLabel: string
   tripVisibilityPublic: string
   tripVisibilityPrivate: string
+
+  // FASE 7 — UserProfile
+  profileTabProfile: string
+  profileTabBookings: string
+  profileTabProducts: string
+  profileTabGallery: string
+  profileTabTrips: string
+  profileTabFeed: string
+  profileTabFriends: string
+  profileTabChat: string
+  profilePersonalData: string
+  profileFullName: string
+  profileFullNamePlaceholder: string
+  profileBio: string
+  profileBioPlaceholder: string
+  profileEmail: string
+  profilePhone: string
+  profilePhonePlaceholder: string
+  profileWhatsApp: string
+  profileWhatsAppRequired: string
+  profileSaving: string
+  profileSave: string
+  profileMemberSince: string
+  profileBack: string
+  profileStatsBookings: string
+  profileStatsConfirmed: string
+  profileStatsProducts: string
+  profileStatsReservations: string
+  profileNoBookings: string
+  profileNoBookingsHint: string
+  profileProductsPhysical: string
+  profileProductsCount: string
+  profileNoProducts: string
+  profileNoProductsHint: string
+  profileGoToShop: string
+  profilePurchasedIn: string
+  profileDelivered: string
+  profilePendingConfirmation: string
+  profileDeliveryStatus: string
+  profileSessionsGallery: string
+  profileSessionsDescription: string
+  profileNoSessions: string
+  profileNoSessionsHint: string
+  profileSessionCompleted: string
+  profileGallerySoon: string
+  profileTripComments: string
+  profileTripCommentsSoon: string
+  profileMyTrips: string
+  profileMyTripsDescription: string
+  profileNoTrips: string
+  profileNoTripsHint: string
+  profileViewTrips: string
+  profileStatusDraft: string
+  profileStatusPublished: string
+  profileStatusFull: string
+  profileStatusCancelled: string
+  profileStatusCompleted: string
+  profileParticipants: string
+  profileCommunityFeed: string
+  profileCommunityFeedDescription: string
+  profileErrorAvatar: string
+  profileErrorSave: string
+  profileSuccessSave: string
+  profileBookingTypeExperience: string
+  profileBookingTypeClass: string
+  profileBookingTypeProduct: string
+
+  // FASE 7 — KiteCoursePage
+  kiteCourseTitle: string
+  kiteCourseSubtitle: string
+  kiteCourseIncludesTitle: string
+  kiteCourseInclude1: string
+  kiteCourseInclude2: string
+  kiteCourseInclude3: string
+  kiteCourseInclude4: string
+  kiteCourseInclude5: string
+  kiteCourseInclude6: string
+  kiteCourseInclude7: string
+  kiteCourseInclude8: string
+  kiteCourseModule1Title: string
+  kiteCourseModule1Desc: string
+  kiteCourseModule2Title: string
+  kiteCourseModule2Desc: string
+  kiteCourseModule3Title: string
+  kiteCourseModule3Desc: string
+  kiteCourseTotalHours: string
+  kiteCourseTotalClasses: string
+  kiteCourseInvestment: string
+  kiteCourseInvestmentSummary: string
+  kiteCourseAbout: string
+  kiteCourseAboutText: string
+  kiteCourseWhatIncluded: string
+  kiteCourseModules: string
+  kiteCourseClasses: string
+  kiteCourseGallery: string
+  kiteCourseSchedule: string
+  kiteCourseScheduleDescription: string
+  kiteCourseTotalInvestment: string
+  kiteCourseScheduleButton: string
+  kiteCourseSelectDate: string
+  kiteCourseReviews: string
+  kiteCourseReviewsEmpty: string
+  kiteCourseVideoSoon: string
+
+  // FASE 7 — ExperienceDetail
+  expDetailNotFound: string
+  expDetailPackage: string
+  expDetailIndividual: string
+  expDetailFullPackage: string
+  expDetailWhatIncluded: string
+  expDetailWhatIncludedShort: string
+  expDetailPackageTotal: string
+  expDetailPerPerson: string
+  expDetailBookingDate: string
+  expDetailAddToCart: string
+  expDetailSecurePayment: string
+  expDetailUserFallback: string
+
+  // FASE 7 — AdminDashboard
+  adminAccessDenied: string
+  adminHeroCover: string
+  adminTrips: string
+  adminLoadingDashboard: string
+  adminPanel: string
+  adminThemeLight: string
+  adminThemeDark: string
+  adminCollapse: string
+  adminOnline: string
+
+  // FASE 7 — Feed components
+  feedErrorLoading: string
+  feedPostError: string
+  feedPostTripPlaceholder: string
+  feedPostPlaceholder: string
+  feedPostSuccess: string
+  feedPostMedia: string
+  feedPostSending: string
+  feedPostPublishing: string
+  feedPostButton: string
+  feedCommentLoading: string
+  feedCommentEmpty: string
+  feedCommentPlaceholder: string
+  feedCommentSend: string
+  feedCommentSave: string
+  feedCommentCancel: string
+  feedCommentRider: string
+  feedPostNow: string
+  feedPostEdited: string
+  feedPostDeleteConfirm: string
+  feedPostErrorSave: string
+  feedPostSaving: string
+  feedPostSave: string
+  feedPostComment: string
+  feedPostShare: string
+
+  // FASE 7 — Chat components
+  chatRiderFallback: string
+  chatDeletedMessage: string
+  chatMessageFallback: string
+  chatReply: string
+  chatDelete: string
+  chatCancel: string
+  chatMessagePlaceholder: string
+
+  // FASE 7 — ConversationsList
+  convRiderFallback: string
+  convYesterday: string
+  convTitle: string
+  convSearchPlaceholder: string
+  convSearching: string
+  convEmpty: string
+  convStartChat: string
+
+  // FASE 7 — Community
+  communityLoginButton: string
+
+  // FASE 7 — Notifications
+  notificationNow: string
+  notificationMin: string
+  notificationHour: string
+  notificationDay: string
+
+  // FASE 7 — Friends
+  friendsRiderFallback: string
+
+  // FASE 7 — Products
+  productNotFound: string
+  productAddedToCart: string
+  productInCart: string
+  productContinueShopping: string
+  productViewCart: string
+  productOutOfStock: string
+  productViewOthers: string
+
+  // FASE 7 — Wishlist
+  wishlistAlreadyInCart: string
+  wishlistAdded: string
+  wishlistRemoved: string
+  wishlistTitle: string
+  wishlistSubtitle: string
+  wishlistEmpty: string
+  wishlistEmptyHint: string
+  wishlistInCart: string
+  wishlistAddToCart: string
+  wishlistRemove: string
+  wishlistItem: string
+  wishlistItems: string
+
+  // FASE 7 — Trips (error/status)
+  tripErrorLoad: string
+  tripErrorJoin: string
+  tripErrorLeave: string
+  tripErrorInvite: string
+  tripErrorRemove: string
+  tripErrorCreate: string
+  tripErrorSave: string
+  tripErrorUpload: string
+  tripNotAuthenticated: string
+  tripStatusPublic: string
+  tripStatusPrivate: string
+  tripAgo: string
+
+  // FASE 7 — ShareDialog
+  shareRiderFallback: string
+  shareGroupFallback: string
+  shareTripFallback: string
+  shareConvFallback: string
+  shareSent: string
+
+  // FASE 7 — FavoriteButton
+  favRemoveAria: string
+  favAddAria: string
+
+  // FASE 7 — Header
+  headerMenu: string
+  headerAbout: string
+  headerToggleTheme: string
+  headerUserFallback: string
+  headerMyProfile: string
+  headerAdminPanel: string
+  headerLogin: string
+  headerCart: string
+
+  // FASE 7 — CartCheckout
+  checkoutTestimonial1: string
+  checkoutTestimonial2: string
+  checkoutTestimonial3: string
+  checkoutEmpty: string
+  checkoutEmptyHint: string
+  checkoutSummary: string
+  checkoutSubtotal: string
+  checkoutPixDiscount: string
+  checkoutTotal: string
+  checkoutWhatsApp: string
+  checkoutFilled: string
+  checkoutPaymentMethod: string
+  checkoutCard: string
+  checkoutUpTo: string
+  checkoutInternational: string
+  checkoutPixInstant: string
+  checkoutPixDiscountApplied: string
+  checkoutPixKey: string
+  checkoutPixCopy: string
+  checkoutPixCopied: string
+  checkoutCardPlaceholder: string
+  checkoutCardName: string
+  checkoutInstallments: string
+  checkoutInterestFree: string
+  checkoutPaypalTitle: string
+  checkoutPaypalDescription: string
+  checkoutConfirmPayment: string
+  checkoutTestimonialsTitle: string
+  checkoutSecurePayment: string
+  checkoutEncryptedPayment: string
+  checkoutGuarantee: string
+  checkoutWhatsAppSupport: string
+  checkoutAddItemFirst: string
+  checkoutWhatsAppRequired: string
+  checkoutCreateAccount: string
+  checkoutItemRemoved: string
+
+  // FASE 7 — Splash / ProtectedRoute
+  splashSubtitle: string
+  protectedRouteLoading: string
+
+  // FASE 7 — Admin components (heroes)
+  heroSlideLimit: string
+  heroMediaRequired: string
+  heroTitleRequired: string
+  heroSlideUpdated: string
+  heroSlideCreated: string
+  heroSlideRemoved: string
+  heroSlideDeleted: string
+  heroManageTitle: string
+  heroManageDescription: string
+  heroSlideCount: string
+  heroNewSlide: string
+  heroDimensionTip: string
+  heroUploadTip: string
+  heroLoading: string
+  heroNoSlides: string
+  heroCreateFirst: string
+  heroTypeYoutube: string
+  heroTypeVideo: string
+  heroTypeImage: string
+  heroOfficial: string
+  heroCtaPrefix: string
+  heroMoveUp: string
+  heroMoveDown: string
+  heroEdit: string
+  heroDelete: string
+  heroEditSlide: string
+  heroNewSlideTitle: string
+  heroTitleLabel: string
+  heroTitlePlaceholder: string
+  heroSubtitleLabel: string
+  heroSubtitlePlaceholder: string
+  heroMediaTypeLabel: string
+  heroOrderLabel: string
+  heroUploadLabel: string
+  heroUrlLabel: string
+  heroUrlPlaceholder: string
+  heroCtaTextLabel: string
+  heroCtaTextPlaceholder: string
+  heroCtaLinkLabel: string
+  heroCancel: string
+  heroSaving: string
+  heroUpdate: string
+  heroCreate: string
+  heroDeleteTitle: string
+  heroDeleteConfirm: string
+  heroDeleteYes: string
+
+  // FASE 7 — Admin components (bookings)
+  bookingUpdated: string
+  bookingDeleted: string
+  bookingTypeExperience: string
+  bookingTypeClass: string
+  bookingTypeProduct: string
+  bookingConfirmAction: string
+  bookingPaid: string
+  bookingDetails: string
+  bookingClientInfo: string
+  bookingFieldName: string
+  bookingFieldEmail: string
+  bookingFieldWhatsApp: string
+  bookingFieldPhone: string
+  bookingNoContact: string
+  bookingReservationDetails: string
+  bookingFieldType: string
+  bookingFieldItemId: string
+  bookingReservedItems: string
+  bookingStatusPending: string
+  bookingStatusConfirmed: string
+  bookingStatusCancelled: string
+  bookingDate: string
+  bookingNotes: string
+  bookingCancel: string
+  bookingDelete: string
+  bookingSaving: string
+  bookingSave: string
+  bookingDeleteTitle: string
+  bookingDeleteConfirm: string
+
+  // FASE 7 — Admin components (classes)
+  classErrorLoad: string
+  classErrorUpdate: string
+  classUpdated: string
+  classErrorCreate: string
+  classCreated: string
+  classErrorDelete: string
+  classDeleted: string
+  classLoading: string
+  classManageTitle: string
+  classManageDescription: string
+  classNewButton: string
+  classEmpty: string
+  classEdit: string
+  classDelete: string
+  classEditTitle: string
+  classNewTitle: string
+  classFieldTitle: string
+  classFieldTitlePlaceholder: string
+  classFieldPrice: string
+  classFieldDuration: string
+  classFieldDurationPlaceholder: string
+  classFieldLevel: string
+  classFieldLevelPlaceholder: string
+  classFieldDescription: string
+  classFieldImage: string
+  classFieldVideo: string
+  classCancel: string
+  classSaving: string
+  classUpdate: string
+  classCreate: string
+  classDeleteTitle: string
+  classDeleteConfirm: string
+
+  // FASE 7 — Admin components (about)
+  aboutTitleRequired: string
+  aboutUpdated: string
+  aboutCreated: string
+  aboutManageTitle: string
+  aboutManageDescription: string
+  aboutEditContent: string
+  aboutLoading: string
+  aboutMainContent: string
+  aboutFieldTitle: string
+  aboutFieldTitlePlaceholder: string
+  aboutFieldSubtitle: string
+  aboutFieldSubtitlePlaceholder: string
+  aboutFieldDescription: string
+  aboutFieldDescriptionPlaceholder: string
+  aboutMissionVision: string
+  aboutFieldMission: string
+  aboutFieldMissionPlaceholder: string
+  aboutFieldVision: string
+  aboutFieldVisionPlaceholder: string
+  aboutMedia: string
+  aboutCoverImage: string
+  aboutCoverUrl: string
+  aboutVideoUrl: string
+  aboutGallery: string
+  aboutGalleryPlaceholder: string
+  aboutAddButton: string
+  aboutCancel: string
+  aboutSaving: string
+  aboutUpdate: string
+  aboutCreate: string
+  aboutUnsavedData: string
+  aboutLabelTitle: string
+  aboutLabelSubtitle: string
+  aboutLabelDescription: string
+  aboutLabelMission: string
+  aboutLabelVision: string
+  aboutLabelMedia: string
+  aboutLabelCover: string
+  aboutLabelVideo: string
+  aboutGalleryCount: string
+
+  // FASE 7 — Admin components (products)
+  productAdminName: string
+  productAdminPrice: string
+  productAdminStock: string
+  productAdminActions: string
+  productAdminUnit: string
+  productAdminEdit: string
+  productAdminDelete: string
+  productAdminCategoryPlaceholder: string
+  productAdminCancel: string
+  productAdminNew: string
+
+  // FASE 7 — Admin components (trips)
+  tripAdminStatusUpdated: string
+  tripAdminError: string
+  tripAdminDeleteConfirm: string
+  tripAdminDeleted: string
+  tripAdminDraft: string
+  tripAdminPublished: string
+  tripAdminFull: string
+  tripAdminCancelled: string
+  tripAdminCompleted: string
+  tripAdminPublic: string
+  tripAdminPrivate: string
+  tripAdminAll: string
+  tripAdminEmpty: string
+  tripAdminParticipants: string
+
+  // FASE 7 — Admin components (shared)
+  sharedStatusPending: string
+  sharedStatusConfirmed: string
+  sharedStatusCancelled: string
+  sharedUploadError: string
+  sharedUploading: string
+  sharedChooseVideo: string
+  sharedChooseImage: string
+
+  // FASE 7 — Admin components (financial)
+  financialStatusPending: string
+  financialStatusPaid: string
+  financialStatusOverdue: string
+  financialTypePayable: string
+  financialTypeReceivable: string
+  financialCategoryRent: string
+  financialCategoryEquipment: string
+  financialCategoryMarketing: string
+  financialCategorySalaries: string
+  financialCategoryServices: string
+  financialCategoryOperations: string
+  financialCategoryClasses: string
+  financialCategoryExpeditions: string
+  financialCategoryProducts: string
+  financialCategoryOther: string
+  financialUpdated: string
+  financialCreated: string
+  financialDeleted: string
+  financialSummary: string
+  financialPay: string
+  financialReceive: string
+  financialBalance: string
+  financialFilters: string
+  financialAllTypes: string
+  financialAllStatuses: string
+  financialNewEntry: string
+  financialEntries: string
+  financialItems: string
+  financialEmpty: string
+  financialFieldDescription: string
+  financialFieldDescriptionPlaceholder: string
+  financialFieldType: string
+  financialFieldValue: string
+  financialFieldDueDate: string
+  financialFieldCategory: string
+  financialFieldCategoryPlaceholder: string
+  financialFieldStatus: string
+  financialFieldNotes: string
+  financialFieldNotesPlaceholder: string
+  financialCancel: string
+  financialSaving: string
+  financialUpdate: string
+  financialCreate: string
+  financialDeleteTitle: string
+  financialDeleteConfirm: string
+
+  // FASE 7 — Admin components (experiences)
+  expAdminPackage: string
+  expAdminIndividual: string
+  expAdminItemsIncluded: string
+  expAdminTypeLabel: string
+  expAdminTypeIndividual: string
+  expAdminTypeIndividualDesc: string
+  expAdminTypePackage: string
+  expAdminTypePackageDesc: string
+  expAdminCategoryPlaceholder: string
+  expAdminCancel: string
+  expAdminNew: string
+  expAdminOriginalPrice: string
+  expAdminOriginalPricePlaceholder: string
+  expAdminOriginalPriceHelp: string
+  expAdminIncludedItems: string
+  expAdminIncludedPlaceholder: string
+  expAdminIncludedHelp: string
+
+  // FASE 7 — Experiencias (landing section)
+  expLandingDiscover: string
+  expLandingTitle: string
+  expLandingDescription: string
+  expLandingDetails: string
+
+  // FASE 7 — KiteSchool component
+  kiteSchoolAlt: string
+
+  // FASE 7 — ContactNewsletter
+  contactSendAnother: string
+
+  // FASE 7 — Servicos
+  svcWhatsAppRequired: string
+  svcDepartureAfterArrival: string
+
+  // FASE 7 — Footer
+  footerWhatsApp: string
+
+  // FASE 7 — InstallAppBanner
+  bannerClose: string
+
+  // Accessibility aria-labels
+  ariaAttach: string
+  ariaLike: string
+  ariaUnlike: string
 }
 
 const pt: TranslationKeys = {
@@ -1113,6 +1682,575 @@ const pt: TranslationKeys = {
   tripVisibilityLabel: 'Visibilidade',
   tripVisibilityPublic: 'Pública — aparece na listagem',
   tripVisibilityPrivate: 'Privada — só participantes veem',
+
+  // FASE 7 — UserProfile
+  profileTabProfile: 'Perfil',
+  profileTabBookings: 'Minhas Reservas',
+  profileTabProducts: 'Produtos',
+  profileTabGallery: 'Galeria',
+  profileTabTrips: 'Trips',
+  profileTabFeed: 'Feed',
+  profileTabFriends: 'Amigos',
+  profileTabChat: 'Chat',
+  profilePersonalData: 'Dados Pessoais',
+  profileFullName: 'Nome Completo',
+  profileFullNamePlaceholder: 'Seu nome completo',
+  profileBio: 'Bio do Atleta',
+  profileBioPlaceholder: 'Conte sua história: desde quando pratica kitesurf, seus spots favoritos, conquistas...',
+  profileEmail: 'E-mail',
+  profilePhone: 'Telefone',
+  profilePhonePlaceholder: '(92) 99999-0000',
+  profileWhatsApp: 'WhatsApp',
+  profileWhatsAppRequired: 'WhatsApp (obrigatório para contato)',
+  profileSaving: 'Salvando...',
+  profileSave: 'Salvar Perfil',
+  profileMemberSince: 'Membro desde:',
+  profileBack: 'Voltar',
+  profileStatsBookings: 'Reservas',
+  profileStatsConfirmed: 'Confirmadas',
+  profileStatsProducts: 'Produtos',
+  profileStatsReservations: 'reserva(s)',
+  profileNoBookings: 'Nenhuma reserva ainda',
+  profileNoBookingsHint: 'Suas experiências, aulas e downwinds aparecerão aqui',
+  profileProductsPhysical: 'Produtos Físicos',
+  profileProductsCount: 'produto(s)',
+  profileNoProducts: 'Nenhum produto comprado',
+  profileNoProductsHint: 'Lycras, chapéus, acessórios e mais',
+  profileGoToShop: 'Ir à Loja',
+  profilePurchasedIn: 'Comprado em',
+  profileDelivered: 'Produto entregue',
+  profilePendingConfirmation: 'Aguardando confirmação',
+  profileDeliveryStatus: 'Status da entrega',
+  profileSessionsGallery: 'Galeria das Sessions',
+  profileSessionsDescription: 'Fotos oficiais tiradas pela equipe da Amazon Wind nas suas sessões. Baixe, comente e conecte-se com outros participantes.',
+  profileNoSessions: 'Nenhuma sessão concluída',
+  profileNoSessionsHint: 'Complete uma experiência para acessar as fotos da session',
+  profileSessionCompleted: 'Concluída',
+  profileGallerySoon: 'Galeria será disponibilizada pela equipe em breve',
+  profileTripComments: 'Comentários da Trip',
+  profileTripCommentsSoon: 'Em breve você poderá comentar e interagir com outros participantes desta sessão!',
+  profileMyTrips: 'Minhas Trips',
+  profileMyTripsDescription: 'Trips que você organizou ou participa.',
+  profileNoTrips: 'Nenhuma trip ainda',
+  profileNoTripsHint: 'Crie ou participe de uma trip',
+  profileViewTrips: 'Ver Trips',
+  profileStatusDraft: 'Rascunho',
+  profileStatusPublished: 'Publicada',
+  profileStatusFull: 'Lotada',
+  profileStatusCancelled: 'Cancelada',
+  profileStatusCompleted: 'Concluída',
+  profileParticipants: 'participantes',
+  profileCommunityFeed: 'Feed da Comunidade',
+  profileCommunityFeedDescription: 'Conecte-se com outros riders. Compartilhe suas sessões, fotos e conquistas no kitesurf.',
+  profileErrorAvatar: 'Erro ao enviar avatar:',
+  profileErrorSave: 'Erro ao salvar:',
+  profileSuccessSave: 'Perfil atualizado com sucesso!',
+  profileBookingTypeExperience: 'Experiência',
+  profileBookingTypeClass: 'Aula',
+  profileBookingTypeProduct: 'Produto',
+
+  // FASE 7 — KiteCoursePage
+  kiteCourseTitle: 'Aula de Kitesurf Iniciante',
+  kiteCourseSubtitle: 'Módulo Iniciante',
+  kiteCourseIncludesTitle: 'O que está incluído',
+  kiteCourseInclude1: '10 aulas práticas (duração total: 30h)',
+  kiteCourseInclude2: 'Equipamento completo incluído (kite, barra, prancha, colete)',
+  kiteCourseInclude3: 'Teoria de segurança e meteorologia',
+  kiteCourseInclude4: 'Instrutor certificado IKO',
+  kiteCourseInclude5: 'Seguro de acidente durante as aulas',
+  kiteCourseInclude6: 'Certificado de conclusão do nível Iniciante',
+  kiteCourseInclude7: 'Vídeo análise das sessões',
+  kiteCourseInclude8: 'Água e lanches durante as aulas',
+  kiteCourseModule1Title: 'Módulo 1 — Fundamentos',
+  kiteCourseModule1Desc: 'Teoria na praia, montagem do equipamento, primeiros voos com kite na areia, controle básico da barra.',
+  kiteCourseModule2Title: 'Módulo 2 — Água',
+  kiteCourseModule2Desc: 'Body drag, water start, controle na água, voo assistido pelo instrutor, primeiras manobras.',
+  kiteCourseModule3Title: 'Módulo 3 — Independência',
+  kiteCourseModule3Desc: 'Manobras básicas autônomas, transição, corte, downwind guiado e análise de vídeo.',
+  kiteCourseTotalHours: '30h totais',
+  kiteCourseTotalClasses: 'aulas',
+  kiteCourseInvestment: 'Investimento',
+  kiteCourseInvestmentSummary: '10 aulas completas • Equipamento incluso • Certificação IKO',
+  kiteCourseAbout: 'Sobre o Curso',
+  kiteCourseAboutText: 'Nosso módulo Iniciante é o programa completo para quem quer aprender kitesurf do zero. Com 10 aulas práticas distribuídas em 3 módulos progressivos, você sai da teoria na praia até realizar suas primeiras manobras de forma independente. Todo o equipamento é fornecido e as aulas são ministradas por instrutores certificados IKO nas melhores condições de vento e água da costa amazônica.',
+  kiteCourseWhatIncluded: 'O que está incluído',
+  kiteCourseModules: 'Módulos do Curso',
+  kiteCourseClasses: 'aulas',
+  kiteCourseGallery: 'Galeria',
+  kiteCourseSchedule: 'Agendar Aulas',
+  kiteCourseScheduleDescription: 'Selecione as datas de início e término das suas aulas. O calendário abaixo ajuda a planejar seu curso.',
+  kiteCourseTotalInvestment: 'Total do investimento',
+  kiteCourseScheduleButton: 'Agendar e Prosseguir',
+  kiteCourseSelectDate: 'Selecione uma data',
+  kiteCourseReviews: 'Avaliações',
+  kiteCourseReviewsEmpty: 'Avaliações dos alunos aparecerão aqui após conclusão dos cursos.',
+  kiteCourseVideoSoon: 'Vídeo em breve',
+
+  // FASE 7 — ExperienceDetail
+  expDetailNotFound: 'Experiência não encontrada.',
+  expDetailPackage: 'Pacote',
+  expDetailIndividual: 'Avulso',
+  expDetailFullPackage: 'Pacote Completo',
+  expDetailWhatIncluded: 'O que está incluído no pacote',
+  expDetailWhatIncludedShort: 'O que está incluído',
+  expDetailPackageTotal: 'Investimento total do pacote',
+  expDetailPerPerson: 'por pessoa',
+  expDetailBookingDate: 'Data da Reserva',
+  expDetailAddToCart: 'Adicionar Pacote ao Carrinho',
+  expDetailSecurePayment: 'Pagamento seguro via PIX, Cartão ou PayPal',
+  expDetailUserFallback: 'User',
+
+  // FASE 7 — AdminDashboard
+  adminAccessDenied: 'Acesso restrito a administradores.',
+  adminHeroCover: 'Hero / Capa',
+  adminTrips: 'Trips',
+  adminLoadingDashboard: 'Carregando Painel Administrativo...',
+  adminPanel: 'Painel Admin',
+  adminThemeLight: 'Modo Claro',
+  adminThemeDark: 'Modo Escuro',
+  adminCollapse: 'Recolher',
+  adminOnline: 'Online',
+
+  // FASE 7 — Feed components
+  feedErrorLoading: 'Erro ao carregar feed.',
+  feedPostError: 'Erro ao publicar.',
+  feedPostTripPlaceholder: 'Postar na trip "${tripName}"...',
+  feedPostPlaceholder: 'Compartilhe sua session de kite... 🪁',
+  feedPostSuccess: 'Publicado com sucesso!',
+  feedPostMedia: 'Foto/Vídeo',
+  feedPostSending: 'Enviando mídia...',
+  feedPostPublishing: 'Publicando...',
+  feedPostButton: 'Publicar',
+  feedCommentLoading: 'Carregando...',
+  feedCommentEmpty: 'Nenhum comentário ainda.',
+  feedCommentPlaceholder: 'Escreva um comentário...',
+  feedCommentSend: 'Enviar',
+  feedCommentSave: 'Salvar',
+  feedCommentCancel: 'Cancelar',
+  feedCommentRider: 'Rider',
+  feedPostNow: 'agora',
+  feedPostEdited: 'editado',
+  feedPostDeleteConfirm: 'Excluir esta publicação?',
+  feedPostErrorSave: 'Erro ao salvar',
+  feedPostSaving: 'Salvando...',
+  feedPostSave: 'Salvar',
+  feedPostComment: 'Comentar',
+  feedPostShare: 'Compartilhar',
+
+  // FASE 7 — Chat components
+  chatRiderFallback: 'Rider',
+  chatDeletedMessage: 'Mensagem apagada',
+  chatMessageFallback: 'Mensagem',
+  chatReply: 'Responder',
+  chatDelete: 'Apagar',
+  chatCancel: 'Cancelar',
+  chatMessagePlaceholder: 'Mensagem...',
+
+  // FASE 7 — ConversationsList
+  convRiderFallback: 'Rider',
+  convYesterday: 'Ontem',
+  convTitle: 'Conversas',
+  convSearchPlaceholder: 'Buscar riders...',
+  convSearching: 'Buscando...',
+  convEmpty: 'Nenhuma conversa ainda. Busque um rider acima para iniciar!',
+  convStartChat: 'Iniciar conversa...',
+
+  // FASE 7 — Community
+  communityLoginButton: 'Entrar',
+
+  // FASE 7 — Notifications
+  notificationNow: 'Agora',
+  notificationMin: 'min',
+  notificationHour: 'h',
+  notificationDay: 'd',
+
+  // FASE 7 — Friends
+  friendsRiderFallback: 'Rider',
+
+  // FASE 7 — Products
+  productNotFound: 'Produto não encontrado.',
+  productAddedToCart: 'Adicionado ao carrinho!',
+  productInCart: 'no carrinho',
+  productContinueShopping: 'Continuar Comprando',
+  productViewCart: 'Ver Carrinho',
+  productOutOfStock: 'Este produto está esgotado no momento.',
+  productViewOthers: 'Ver outros produtos',
+
+  // FASE 7 — Wishlist
+  wishlistAlreadyInCart: 'Este item já está no carrinho',
+  wishlistAdded: 'adicionado ao carrinho!',
+  wishlistRemoved: 'Removido dos favoritos',
+  wishlistTitle: 'Lista de Desejos',
+  wishlistSubtitle: 'Itens salvos para reserva futura',
+  wishlistEmpty: 'Nenhum favorito ainda',
+  wishlistEmptyHint: 'Toque no ícone de coração em qualquer experiência ou produto para salvá-lo aqui.',
+  wishlistInCart: '✓ No Carrinho',
+  wishlistAddToCart: 'Enviar ao Carrinho',
+  wishlistRemove: 'Remover',
+  wishlistItem: 'item',
+  wishlistItems: 'itens',
+
+  // FASE 7 — Trips (error/status)
+  tripErrorLoad: 'Erro ao carregar viagem',
+  tripErrorJoin: 'Erro ao entrar na viagem',
+  tripErrorLeave: 'Erro ao sair da viagem',
+  tripErrorInvite: 'Erro ao enviar convite',
+  tripErrorRemove: 'Erro ao remover participante',
+  tripErrorCreate: 'Erro ao criar viagem',
+  tripErrorSave: 'Erro ao salvar',
+  tripErrorUpload: 'Falha no upload:',
+  tripNotAuthenticated: 'Não autenticado',
+  tripStatusPublic: '🌐 Pública',
+  tripStatusPrivate: '🔒 Privada',
+  tripAgo: 'agora',
+
+  // FASE 7 — ShareDialog
+  shareRiderFallback: 'Rider',
+  shareGroupFallback: 'Grupo',
+  shareTripFallback: 'Trip',
+  shareConvFallback: 'Conversa',
+  shareSent: 'Enviado!',
+
+  // FASE 7 — FavoriteButton
+  favRemoveAria: 'Remover dos favoritos',
+  favAddAria: 'Adicionar aos favoritos',
+
+  // FASE 7 — Header
+  headerMenu: 'Menu',
+  headerAbout: 'Sobre',
+  headerToggleTheme: 'Toggle theme',
+  headerUserFallback: 'Usuário',
+  headerMyProfile: 'Meu Perfil',
+  headerAdminPanel: 'Painel Admin',
+  headerLogin: 'Entrar',
+  headerCart: 'Carrinho',
+
+  // FASE 7 — CartCheckout
+  checkoutTestimonial1: 'Experiência incrível! Tudo foi organizado com perfeição. Recomendo demais!',
+  checkoutTestimonial2: 'Aula de kite sensacional. Segurança e diversão ao mesmo tempo.',
+  checkoutTestimonial3: 'Roteiro de downwind mais lindo que já fiz. Equipe top!',
+  checkoutEmpty: 'Explore nossas experiências, produtos e aulas e adicione itens ao carrinho para reservar.',
+  checkoutEmptyHint: '',
+  checkoutSummary: 'Resumo da Reserva',
+  checkoutSubtotal: 'Subtotal',
+  checkoutPixDiscount: 'Desconto PIX (5%)',
+  checkoutTotal: 'Total',
+  checkoutWhatsApp: 'WhatsApp para contato',
+  checkoutFilled: '(preenchido)',
+  checkoutPaymentMethod: 'Forma de Pagamento',
+  checkoutCard: 'Cartão',
+  checkoutUpTo: 'Até 6x',
+  checkoutInternational: 'Internacional',
+  checkoutPixInstant: 'Aprovação Instantânea',
+  checkoutPixDiscountApplied: '5% de desconto aplicado',
+  checkoutPixKey: 'Chave PIX (Copia e Cola):',
+  checkoutPixCopy: 'Copiar Chave PIX',
+  checkoutPixCopied: '✓ Copiado!',
+  checkoutCardPlaceholder: '0000 0000 0000 0000',
+  checkoutCardName: 'Nome no cartão',
+  checkoutInstallments: 'Parcelamento',
+  checkoutInterestFree: 'sem juros',
+  checkoutPaypalTitle: 'PayPal Checkout',
+  checkoutPaypalDescription: 'Você será redirecionado para o PayPal para concluir o pagamento de forma segura.',
+  checkoutConfirmPayment: 'Confirmar Pagamento',
+  checkoutTestimonialsTitle: 'O que nossos clientes dizem',
+  checkoutSecurePayment: '100% Seguro',
+  checkoutEncryptedPayment: 'Pagamento Criptografado',
+  checkoutGuarantee: 'Garantia Amazon Wind',
+  checkoutWhatsAppSupport: 'Suporte via WhatsApp',
+  checkoutAddItemFirst: 'Adicione um item ao carrinho primeiro',
+  checkoutWhatsAppRequired: 'Informe seu WhatsApp para contato.',
+  checkoutCreateAccount: 'Criar conta',
+  checkoutItemRemoved: 'Item removido do carrinho',
+
+  // FASE 7 — Splash / ProtectedRoute
+  splashSubtitle: 'Kitesurf & Expedições',
+  protectedRouteLoading: 'Verificando credenciais Amazon Wind...',
+
+  // FASE 7 — Admin components (heroes)
+  heroSlideLimit: 'Limite de 6 slides atingido. Exclua um slide antes de criar outro.',
+  heroMediaRequired: 'Informe ou envie a mídia de fundo.',
+  heroTitleRequired: 'O título é obrigatório.',
+  heroSlideUpdated: 'Slide atualizado com sucesso!',
+  heroSlideCreated: 'Slide criado com sucesso!',
+  heroSlideRemoved: 'Slide oficial removido da visualização.',
+  heroSlideDeleted: 'Slide excluído.',
+  heroManageTitle: 'Gerenciar Hero / Capa',
+  heroManageDescription: 'Controle as mídias e textos de destaque da página inicial.',
+  heroSlideCount: 'Limite de 6 slides atingido',
+  heroNewSlide: '+ Novo Slide',
+  heroDimensionTip: 'Sugestão de dimensões:',
+  heroUploadTip: 'Você pode fazer upload de imagem ou vídeo.',
+  heroLoading: 'Carregando slides...',
+  heroNoSlides: 'Nenhum slide configurado.',
+  heroCreateFirst: 'Criar primeiro slide',
+  heroTypeYoutube: 'YouTube',
+  heroTypeVideo: 'Vídeo',
+  heroTypeImage: 'Imagem',
+  heroOfficial: 'Oficial',
+  heroCtaPrefix: 'CTA:',
+  heroMoveUp: 'Mover para cima',
+  heroMoveDown: 'Mover para baixo',
+  heroEdit: 'Editar',
+  heroDelete: 'Excluir',
+  heroEditSlide: 'Editar Slide',
+  heroNewSlideTitle: 'Novo Slide da Hero',
+  heroTitleLabel: 'Título de Destaque',
+  heroTitlePlaceholder: 'Ex: Expedições na Costa Norte',
+  heroSubtitleLabel: 'Subtítulo',
+  heroSubtitlePlaceholder: 'Ex: Sinta a força dos ventos alísios',
+  heroMediaTypeLabel: 'Tipo de Mídia',
+  heroOrderLabel: 'Ordem',
+  heroUploadLabel: 'Fazer Upload do Arquivo',
+  heroUrlLabel: 'Ou cole o link direto (URL)',
+  heroUrlPlaceholder: 'https://exemplo.com/imagem.jpg ou link do YouTube',
+  heroCtaTextLabel: 'Texto do Botão (CTA)',
+  heroCtaTextPlaceholder: 'Explorar Roteiros',
+  heroCtaLinkLabel: 'Link do Botão',
+  heroCancel: 'Cancelar',
+  heroSaving: 'Salvando...',
+  heroUpdate: 'Atualizar',
+  heroCreate: 'Criar Slide',
+  heroDeleteTitle: 'Excluir Slide',
+  heroDeleteConfirm: 'Tem certeza que deseja excluir "${deleteTarget.title}"?',
+  heroDeleteYes: 'Sim, Excluir',
+
+  // FASE 7 — Admin components (bookings)
+  bookingUpdated: 'Reserva atualizada com sucesso!',
+  bookingDeleted: 'Reserva excluída.',
+  bookingTypeExperience: 'Experiência',
+  bookingTypeClass: 'Aula',
+  bookingTypeProduct: 'Produto',
+  bookingConfirmAction: 'Deseja confirmar/cancelar esta reserva?',
+  bookingPaid: 'Pagamento confirmado',
+  bookingDetails: 'Detalhes da Reserva',
+  bookingClientInfo: 'Informações do Cliente',
+  bookingFieldName: 'Nome:',
+  bookingFieldEmail: 'Email:',
+  bookingFieldWhatsApp: 'WhatsApp:',
+  bookingFieldPhone: 'Telefone:',
+  bookingNoContact: 'Nenhuma informação de contato registrada',
+  bookingReservationDetails: 'Detalhes da Reserva',
+  bookingFieldType: 'Tipo',
+  bookingFieldItemId: 'ID do Item',
+  bookingReservedItems: 'Itens Reservados',
+  bookingStatusPending: 'Pendente',
+  bookingStatusConfirmed: 'Confirmada',
+  bookingStatusCancelled: 'Cancelada',
+  bookingDate: 'Data da Reserva',
+  bookingNotes: 'Notas / Observações',
+  bookingCancel: 'Cancelar',
+  bookingDelete: 'Excluir',
+  bookingSaving: 'Salvando...',
+  bookingSave: 'Salvar Alterações',
+  bookingDeleteTitle: 'Excluir Reserva',
+  bookingDeleteConfirm: 'Tem certeza que deseja excluir esta reserva? Esta ação não pode ser desfeita.',
+
+  // FASE 7 — Admin components (classes)
+  classErrorLoad: 'Erro ao carregar aulas:',
+  classErrorUpdate: 'Erro ao atualizar aula:',
+  classUpdated: 'Aula atualizada com sucesso!',
+  classErrorCreate: 'Erro ao criar aula:',
+  classCreated: 'Aula criada com sucesso!',
+  classErrorDelete: 'Erro ao excluir aula:',
+  classDeleted: 'Aula excluída.',
+  classLoading: 'Carregando aulas...',
+  classManageTitle: 'Gerenciar Aulas',
+  classManageDescription: 'Configure os pacotes de aulas, mídias e valores.',
+  classNewButton: '+ Nova Aula',
+  classEmpty: 'Nenhuma aula cadastrada',
+  classEdit: 'Editar',
+  classDelete: 'Excluir',
+  classEditTitle: 'Editar Aula',
+  classNewTitle: 'Nova Aula',
+  classFieldTitle: 'Título',
+  classFieldTitlePlaceholder: 'Ex: Aula Particular de Kite',
+  classFieldPrice: 'Preço (R$)',
+  classFieldDuration: 'Duração',
+  classFieldDurationPlaceholder: 'Ex: 2h30',
+  classFieldLevel: 'Nível',
+  classFieldLevelPlaceholder: 'Ex: Iniciante / Intermediário',
+  classFieldDescription: 'Descrição',
+  classFieldImage: 'Imagem Principal da Aula',
+  classFieldVideo: 'Vídeo Promocional (Opcional)',
+  classCancel: 'Cancelar',
+  classSaving: 'Salvando...',
+  classUpdate: 'Atualizar',
+  classCreate: 'Criar Aula',
+  classDeleteTitle: 'Excluir Aula',
+  classDeleteConfirm: 'Tem certeza que deseja excluir "${deleteTarget.title}"?',
+
+  // FASE 7 — Admin components (about)
+  aboutTitleRequired: 'O título é obrigatório.',
+  aboutUpdated: 'Página "Sobre" atualizada!',
+  aboutCreated: 'Página "Sobre" criada!',
+  aboutManageTitle: 'Gerenciar Página "Sobre"',
+  aboutManageDescription: 'Edite o conteúdo da página sobre em cada idioma.',
+  aboutEditContent: 'Editar Conteúdo',
+  aboutLoading: 'Carregando conteúdo...',
+  aboutMainContent: 'Conteúdo Principal',
+  aboutFieldTitle: 'Título',
+  aboutFieldTitlePlaceholder: 'Ex: Sobre a Amazon Wind',
+  aboutFieldSubtitle: 'Subtítulo',
+  aboutFieldSubtitlePlaceholder: 'Ex: Escola de Kitesurf & Expedições',
+  aboutFieldDescription: 'Descrição',
+  aboutFieldDescriptionPlaceholder: 'História completa da empresa...',
+  aboutMissionVision: 'Missão & Visão',
+  aboutFieldMission: 'Missão',
+  aboutFieldMissionPlaceholder: 'Missão da empresa...',
+  aboutFieldVision: 'Visão',
+  aboutFieldVisionPlaceholder: 'Visão da empresa...',
+  aboutMedia: 'Mídia',
+  aboutCoverImage: 'Imagem de Capa',
+  aboutCoverUrl: 'Ou cole a URL da capa',
+  aboutVideoUrl: 'URL do Vídeo (YouTube ou link direto)',
+  aboutGallery: 'Galeria',
+  aboutGalleryPlaceholder: 'URL da imagem da galeria',
+  aboutAddButton: '+ Adicionar',
+  aboutCancel: 'Cancelar',
+  aboutSaving: 'Salvando...',
+  aboutUpdate: 'Atualizar',
+  aboutCreate: 'Criar',
+  aboutUnsavedData: 'Dados oficiais (não salvos)',
+  aboutLabelTitle: 'Título',
+  aboutLabelSubtitle: 'Subtítulo',
+  aboutLabelDescription: 'Descrição',
+  aboutLabelMission: 'Missão',
+  aboutLabelVision: 'Visão',
+  aboutLabelMedia: 'Mídia',
+  aboutLabelCover: 'Capa',
+  aboutLabelVideo: 'Vídeo',
+  aboutGalleryCount: 'Galeria (${count} imagens)',
+
+  // FASE 7 — Admin components (products)
+  productAdminName: 'Produto',
+  productAdminPrice: 'Preço',
+  productAdminStock: 'Estoque',
+  productAdminActions: 'Ações',
+  productAdminUnit: ' un.',
+  productAdminEdit: 'Editar',
+  productAdminDelete: 'Excluir',
+  productAdminCategoryPlaceholder: 'Nome da nova categoria',
+  productAdminCancel: 'Cancelar',
+  productAdminNew: '+ Nova',
+
+  // FASE 7 — Admin components (trips)
+  tripAdminStatusUpdated: 'Status atualizado!',
+  tripAdminError: 'Erro:',
+  tripAdminDeleteConfirm: 'Tem certeza que deseja excluir esta trip?',
+  tripAdminDeleted: 'Trip excluída!',
+  tripAdminDraft: 'Rascunho',
+  tripAdminPublished: 'Publicada',
+  tripAdminFull: 'Lotada',
+  tripAdminCancelled: 'Cancelada',
+  tripAdminCompleted: 'Concluída',
+  tripAdminPublic: 'Pública',
+  tripAdminPrivate: 'Privada',
+  tripAdminAll: 'Todas',
+  tripAdminEmpty: 'Nenhuma trip encontrada',
+  tripAdminParticipants: ' participantes',
+
+  // FASE 7 — Admin components (shared)
+  sharedStatusPending: 'Pendente',
+  sharedStatusConfirmed: 'Confirmada',
+  sharedStatusCancelled: 'Cancelada',
+  sharedUploadError: 'Não foi possível obter a URL do arquivo.',
+  sharedUploading: 'Enviando...',
+  sharedChooseVideo: 'Escolher vídeo',
+  sharedChooseImage: 'Escolher imagem',
+
+  // FASE 7 — Admin components (financial)
+  financialStatusPending: 'Pendente',
+  financialStatusPaid: 'Pago',
+  financialStatusOverdue: 'Atrasado',
+  financialTypePayable: 'A Pagar',
+  financialTypeReceivable: 'A Receber',
+  financialCategoryRent: 'Aluguel',
+  financialCategoryEquipment: 'Equipamentos',
+  financialCategoryMarketing: 'Marketing',
+  financialCategorySalaries: 'Salários',
+  financialCategoryServices: 'Serviços',
+  financialCategoryOperations: 'Operacional',
+  financialCategoryClasses: 'Receita Aulas',
+  financialCategoryExpeditions: 'Receita Expedições',
+  financialCategoryProducts: 'Receita Produtos',
+  financialCategoryOther: 'Outros',
+  financialUpdated: 'Conta atualizada!',
+  financialCreated: 'Conta criada!',
+  financialDeleted: 'Conta excluída.',
+  financialSummary: 'Resumo Financeiro',
+  financialPay: 'Pagar',
+  financialReceive: 'Receber',
+  financialBalance: 'Saldo',
+  financialFilters: 'Filtros',
+  financialAllTypes: 'Todos os Tipos',
+  financialAllStatuses: 'Todos os Status',
+  financialNewEntry: '+ Nova Conta',
+  financialEntries: 'Lançamentos',
+  financialItems: ' itens',
+  financialEmpty: 'Nenhum lançamento encontrado',
+  financialFieldDescription: 'Descrição',
+  financialFieldDescriptionPlaceholder: 'Ex: Aluguel espaço, Aula particular...',
+  financialFieldType: 'Tipo',
+  financialFieldValue: 'Valor (R$)',
+  financialFieldDueDate: 'Vencimento',
+  financialFieldCategory: 'Categoria',
+  financialFieldCategoryPlaceholder: 'Selecione...',
+  financialFieldStatus: 'Status',
+  financialFieldNotes: 'Observações',
+  financialFieldNotesPlaceholder: 'Opcional...',
+  financialCancel: 'Cancelar',
+  financialSaving: 'Salvando...',
+  financialUpdate: 'Atualizar',
+  financialCreate: 'Criar Conta',
+  financialDeleteTitle: 'Excluir Lançamento',
+  financialDeleteConfirm: 'Tem certeza que deseja excluir "${deleteTarget.description}"?',
+
+  // FASE 7 — Admin components (experiences)
+  expAdminPackage: 'Pacote',
+  expAdminIndividual: 'Avulso',
+  expAdminItemsIncluded: ' itens inclusos',
+  expAdminTypeLabel: 'Tipo de Experiência',
+  expAdminTypeIndividual: 'Experiência Individual',
+  expAdminTypeIndividualDesc: 'Aula avulsa, downwind, etc.',
+  expAdminTypePackage: 'Pacote Completo',
+  expAdminTypePackageDesc: 'All-Inclusive, curso, etc.',
+  expAdminCategoryPlaceholder: 'Nome da nova categoria',
+  expAdminCancel: 'Cancelar',
+  expAdminNew: '+ Nova',
+  expAdminOriginalPrice: 'Preço Original (de referência, opcional)',
+  expAdminOriginalPricePlaceholder: 'Ex: 14500.00 (mostra desconto)',
+  expAdminOriginalPriceHelp: 'Se preenchido, mostra o preço riscado e o percentual de desconto.',
+  expAdminIncludedItems: 'O que está incluído (1 item por linha)',
+  expAdminIncludedPlaceholder: '10 aulas práticas (30h)\nEquipamento completo\nCertificação IKO\nSeguro de acidente\nÁgua e lanches',
+  expAdminIncludedHelp: 'Separe cada item por linha...',
+
+  // FASE 7 — Experiencias (landing section)
+  expLandingDiscover: 'Descubra',
+  expLandingTitle: 'Experiências & Downwinds',
+  expLandingDescription: 'Rotas exclusivas pela Amazônia Atlântica. Cada trajeto é uma nova aventura.',
+  expLandingDetails: 'Ver Detalhes →',
+
+  // FASE 7 — KiteSchool component
+  kiteSchoolAlt: 'Aula de kitesurf',
+
+  // FASE 7 — ContactNewsletter
+  contactSendAnother: 'Enviar outra mensagem',
+
+  // FASE 7 — Servicos
+  svcWhatsAppRequired: 'Informe o número de WhatsApp para contato.',
+  svcDepartureAfterArrival: 'Saída deve ser posterior a Chegada',
+
+  // FASE 7 — Footer
+  footerWhatsApp: 'WhatsApp',
+
+  // FASE 7 — InstallAppBanner
+  bannerClose: 'Fechar',
+
+  // Accessibility aria-labels
+  ariaAttach: 'Anexar arquivo',
+  ariaLike: 'Curtir',
+  ariaUnlike: 'Descurtir',
 }
 
 const en: TranslationKeys = {
@@ -1653,6 +2791,575 @@ const en: TranslationKeys = {
   tripVisibilityLabel: 'Visibility',
   tripVisibilityPublic: 'Public — appears in listing',
   tripVisibilityPrivate: 'Private — only participants see',
+
+  // FASE 7 — UserProfile
+  profileTabProfile: 'Profile',
+  profileTabBookings: 'My Bookings',
+  profileTabProducts: 'Products',
+  profileTabGallery: 'Gallery',
+  profileTabTrips: 'Trips',
+  profileTabFeed: 'Feed',
+  profileTabFriends: 'Friends',
+  profileTabChat: 'Chat',
+  profilePersonalData: 'Personal Data',
+  profileFullName: 'Full Name',
+  profileFullNamePlaceholder: 'Your full name',
+  profileBio: 'Athlete Bio',
+  profileBioPlaceholder: 'Tell your story: when you started kitesurfing, your favorite spots, achievements...',
+  profileEmail: 'Email',
+  profilePhone: 'Phone',
+  profilePhonePlaceholder: '(92) 99999-0000',
+  profileWhatsApp: 'WhatsApp',
+  profileWhatsAppRequired: 'WhatsApp (required for contact)',
+  profileSaving: 'Saving...',
+  profileSave: 'Save Profile',
+  profileMemberSince: 'Member since:',
+  profileBack: 'Back',
+  profileStatsBookings: 'Bookings',
+  profileStatsConfirmed: 'Confirmed',
+  profileStatsProducts: 'Products',
+  profileStatsReservations: 'booking(s)',
+  profileNoBookings: 'No bookings yet',
+  profileNoBookingsHint: 'Your experiences, classes and downwinds will appear here',
+  profileProductsPhysical: 'Physical Products',
+  profileProductsCount: 'product(s)',
+  profileNoProducts: 'No products purchased',
+  profileNoProductsHint: 'Rashguards, hats, accessories and more',
+  profileGoToShop: 'Go to Shop',
+  profilePurchasedIn: 'Purchased on',
+  profileDelivered: 'Product delivered',
+  profilePendingConfirmation: 'Awaiting confirmation',
+  profileDeliveryStatus: 'Delivery status',
+  profileSessionsGallery: 'Sessions Gallery',
+  profileSessionsDescription: 'Official photos taken by the Amazon Wind team during your sessions. Download, comment and connect with other participants.',
+  profileNoSessions: 'No sessions completed',
+  profileNoSessionsHint: 'Complete an experience to access session photos',
+  profileSessionCompleted: 'Completed',
+  profileGallerySoon: 'Gallery will be available from the team soon',
+  profileTripComments: 'Trip Comments',
+  profileTripCommentsSoon: 'Soon you will be able to comment and interact with other session participants!',
+  profileMyTrips: 'My Trips',
+  profileMyTripsDescription: 'Trips you organized or participate in.',
+  profileNoTrips: 'No trips yet',
+  profileNoTripsHint: 'Create or join a trip',
+  profileViewTrips: 'View Trips',
+  profileStatusDraft: 'Draft',
+  profileStatusPublished: 'Published',
+  profileStatusFull: 'Full',
+  profileStatusCancelled: 'Cancelled',
+  profileStatusCompleted: 'Completed',
+  profileParticipants: 'participants',
+  profileCommunityFeed: 'Community Feed',
+  profileCommunityFeedDescription: 'Connect with other riders. Share your sessions, photos and kitesurfing achievements.',
+  profileErrorAvatar: 'Error uploading avatar:',
+  profileErrorSave: 'Error saving:',
+  profileSuccessSave: 'Profile updated successfully!',
+  profileBookingTypeExperience: 'Experience',
+  profileBookingTypeClass: 'Class',
+  profileBookingTypeProduct: 'Product',
+
+  // FASE 7 — KiteCoursePage
+  kiteCourseTitle: 'Beginner Kitesurf Lesson',
+  kiteCourseSubtitle: 'Beginner Module',
+  kiteCourseIncludesTitle: "What's included",
+  kiteCourseInclude1: '10 practical lessons (total duration: 30h)',
+  kiteCourseInclude2: 'Complete equipment included (kite, bar, board, vest)',
+  kiteCourseInclude3: 'Safety and meteorology theory',
+  kiteCourseInclude4: 'IKO certified instructor',
+  kiteCourseInclude5: 'Accident insurance during lessons',
+  kiteCourseInclude6: 'Beginner level completion certificate',
+  kiteCourseInclude7: 'Video analysis of sessions',
+  kiteCourseInclude8: 'Water and snacks during lessons',
+  kiteCourseModule1Title: 'Module 1 — Fundamentals',
+  kiteCourseModule1Desc: 'Beach theory, equipment assembly, first flights with kite on sand, basic bar control.',
+  kiteCourseModule2Title: 'Module 2 — Water',
+  kiteCourseModule2Desc: 'Body drag, water start, water control, instructor-assisted flight, first maneuvers.',
+  kiteCourseModule3Title: 'Module 3 — Independence',
+  kiteCourseModule3Desc: 'Autonomous basic maneuvers, transition, carving, guided downwind and video analysis.',
+  kiteCourseTotalHours: '30h total',
+  kiteCourseTotalClasses: 'classes',
+  kiteCourseInvestment: 'Investment',
+  kiteCourseInvestmentSummary: '10 complete classes • Equipment included • IKO Certification',
+  kiteCourseAbout: 'About the Course',
+  kiteCourseAboutText: 'Our Beginner module is the complete program for those who want to learn kitesurfing from scratch. With 10 practical lessons distributed in 3 progressive modules, you go from beach theory to performing your first maneuvers independently. All equipment is provided and lessons are taught by IKO certified instructors in the best wind and water conditions of the Amazon coast.',
+  kiteCourseWhatIncluded: "What's included",
+  kiteCourseModules: 'Course Modules',
+  kiteCourseClasses: 'classes',
+  kiteCourseGallery: 'Gallery',
+  kiteCourseSchedule: 'Schedule Classes',
+  kiteCourseScheduleDescription: 'Select your class start and end dates. The calendar below helps you plan your course.',
+  kiteCourseTotalInvestment: 'Total investment',
+  kiteCourseScheduleButton: 'Schedule & Proceed',
+  kiteCourseSelectDate: 'Select a date',
+  kiteCourseReviews: 'Reviews',
+  kiteCourseReviewsEmpty: 'Student reviews will appear here after course completion.',
+  kiteCourseVideoSoon: 'Video coming soon',
+
+  // FASE 7 — ExperienceDetail
+  expDetailNotFound: 'Experience not found.',
+  expDetailPackage: 'Package',
+  expDetailIndividual: 'Individual',
+  expDetailFullPackage: 'Full Package',
+  expDetailWhatIncluded: "What's included in the package",
+  expDetailWhatIncludedShort: "What's included",
+  expDetailPackageTotal: 'Total package investment',
+  expDetailPerPerson: 'per person',
+  expDetailBookingDate: 'Booking Date',
+  expDetailAddToCart: 'Add Package to Cart',
+  expDetailSecurePayment: 'Secure payment via PIX, Card or PayPal',
+  expDetailUserFallback: 'User',
+
+  // FASE 7 — AdminDashboard
+  adminAccessDenied: 'Access restricted to administrators.',
+  adminHeroCover: 'Hero / Cover',
+  adminTrips: 'Trips',
+  adminLoadingDashboard: 'Loading Admin Dashboard...',
+  adminPanel: 'Admin Panel',
+  adminThemeLight: 'Light Mode',
+  adminThemeDark: 'Dark Mode',
+  adminCollapse: 'Collapse',
+  adminOnline: 'Online',
+
+  // FASE 7 — Feed components
+  feedErrorLoading: 'Error loading feed.',
+  feedPostError: 'Error posting.',
+  feedPostTripPlaceholder: 'Post in trip "${tripName}"...',
+  feedPostPlaceholder: 'Share your kite session... 🪁',
+  feedPostSuccess: 'Published successfully!',
+  feedPostMedia: 'Photo/Video',
+  feedPostSending: 'Sending media...',
+  feedPostPublishing: 'Publishing...',
+  feedPostButton: 'Publish',
+  feedCommentLoading: 'Loading...',
+  feedCommentEmpty: 'No comments yet.',
+  feedCommentPlaceholder: 'Write a comment...',
+  feedCommentSend: 'Send',
+  feedCommentSave: 'Save',
+  feedCommentCancel: 'Cancel',
+  feedCommentRider: 'Rider',
+  feedPostNow: 'now',
+  feedPostEdited: 'edited',
+  feedPostDeleteConfirm: 'Delete this post?',
+  feedPostErrorSave: 'Error saving',
+  feedPostSaving: 'Saving...',
+  feedPostSave: 'Save',
+  feedPostComment: 'Comment',
+  feedPostShare: 'Share',
+
+  // FASE 7 — Chat components
+  chatRiderFallback: 'Rider',
+  chatDeletedMessage: 'Message deleted',
+  chatMessageFallback: 'Message',
+  chatReply: 'Reply',
+  chatDelete: 'Delete',
+  chatCancel: 'Cancel',
+  chatMessagePlaceholder: 'Message...',
+
+  // FASE 7 — ConversationsList
+  convRiderFallback: 'Rider',
+  convYesterday: 'Yesterday',
+  convTitle: 'Conversations',
+  convSearchPlaceholder: 'Search riders...',
+  convSearching: 'Searching...',
+  convEmpty: 'No conversations yet. Search for a rider above to start!',
+  convStartChat: 'Start conversation...',
+
+  // FASE 7 — Community
+  communityLoginButton: 'Sign in',
+
+  // FASE 7 — Notifications
+  notificationNow: 'Now',
+  notificationMin: 'min',
+  notificationHour: 'h',
+  notificationDay: 'd',
+
+  // FASE 7 — Friends
+  friendsRiderFallback: 'Rider',
+
+  // FASE 7 — Products
+  productNotFound: 'Product not found.',
+  productAddedToCart: 'Added to cart!',
+  productInCart: 'in cart',
+  productContinueShopping: 'Continue Shopping',
+  productViewCart: 'View Cart',
+  productOutOfStock: 'This product is currently out of stock.',
+  productViewOthers: 'View other products',
+
+  // FASE 7 — Wishlist
+  wishlistAlreadyInCart: 'This item is already in the cart',
+  wishlistAdded: 'added to cart!',
+  wishlistRemoved: 'Removed from favorites',
+  wishlistTitle: 'Wishlist',
+  wishlistSubtitle: 'Items saved for future booking',
+  wishlistEmpty: 'No favorites yet',
+  wishlistEmptyHint: 'Tap the heart icon on any experience or product to save it here.',
+  wishlistInCart: '✓ In Cart',
+  wishlistAddToCart: 'Add to Cart',
+  wishlistRemove: 'Remove',
+  wishlistItem: 'item',
+  wishlistItems: 'items',
+
+  // FASE 7 — Trips (error/status)
+  tripErrorLoad: 'Error loading trip',
+  tripErrorJoin: 'Error joining trip',
+  tripErrorLeave: 'Error leaving trip',
+  tripErrorInvite: 'Error sending invite',
+  tripErrorRemove: 'Error removing participant',
+  tripErrorCreate: 'Error creating trip',
+  tripErrorSave: 'Error saving',
+  tripErrorUpload: 'Upload failed:',
+  tripNotAuthenticated: 'Not authenticated',
+  tripStatusPublic: '🌐 Public',
+  tripStatusPrivate: '🔒 Private',
+  tripAgo: 'now',
+
+  // FASE 7 — ShareDialog
+  shareRiderFallback: 'Rider',
+  shareGroupFallback: 'Group',
+  shareTripFallback: 'Trip',
+  shareConvFallback: 'Conversation',
+  shareSent: 'Sent!',
+
+  // FASE 7 — FavoriteButton
+  favRemoveAria: 'Remove from favorites',
+  favAddAria: 'Add to favorites',
+
+  // FASE 7 — Header
+  headerMenu: 'Menu',
+  headerAbout: 'About',
+  headerToggleTheme: 'Toggle theme',
+  headerUserFallback: 'User',
+  headerMyProfile: 'My Profile',
+  headerAdminPanel: 'Admin Panel',
+  headerLogin: 'Sign in',
+  headerCart: 'Cart',
+
+  // FASE 7 — CartCheckout
+  checkoutTestimonial1: 'Incredible experience! Everything was organized perfectly. Highly recommend!',
+  checkoutTestimonial2: 'Sensational kite class. Safety and fun at the same time.',
+  checkoutTestimonial3: 'Most beautiful downwind route I have ever done. Top team!',
+  checkoutEmpty: 'Explore our experiences, products and classes and add items to the cart to book.',
+  checkoutEmptyHint: '',
+  checkoutSummary: 'Booking Summary',
+  checkoutSubtotal: 'Subtotal',
+  checkoutPixDiscount: 'PIX Discount (5%)',
+  checkoutTotal: 'Total',
+  checkoutWhatsApp: 'WhatsApp for contact',
+  checkoutFilled: '(filled)',
+  checkoutPaymentMethod: 'Payment Method',
+  checkoutCard: 'Card',
+  checkoutUpTo: 'Up to 6x',
+  checkoutInternational: 'International',
+  checkoutPixInstant: 'Instant Approval',
+  checkoutPixDiscountApplied: '5% discount applied',
+  checkoutPixKey: 'PIX Key (Copy & Paste):',
+  checkoutPixCopy: 'Copy PIX Key',
+  checkoutPixCopied: '✓ Copied!',
+  checkoutCardPlaceholder: '0000 0000 0000 0000',
+  checkoutCardName: 'Name on card',
+  checkoutInstallments: 'Installments',
+  checkoutInterestFree: 'interest-free',
+  checkoutPaypalTitle: 'PayPal Checkout',
+  checkoutPaypalDescription: 'You will be redirected to PayPal to complete the payment securely.',
+  checkoutConfirmPayment: 'Confirm Payment',
+  checkoutTestimonialsTitle: 'What our customers say',
+  checkoutSecurePayment: '100% Secure',
+  checkoutEncryptedPayment: 'Encrypted Payment',
+  checkoutGuarantee: 'Amazon Wind Guarantee',
+  checkoutWhatsAppSupport: 'WhatsApp Support',
+  checkoutAddItemFirst: 'Add an item to the cart first',
+  checkoutWhatsAppRequired: 'Enter your WhatsApp for contact.',
+  checkoutCreateAccount: 'Create account',
+  checkoutItemRemoved: 'Item removed from cart',
+
+  // FASE 7 — Splash / ProtectedRoute
+  splashSubtitle: 'Kitesurf & Expeditions',
+  protectedRouteLoading: 'Verifying Amazon Wind credentials...',
+
+  // FASE 7 — Admin components (heroes)
+  heroSlideLimit: 'Limit of 6 slides reached. Delete a slide before creating another.',
+  heroMediaRequired: 'Please provide or upload the background media.',
+  heroTitleRequired: 'Title is required.',
+  heroSlideUpdated: 'Slide updated successfully!',
+  heroSlideCreated: 'Slide created successfully!',
+  heroSlideRemoved: 'Official slide removed from display.',
+  heroSlideDeleted: 'Slide deleted.',
+  heroManageTitle: 'Manage Hero / Cover',
+  heroManageDescription: 'Control the highlight media and text on the homepage.',
+  heroSlideCount: 'Limit of 6 slides reached',
+  heroNewSlide: '+ New Slide',
+  heroDimensionTip: 'Dimension suggestion:',
+  heroUploadTip: 'You can upload image or video.',
+  heroLoading: 'Loading slides...',
+  heroNoSlides: 'No slides configured.',
+  heroCreateFirst: 'Create first slide',
+  heroTypeYoutube: 'YouTube',
+  heroTypeVideo: 'Video',
+  heroTypeImage: 'Image',
+  heroOfficial: 'Official',
+  heroCtaPrefix: 'CTA:',
+  heroMoveUp: 'Move up',
+  heroMoveDown: 'Move down',
+  heroEdit: 'Edit',
+  heroDelete: 'Delete',
+  heroEditSlide: 'Edit Slide',
+  heroNewSlideTitle: 'New Hero Slide',
+  heroTitleLabel: 'Highlight Title',
+  heroTitlePlaceholder: 'Ex: Expeditions on the North Coast',
+  heroSubtitleLabel: 'Subtitle',
+  heroSubtitlePlaceholder: 'Ex: Feel the strength of the trade winds',
+  heroMediaTypeLabel: 'Media Type',
+  heroOrderLabel: 'Order',
+  heroUploadLabel: 'Upload File',
+  heroUrlLabel: 'Or paste the direct link (URL)',
+  heroUrlPlaceholder: 'https://example.com/image.jpg or YouTube link',
+  heroCtaTextLabel: 'Button Text (CTA)',
+  heroCtaTextPlaceholder: 'Explore Routes',
+  heroCtaLinkLabel: 'Button Link',
+  heroCancel: 'Cancel',
+  heroSaving: 'Saving...',
+  heroUpdate: 'Update',
+  heroCreate: 'Create Slide',
+  heroDeleteTitle: 'Delete Slide',
+  heroDeleteConfirm: 'Are you sure you want to delete "${deleteTarget.title}"?',
+  heroDeleteYes: 'Yes, Delete',
+
+  // FASE 7 — Admin components (bookings)
+  bookingUpdated: 'Booking updated successfully!',
+  bookingDeleted: 'Booking deleted.',
+  bookingTypeExperience: 'Experience',
+  bookingTypeClass: 'Class',
+  bookingTypeProduct: 'Product',
+  bookingConfirmAction: 'Do you want to confirm/cancel this booking?',
+  bookingPaid: 'Payment confirmed',
+  bookingDetails: 'Booking Details',
+  bookingClientInfo: 'Client Information',
+  bookingFieldName: 'Name:',
+  bookingFieldEmail: 'Email:',
+  bookingFieldWhatsApp: 'WhatsApp:',
+  bookingFieldPhone: 'Phone:',
+  bookingNoContact: 'No contact information registered',
+  bookingReservationDetails: 'Booking Details',
+  bookingFieldType: 'Type',
+  bookingFieldItemId: 'Item ID',
+  bookingReservedItems: 'Reserved Items',
+  bookingStatusPending: 'Pending',
+  bookingStatusConfirmed: 'Confirmed',
+  bookingStatusCancelled: 'Cancelled',
+  bookingDate: 'Booking Date',
+  bookingNotes: 'Notes / Observations',
+  bookingCancel: 'Cancel',
+  bookingDelete: 'Delete',
+  bookingSaving: 'Saving...',
+  bookingSave: 'Save Changes',
+  bookingDeleteTitle: 'Delete Booking',
+  bookingDeleteConfirm: 'Are you sure you want to delete this booking? This action cannot be undone.',
+
+  // FASE 7 — Admin components (classes)
+  classErrorLoad: 'Error loading classes:',
+  classErrorUpdate: 'Error updating class:',
+  classUpdated: 'Class updated successfully!',
+  classErrorCreate: 'Error creating class:',
+  classCreated: 'Class created successfully!',
+  classErrorDelete: 'Error deleting class:',
+  classDeleted: 'Class deleted.',
+  classLoading: 'Loading classes...',
+  classManageTitle: 'Manage Classes',
+  classManageDescription: 'Configure class packages, media and prices.',
+  classNewButton: '+ New Class',
+  classEmpty: 'No classes registered',
+  classEdit: 'Edit',
+  classDelete: 'Delete',
+  classEditTitle: 'Edit Class',
+  classNewTitle: 'New Class',
+  classFieldTitle: 'Title',
+  classFieldTitlePlaceholder: 'Ex: Private Kite Lesson',
+  classFieldPrice: 'Price (R$)',
+  classFieldDuration: 'Duration',
+  classFieldDurationPlaceholder: 'Ex: 2h30',
+  classFieldLevel: 'Level',
+  classFieldLevelPlaceholder: 'Ex: Beginner / Intermediate',
+  classFieldDescription: 'Description',
+  classFieldImage: 'Main Class Image',
+  classFieldVideo: 'Promotional Video (Optional)',
+  classCancel: 'Cancel',
+  classSaving: 'Saving...',
+  classUpdate: 'Update',
+  classCreate: 'Create Class',
+  classDeleteTitle: 'Delete Class',
+  classDeleteConfirm: 'Are you sure you want to delete "${deleteTarget.title}"?',
+
+  // FASE 7 — Admin components (about)
+  aboutTitleRequired: 'Title is required.',
+  aboutUpdated: '"About" page updated!',
+  aboutCreated: '"About" page created!',
+  aboutManageTitle: 'Manage "About" Page',
+  aboutManageDescription: 'Edit the about page content in each language.',
+  aboutEditContent: 'Edit Content',
+  aboutLoading: 'Loading content...',
+  aboutMainContent: 'Main Content',
+  aboutFieldTitle: 'Title',
+  aboutFieldTitlePlaceholder: 'Ex: About Amazon Wind',
+  aboutFieldSubtitle: 'Subtitle',
+  aboutFieldSubtitlePlaceholder: 'Ex: Kitesurf School & Expeditions',
+  aboutFieldDescription: 'Description',
+  aboutFieldDescriptionPlaceholder: 'Complete company history...',
+  aboutMissionVision: 'Mission & Vision',
+  aboutFieldMission: 'Mission',
+  aboutFieldMissionPlaceholder: 'Company mission...',
+  aboutFieldVision: 'Vision',
+  aboutFieldVisionPlaceholder: 'Company vision...',
+  aboutMedia: 'Media',
+  aboutCoverImage: 'Cover Image',
+  aboutCoverUrl: 'Or paste cover URL',
+  aboutVideoUrl: 'Video URL (YouTube or direct link)',
+  aboutGallery: 'Gallery',
+  aboutGalleryPlaceholder: 'Gallery image URL',
+  aboutAddButton: '+ Add',
+  aboutCancel: 'Cancel',
+  aboutSaving: 'Saving...',
+  aboutUpdate: 'Update',
+  aboutCreate: 'Create',
+  aboutUnsavedData: 'Official data (not saved)',
+  aboutLabelTitle: 'Title',
+  aboutLabelSubtitle: 'Subtitle',
+  aboutLabelDescription: 'Description',
+  aboutLabelMission: 'Mission',
+  aboutLabelVision: 'Vision',
+  aboutLabelMedia: 'Media',
+  aboutLabelCover: 'Cover',
+  aboutLabelVideo: 'Video',
+  aboutGalleryCount: 'Gallery (${count} images)',
+
+  // FASE 7 — Admin components (products)
+  productAdminName: 'Product',
+  productAdminPrice: 'Price',
+  productAdminStock: 'Stock',
+  productAdminActions: 'Actions',
+  productAdminUnit: ' unit',
+  productAdminEdit: 'Edit',
+  productAdminDelete: 'Delete',
+  productAdminCategoryPlaceholder: 'New category name',
+  productAdminCancel: 'Cancel',
+  productAdminNew: '+ New',
+
+  // FASE 7 — Admin components (trips)
+  tripAdminStatusUpdated: 'Status updated!',
+  tripAdminError: 'Error:',
+  tripAdminDeleteConfirm: 'Are you sure you want to delete this trip?',
+  tripAdminDeleted: 'Trip deleted!',
+  tripAdminDraft: 'Draft',
+  tripAdminPublished: 'Published',
+  tripAdminFull: 'Full',
+  tripAdminCancelled: 'Cancelled',
+  tripAdminCompleted: 'Completed',
+  tripAdminPublic: 'Public',
+  tripAdminPrivate: 'Private',
+  tripAdminAll: 'All',
+  tripAdminEmpty: 'No trips found',
+  tripAdminParticipants: ' participants',
+
+  // FASE 7 — Admin components (shared)
+  sharedStatusPending: 'Pending',
+  sharedStatusConfirmed: 'Confirmed',
+  sharedStatusCancelled: 'Cancelled',
+  sharedUploadError: 'Could not get file URL.',
+  sharedUploading: 'Uploading...',
+  sharedChooseVideo: 'Choose video',
+  sharedChooseImage: 'Choose image',
+
+  // FASE 7 — Admin components (financial)
+  financialStatusPending: 'Pending',
+  financialStatusPaid: 'Paid',
+  financialStatusOverdue: 'Overdue',
+  financialTypePayable: 'Payable',
+  financialTypeReceivable: 'Receivable',
+  financialCategoryRent: 'Rent',
+  financialCategoryEquipment: 'Equipment',
+  financialCategoryMarketing: 'Marketing',
+  financialCategorySalaries: 'Salaries',
+  financialCategoryServices: 'Services',
+  financialCategoryOperations: 'Operations',
+  financialCategoryClasses: 'Class Revenue',
+  financialCategoryExpeditions: 'Expedition Revenue',
+  financialCategoryProducts: 'Product Revenue',
+  financialCategoryOther: 'Other',
+  financialUpdated: 'Account updated!',
+  financialCreated: 'Account created!',
+  financialDeleted: 'Account deleted.',
+  financialSummary: 'Financial Summary',
+  financialPay: 'Pay',
+  financialReceive: 'Receive',
+  financialBalance: 'Balance',
+  financialFilters: 'Filters',
+  financialAllTypes: 'All Types',
+  financialAllStatuses: 'All Statuses',
+  financialNewEntry: '+ New Entry',
+  financialEntries: 'Entries',
+  financialItems: ' items',
+  financialEmpty: 'No entries found',
+  financialFieldDescription: 'Description',
+  financialFieldDescriptionPlaceholder: 'Ex: Space rental, Private class...',
+  financialFieldType: 'Type',
+  financialFieldValue: 'Amount (R$)',
+  financialFieldDueDate: 'Due Date',
+  financialFieldCategory: 'Category',
+  financialFieldCategoryPlaceholder: 'Select...',
+  financialFieldStatus: 'Status',
+  financialFieldNotes: 'Notes',
+  financialFieldNotesPlaceholder: 'Optional...',
+  financialCancel: 'Cancel',
+  financialSaving: 'Saving...',
+  financialUpdate: 'Update',
+  financialCreate: 'Create Account',
+  financialDeleteTitle: 'Delete Entry',
+  financialDeleteConfirm: 'Are you sure you want to delete "${deleteTarget.description}"?',
+
+  // FASE 7 — Admin components (experiences)
+  expAdminPackage: 'Package',
+  expAdminIndividual: 'Individual',
+  expAdminItemsIncluded: ' items included',
+  expAdminTypeLabel: 'Experience Type',
+  expAdminTypeIndividual: 'Individual Experience',
+  expAdminTypeIndividualDesc: 'Single class, downwind, etc.',
+  expAdminTypePackage: 'Full Package',
+  expAdminTypePackageDesc: 'All-Inclusive, course, etc.',
+  expAdminCategoryPlaceholder: 'New category name',
+  expAdminCancel: 'Cancel',
+  expAdminNew: '+ New',
+  expAdminOriginalPrice: 'Original Price (reference, optional)',
+  expAdminOriginalPricePlaceholder: 'Ex: 14500.00 (shows discount)',
+  expAdminOriginalPriceHelp: 'If filled, shows crossed-out price and discount percentage.',
+  expAdminIncludedItems: "What's included (1 item per line)",
+  expAdminIncludedPlaceholder: '10 practical lessons (30h)\nComplete equipment\nIKO Certification\nAccident insurance\nWater and snacks',
+  expAdminIncludedHelp: 'Separate each item by line...',
+
+  // FASE 7 — Experiencias (landing section)
+  expLandingDiscover: 'Discover',
+  expLandingTitle: 'Experiences & Downwinds',
+  expLandingDescription: 'Exclusive routes through the Atlantic Amazon. Each route is a new adventure.',
+  expLandingDetails: 'See Details →',
+
+  // FASE 7 — KiteSchool component
+  kiteSchoolAlt: 'Kitesurf lesson',
+
+  // FASE 7 — ContactNewsletter
+  contactSendAnother: 'Send another message',
+
+  // FASE 7 — Servicos
+  svcWhatsAppRequired: 'Enter the WhatsApp number for contact.',
+  svcDepartureAfterArrival: 'Departure must be after Arrival',
+
+  // FASE 7 — Footer
+  footerWhatsApp: 'WhatsApp',
+
+  // FASE 7 — InstallAppBanner
+  bannerClose: 'Close',
+
+  // Accessibility aria-labels
+  ariaAttach: 'Attach file',
+  ariaLike: 'Like',
+  ariaUnlike: 'Unlike',
 }
 
 const es: TranslationKeys = {
@@ -2193,6 +3900,575 @@ const es: TranslationKeys = {
   tripVisibilityLabel: 'Visibilidad',
   tripVisibilityPublic: 'Pública — aparece en el listado',
   tripVisibilityPrivate: 'Privada — solo participantes ven',
+
+  // FASE 7 — UserProfile
+  profileTabProfile: 'Perfil',
+  profileTabBookings: 'Mis Reservas',
+  profileTabProducts: 'Productos',
+  profileTabGallery: 'Galería',
+  profileTabTrips: 'Viajes',
+  profileTabFeed: 'Feed',
+  profileTabFriends: 'Amigos',
+  profileTabChat: 'Chat',
+  profilePersonalData: 'Datos Personales',
+  profileFullName: 'Nombre Completo',
+  profileFullNamePlaceholder: 'Tu nombre completo',
+  profileBio: 'Bio del Atleta',
+  profileBioPlaceholder: 'Cuenta tu historia: desde cuando practicas kitesurf, tus spots favoritos, logros...',
+  profileEmail: 'Correo',
+  profilePhone: 'Teléfono',
+  profilePhonePlaceholder: '(92) 99999-0000',
+  profileWhatsApp: 'WhatsApp',
+  profileWhatsAppRequired: 'WhatsApp (obligatorio para contacto)',
+  profileSaving: 'Guardando...',
+  profileSave: 'Guardar Perfil',
+  profileMemberSince: 'Miembro desde:',
+  profileBack: 'Volver',
+  profileStatsBookings: 'Reservas',
+  profileStatsConfirmed: 'Confirmadas',
+  profileStatsProducts: 'Productos',
+  profileStatsReservations: 'reserva(s)',
+  profileNoBookings: 'Sin reservas aún',
+  profileNoBookingsHint: 'Tus experiencias, clases y downwinds aparecerán aquí',
+  profileProductsPhysical: 'Productos Físicos',
+  profileProductsCount: 'producto(s)',
+  profileNoProducts: 'Sin productos comprados',
+  profileNoProductsHint: 'Lycras, sombreros, accesorios y más',
+  profileGoToShop: 'Ir a la Tienda',
+  profilePurchasedIn: 'Comprado el',
+  profileDelivered: 'Producto entregado',
+  profilePendingConfirmation: 'Esperando confirmación',
+  profileDeliveryStatus: 'Estado de entrega',
+  profileSessionsGallery: 'Galería de Sesiones',
+  profileSessionsDescription: 'Fotos oficiales tomadas por el equipo de Amazon Wind en tus sesiones. Descarga, comenta y conéctate con otros participantes.',
+  profileNoSessions: 'Sin sesiones completadas',
+  profileNoSessionsHint: 'Completa una experiencia para acceder a las fotos de la sesión',
+  profileSessionCompleted: 'Completada',
+  profileGallerySoon: 'La galería estará disponible pronto por el equipo',
+  profileTripComments: 'Comentarios del Viaje',
+  profileTripCommentsSoon: 'Pronto podrás comentar e interactuar con otros participantes de esta sesión!',
+  profileMyTrips: 'Mis Viajes',
+  profileMyTripsDescription: 'Viajes que organizaste o en los que participas.',
+  profileNoTrips: 'Sin viajes aún',
+  profileNoTripsHint: 'Crea o únete a un viaje',
+  profileViewTrips: 'Ver Viajes',
+  profileStatusDraft: 'Borrador',
+  profileStatusPublished: 'Publicado',
+  profileStatusFull: 'Lleno',
+  profileStatusCancelled: 'Cancelado',
+  profileStatusCompleted: 'Completado',
+  profileParticipants: 'participantes',
+  profileCommunityFeed: 'Feed de la Comunidad',
+  profileCommunityFeedDescription: 'Conéctate con otros riders. Comparte tus sesiones, fotos y logros en kitesurf.',
+  profileErrorAvatar: 'Error al subir avatar:',
+  profileErrorSave: 'Error al guardar:',
+  profileSuccessSave: 'Perfil actualizado con éxito!',
+  profileBookingTypeExperience: 'Experiencia',
+  profileBookingTypeClass: 'Clase',
+  profileBookingTypeProduct: 'Producto',
+
+  // FASE 7 — KiteCoursePage
+  kiteCourseTitle: 'Clase de Kitesurf Principiante',
+  kiteCourseSubtitle: 'Módulo Principiante',
+  kiteCourseIncludesTitle: 'Qué está incluido',
+  kiteCourseInclude1: '10 clases prácticas (duración total: 30h)',
+  kiteCourseInclude2: 'Equipo completo incluido (kite, barra, tabla, chaleco)',
+  kiteCourseInclude3: 'Teoría de seguridad y meteorología',
+  kiteCourseInclude4: 'Instructor certificado IKO',
+  kiteCourseInclude5: 'Seguro de accidente durante las clases',
+  kiteCourseInclude6: 'Certificado de finalización del nivel Principiante',
+  kiteCourseInclude7: 'Análisis de video de las sesiones',
+  kiteCourseInclude8: 'Agua y bocadillos durante las clases',
+  kiteCourseModule1Title: 'Módulo 1 — Fundamentos',
+  kiteCourseModule1Desc: 'Teoría en la playa, montaje del equipo, primeros vuelos con kite en la arena, control básico de la barra.',
+  kiteCourseModule2Title: 'Módulo 2 — Agua',
+  kiteCourseModule2Desc: 'Body drag, water start, control en el agua, vuelo asistido por el instructor, primeras maniobras.',
+  kiteCourseModule3Title: 'Módulo 3 — Independencia',
+  kiteCourseModule3Desc: 'Maniobras básicas autónomas, transición, corte, downwind guiado y análisis de video.',
+  kiteCourseTotalHours: '30h totales',
+  kiteCourseTotalClasses: 'clases',
+  kiteCourseInvestment: 'Inversión',
+  kiteCourseInvestmentSummary: '10 clases completas • Equipo incluido • Certificación IKO',
+  kiteCourseAbout: 'Sobre el Curso',
+  kiteCourseAboutText: 'Nuestro módulo Principiante es el programa completo para quienes quieren aprender kitesurf desde cero. Con 10 clases prácticas distribuidas en 3 módulos progresivos, pasas de la teoría en la playa hasta realizar tus primeras maniobras de forma independiente. Todo el equipo es proporcionado y las clases son impartidas por instructores certificados IKO en las mejores condiciones de viento y agua de la costa amazónica.',
+  kiteCourseWhatIncluded: 'Qué está incluido',
+  kiteCourseModules: 'Módulos del Curso',
+  kiteCourseClasses: 'clases',
+  kiteCourseGallery: 'Galería',
+  kiteCourseSchedule: 'Agendar Clases',
+  kiteCourseScheduleDescription: 'Selecciona las fechas de inicio y fin de tus clases. El calendario de abajo ayuda a planificar tu curso.',
+  kiteCourseTotalInvestment: 'Total de la inversión',
+  kiteCourseScheduleButton: 'Agendar y Proceder',
+  kiteCourseSelectDate: 'Selecciona una fecha',
+  kiteCourseReviews: 'Reseñas',
+  kiteCourseReviewsEmpty: 'Las reseñas de los alumnos aparecerán aquí después de la finalización de los cursos.',
+  kiteCourseVideoSoon: 'Próximamente un vídeo',
+
+  // FASE 7 — ExperienceDetail
+  expDetailNotFound: 'Experiencia no encontrada.',
+  expDetailPackage: 'Paquete',
+  expDetailIndividual: 'Individual',
+  expDetailFullPackage: 'Paquete Completo',
+  expDetailWhatIncluded: 'Qué está incluido en el paquete',
+  expDetailWhatIncludedShort: 'Qué está incluido',
+  expDetailPackageTotal: 'Inversión total del paquete',
+  expDetailPerPerson: 'por persona',
+  expDetailBookingDate: 'Fecha de Reserva',
+  expDetailAddToCart: 'Agregar Paquete al Carrito',
+  expDetailSecurePayment: 'Pago seguro vía PIX, Tarjeta o PayPal',
+  expDetailUserFallback: 'User',
+
+  // FASE 7 — AdminDashboard
+  adminAccessDenied: 'Acceso restringido a administradores.',
+  adminHeroCover: 'Hero / Portada',
+  adminTrips: 'Viajes',
+  adminLoadingDashboard: 'Cargando Panel Administrativo...',
+  adminPanel: 'Panel Admin',
+  adminThemeLight: 'Modo Claro',
+  adminThemeDark: 'Modo Oscuro',
+  adminCollapse: 'Contraer',
+  adminOnline: 'En línea',
+
+  // FASE 7 — Feed components
+  feedErrorLoading: 'Error al cargar feed.',
+  feedPostError: 'Error al publicar.',
+  feedPostTripPlaceholder: 'Publicar en viaje "${tripName}"...',
+  feedPostPlaceholder: 'Comparte tu sesión de kite... 🪁',
+  feedPostSuccess: 'Publicado con éxito!',
+  feedPostMedia: 'Foto/Vídeo',
+  feedPostSending: 'Enviando media...',
+  feedPostPublishing: 'Publicando...',
+  feedPostButton: 'Publicar',
+  feedCommentLoading: 'Cargando...',
+  feedCommentEmpty: 'Sin comentarios aún.',
+  feedCommentPlaceholder: 'Escribe un comentario...',
+  feedCommentSend: 'Enviar',
+  feedCommentSave: 'Guardar',
+  feedCommentCancel: 'Cancelar',
+  feedCommentRider: 'Rider',
+  feedPostNow: 'ahora',
+  feedPostEdited: 'editado',
+  feedPostDeleteConfirm: '¿Eliminar esta publicación?',
+  feedPostErrorSave: 'Error al guardar',
+  feedPostSaving: 'Guardando...',
+  feedPostSave: 'Guardar',
+  feedPostComment: 'Comentar',
+  feedPostShare: 'Compartir',
+
+  // FASE 7 — Chat components
+  chatRiderFallback: 'Rider',
+  chatDeletedMessage: 'Mensaje eliminado',
+  chatMessageFallback: 'Mensaje',
+  chatReply: 'Responder',
+  chatDelete: 'Eliminar',
+  chatCancel: 'Cancelar',
+  chatMessagePlaceholder: 'Mensaje...',
+
+  // FASE 7 — ConversationsList
+  convRiderFallback: 'Rider',
+  convYesterday: 'Ayer',
+  convTitle: 'Conversaciones',
+  convSearchPlaceholder: 'Buscar riders...',
+  convSearching: 'Buscando...',
+  convEmpty: 'Sin conversaciones aún. Busca un rider arriba para comenzar!',
+  convStartChat: 'Iniciar conversación...',
+
+  // FASE 7 — Community
+  communityLoginButton: 'Iniciar',
+
+  // FASE 7 — Notifications
+  notificationNow: 'Ahora',
+  notificationMin: 'min',
+  notificationHour: 'h',
+  notificationDay: 'd',
+
+  // FASE 7 — Friends
+  friendsRiderFallback: 'Rider',
+
+  // FASE 7 — Products
+  productNotFound: 'Producto no encontrado.',
+  productAddedToCart: 'Agregado al carrito!',
+  productInCart: 'en el carrito',
+  productContinueShopping: 'Seguir Comprando',
+  productViewCart: 'Ver Carrito',
+  productOutOfStock: 'Este producto está agotado momentáneamente.',
+  productViewOthers: 'Ver otros productos',
+
+  // FASE 7 — Wishlist
+  wishlistAlreadyInCart: 'Este artículo ya está en el carrito',
+  wishlistAdded: 'agregado al carrito!',
+  wishlistRemoved: 'Eliminado de favoritos',
+  wishlistTitle: 'Lista de Deseos',
+  wishlistSubtitle: 'Artículos guardados para reserva futura',
+  wishlistEmpty: 'Sin favoritos aún',
+  wishlistEmptyHint: 'Toca el ícono de corazón en cualquier experiencia o producto para guardarlo aquí.',
+  wishlistInCart: '✓ En el Carrito',
+  wishlistAddToCart: 'Agregar al Carrito',
+  wishlistRemove: 'Eliminar',
+  wishlistItem: 'artículo',
+  wishlistItems: 'artículos',
+
+  // FASE 7 — Trips (error/status)
+  tripErrorLoad: 'Error al cargar viaje',
+  tripErrorJoin: 'Error al unirse al viaje',
+  tripErrorLeave: 'Error al salir del viaje',
+  tripErrorInvite: 'Error al enviar invitación',
+  tripErrorRemove: 'Error al eliminar participante',
+  tripErrorCreate: 'Error al crear viaje',
+  tripErrorSave: 'Error al guardar',
+  tripErrorUpload: 'Error en la subida:',
+  tripNotAuthenticated: 'No autenticado',
+  tripStatusPublic: '🌐 Público',
+  tripStatusPrivate: '🔒 Privado',
+  tripAgo: 'ahora',
+
+  // FASE 7 — ShareDialog
+  shareRiderFallback: 'Rider',
+  shareGroupFallback: 'Grupo',
+  shareTripFallback: 'Viaje',
+  shareConvFallback: 'Conversación',
+  shareSent: 'Enviado!',
+
+  // FASE 7 — FavoriteButton
+  favRemoveAria: 'Eliminar de favoritos',
+  favAddAria: 'Agregar a favoritos',
+
+  // FASE 7 — Header
+  headerMenu: 'Menú',
+  headerAbout: 'Sobre',
+  headerToggleTheme: 'Cambiar tema',
+  headerUserFallback: 'Usuario',
+  headerMyProfile: 'Mi Perfil',
+  headerAdminPanel: 'Panel Admin',
+  headerLogin: 'Iniciar',
+  headerCart: 'Carrito',
+
+  // FASE 7 — CartCheckout
+  checkoutTestimonial1: '¡Experiencia increíble! Todo fue organizado a la perfección. ¡Muy recomendable!',
+  checkoutTestimonial2: 'Clase de kite sensacional. Seguridad y diversión al mismo tiempo.',
+  checkoutTestimonial3: 'El route de downwind más lindo que hice. ¡Equipo top!',
+  checkoutEmpty: 'Explora nuestras experiencias, productos y clases y agrega artículos al carrito para reservar.',
+  checkoutEmptyHint: '',
+  checkoutSummary: 'Resumen de la Reserva',
+  checkoutSubtotal: 'Subtotal',
+  checkoutPixDiscount: 'Descuento PIX (5%)',
+  checkoutTotal: 'Total',
+  checkoutWhatsApp: 'WhatsApp para contacto',
+  checkoutFilled: '(completado)',
+  checkoutPaymentMethod: 'Forma de Pago',
+  checkoutCard: 'Tarjeta',
+  checkoutUpTo: 'Hasta 6x',
+  checkoutInternational: 'Internacional',
+  checkoutPixInstant: 'Aprobación Instantánea',
+  checkoutPixDiscountApplied: '5% de descuento aplicado',
+  checkoutPixKey: 'Clave PIX (Copiar y Pegar):',
+  checkoutPixCopy: 'Copiar Clave PIX',
+  checkoutPixCopied: '✓ Copiado!',
+  checkoutCardPlaceholder: '0000 0000 0000 0000',
+  checkoutCardName: 'Nombre en la tarjeta',
+  checkoutInstallments: 'Cuotas',
+  checkoutInterestFree: 'sin interés',
+  checkoutPaypalTitle: 'Pago con PayPal',
+  checkoutPaypalDescription: 'Serás redirigido a PayPal para completar el pago de forma segura.',
+  checkoutConfirmPayment: 'Confirmar Pago',
+  checkoutTestimonialsTitle: 'Lo que dicen nuestros clientes',
+  checkoutSecurePayment: '100% Seguro',
+  checkoutEncryptedPayment: 'Pago Cifrado',
+  checkoutGuarantee: 'Garantía Amazon Wind',
+  checkoutWhatsAppSupport: 'Soporte vía WhatsApp',
+  checkoutAddItemFirst: 'Agrega un artículo al carrito primero',
+  checkoutWhatsAppRequired: 'Ingresa tu WhatsApp para contacto.',
+  checkoutCreateAccount: 'Crear cuenta',
+  checkoutItemRemoved: 'Artículo eliminado del carrito',
+
+  // FASE 7 — Splash / ProtectedRoute
+  splashSubtitle: 'Kitesurf & Expediciones',
+  protectedRouteLoading: 'Verificando credenciales de Amazon Wind...',
+
+  // FASE 7 — Admin components (heroes)
+  heroSlideLimit: 'Límite de 6 slides alcanzado. Elimina un slide antes de crear otro.',
+  heroMediaRequired: 'Por favor indica o sube el medio de fondo.',
+  heroTitleRequired: 'El título es obligatorio.',
+  heroSlideUpdated: '¡Slide actualizado con éxito!',
+  heroSlideCreated: '¡Slide creado con éxito!',
+  heroSlideRemoved: 'Slide oficial eliminado de la visualización.',
+  heroSlideDeleted: 'Slide eliminado.',
+  heroManageTitle: 'Gestionar Hero / Portada',
+  heroManageDescription: 'Controla los medios y textos destacados de la página principal.',
+  heroSlideCount: 'Límite de 6 slides alcanzado',
+  heroNewSlide: '+ Nuevo Slide',
+  heroDimensionTip: 'Sugerencia de dimensiones:',
+  heroUploadTip: 'Puedes subir imagen o video.',
+  heroLoading: 'Cargando slides...',
+  heroNoSlides: 'Sin slides configurados.',
+  heroCreateFirst: 'Crear primer slide',
+  heroTypeYoutube: 'YouTube',
+  heroTypeVideo: 'Video',
+  heroTypeImage: 'Imagen',
+  heroOfficial: 'Oficial',
+  heroCtaPrefix: 'CTA:',
+  heroMoveUp: 'Mover arriba',
+  heroMoveDown: 'Mover abajo',
+  heroEdit: 'Editar',
+  heroDelete: 'Eliminar',
+  heroEditSlide: 'Editar Slide',
+  heroNewSlideTitle: 'Nuevo Slide de Hero',
+  heroTitleLabel: 'Título Destacado',
+  heroTitlePlaceholder: 'Ej: Expediciones en la Costa Norte',
+  heroSubtitleLabel: 'Subtítulo',
+  heroSubtitlePlaceholder: 'Ej: Siente la fuerza de los vientos alisios',
+  heroMediaTypeLabel: 'Tipo de Medio',
+  heroOrderLabel: 'Orden',
+  heroUploadLabel: 'Subir Archivo',
+  heroUrlLabel: 'O pega el enlace directo (URL)',
+  heroUrlPlaceholder: 'https://ejemplo.com/imagen.jpg o enlace de YouTube',
+  heroCtaTextLabel: 'Texto del Botón (CTA)',
+  heroCtaTextPlaceholder: 'Explorar Rutas',
+  heroCtaLinkLabel: 'Enlace del Botón',
+  heroCancel: 'Cancelar',
+  heroSaving: 'Guardando...',
+  heroUpdate: 'Actualizar',
+  heroCreate: 'Crear Slide',
+  heroDeleteTitle: 'Eliminar Slide',
+  heroDeleteConfirm: '¿Estás seguro de que deseas eliminar "${deleteTarget.title}"?',
+  heroDeleteYes: 'Sí, Eliminar',
+
+  // FASE 7 — Admin components (bookings)
+  bookingUpdated: '¡Reserva actualizada con éxito!',
+  bookingDeleted: 'Reserva eliminada.',
+  bookingTypeExperience: 'Experiencia',
+  bookingTypeClass: 'Clase',
+  bookingTypeProduct: 'Producto',
+  bookingConfirmAction: '¿Deseas confirmar/cancelar esta reserva?',
+  bookingPaid: 'Pago confirmado',
+  bookingDetails: 'Detalles de la Reserva',
+  bookingClientInfo: 'Información del Cliente',
+  bookingFieldName: 'Nombre:',
+  bookingFieldEmail: 'Email:',
+  bookingFieldWhatsApp: 'WhatsApp:',
+  bookingFieldPhone: 'Teléfono:',
+  bookingNoContact: 'Sin información de contacto registrada',
+  bookingReservationDetails: 'Detalles de la Reserva',
+  bookingFieldType: 'Tipo',
+  bookingFieldItemId: 'ID del Artículo',
+  bookingReservedItems: 'Artículos Reservados',
+  bookingStatusPending: 'Pendiente',
+  bookingStatusConfirmed: 'Confirmada',
+  bookingStatusCancelled: 'Cancelada',
+  bookingDate: 'Fecha de Reserva',
+  bookingNotes: 'Notas / Observaciones',
+  bookingCancel: 'Cancelar',
+  bookingDelete: 'Eliminar',
+  bookingSaving: 'Guardando...',
+  bookingSave: 'Guardar Cambios',
+  bookingDeleteTitle: 'Eliminar Reserva',
+  bookingDeleteConfirm: '¿Estás seguro de que deseas eliminar esta reserva? Esta acción no se puede deshacer.',
+
+  // FASE 7 — Admin components (classes)
+  classErrorLoad: 'Error al cargar clases:',
+  classErrorUpdate: 'Error al actualizar clase:',
+  classUpdated: '¡Clase actualizada con éxito!',
+  classErrorCreate: 'Error al crear clase:',
+  classCreated: '¡Clase creada con éxito!',
+  classErrorDelete: 'Error al eliminar clase:',
+  classDeleted: 'Clase eliminada.',
+  classLoading: 'Cargando clases...',
+  classManageTitle: 'Gestionar Clases',
+  classManageDescription: 'Configura los paquetes de clases, medios y precios.',
+  classNewButton: '+ Nueva Clase',
+  classEmpty: 'Sin clases registradas',
+  classEdit: 'Editar',
+  classDelete: 'Eliminar',
+  classEditTitle: 'Editar Clase',
+  classNewTitle: 'Nueva Clase',
+  classFieldTitle: 'Título',
+  classFieldTitlePlaceholder: 'Ej: Clase Privada de Kite',
+  classFieldPrice: 'Precio (R$)',
+  classFieldDuration: 'Duración',
+  classFieldDurationPlaceholder: 'Ej: 2h30',
+  classFieldLevel: 'Nivel',
+  classFieldLevelPlaceholder: 'Ej: Principiante / Intermedio',
+  classFieldDescription: 'Descripción',
+  classFieldImage: 'Imagen Principal de la Clase',
+  classFieldVideo: 'Video Promocional (Opcional)',
+  classCancel: 'Cancelar',
+  classSaving: 'Guardando...',
+  classUpdate: 'Actualizar',
+  classCreate: 'Crear Clase',
+  classDeleteTitle: 'Eliminar Clase',
+  classDeleteConfirm: '¿Estás seguro de que deseas eliminar "${deleteTarget.title}"?',
+
+  // FASE 7 — Admin components (about)
+  aboutTitleRequired: 'El título es obligatorio.',
+  aboutUpdated: '¡Página "Sobre" actualizada!',
+  aboutCreated: '¡Página "Sobre" creada!',
+  aboutManageTitle: 'Gestionar Página "Sobre"',
+  aboutManageDescription: 'Edita el contenido de la página sobre en cada idioma.',
+  aboutEditContent: 'Editar Contenido',
+  aboutLoading: 'Cargando contenido...',
+  aboutMainContent: 'Contenido Principal',
+  aboutFieldTitle: 'Título',
+  aboutFieldTitlePlaceholder: 'Ej: Sobre Amazon Wind',
+  aboutFieldSubtitle: 'Subtítulo',
+  aboutFieldSubtitlePlaceholder: 'Ej: Escuela de Kitesurf & Expediciones',
+  aboutFieldDescription: 'Descripción',
+  aboutFieldDescriptionPlaceholder: 'Historia completa de la empresa...',
+  aboutMissionVision: 'Misión & Visión',
+  aboutFieldMission: 'Misión',
+  aboutFieldMissionPlaceholder: 'Misión de la empresa...',
+  aboutFieldVision: 'Visión',
+  aboutFieldVisionPlaceholder: 'Visión de la empresa...',
+  aboutMedia: 'Medios',
+  aboutCoverImage: 'Imagen de Portada',
+  aboutCoverUrl: 'O pega la URL de la portada',
+  aboutVideoUrl: 'URL del Video (YouTube o enlace directo)',
+  aboutGallery: 'Galería',
+  aboutGalleryPlaceholder: 'URL de imagen de galería',
+  aboutAddButton: '+ Agregar',
+  aboutCancel: 'Cancelar',
+  aboutSaving: 'Guardando...',
+  aboutUpdate: 'Actualizar',
+  aboutCreate: 'Crear',
+  aboutUnsavedData: 'Datos oficiales (no guardados)',
+  aboutLabelTitle: 'Título',
+  aboutLabelSubtitle: 'Subtítulo',
+  aboutLabelDescription: 'Descripción',
+  aboutLabelMission: 'Misión',
+  aboutLabelVision: 'Visión',
+  aboutLabelMedia: 'Medios',
+  aboutLabelCover: 'Portada',
+  aboutLabelVideo: 'Video',
+  aboutGalleryCount: 'Galería (${count} imágenes)',
+
+  // FASE 7 — Admin components (products)
+  productAdminName: 'Producto',
+  productAdminPrice: 'Precio',
+  productAdminStock: 'Stock',
+  productAdminActions: 'Acciones',
+  productAdminUnit: ' un.',
+  productAdminEdit: 'Editar',
+  productAdminDelete: 'Eliminar',
+  productAdminCategoryPlaceholder: 'Nombre de nueva categoría',
+  productAdminCancel: 'Cancelar',
+  productAdminNew: '+ Nuevo',
+
+  // FASE 7 — Admin components (trips)
+  tripAdminStatusUpdated: '¡Estado actualizado!',
+  tripAdminError: 'Error:',
+  tripAdminDeleteConfirm: '¿Estás seguro de que deseas eliminar este viaje?',
+  tripAdminDeleted: '¡Viaje eliminado!',
+  tripAdminDraft: 'Borrador',
+  tripAdminPublished: 'Publicado',
+  tripAdminFull: 'Lleno',
+  tripAdminCancelled: 'Cancelado',
+  tripAdminCompleted: 'Completado',
+  tripAdminPublic: 'Público',
+  tripAdminPrivate: 'Privado',
+  tripAdminAll: 'Todos',
+  tripAdminEmpty: 'Sin viajes encontrados',
+  tripAdminParticipants: ' participantes',
+
+  // FASE 7 — Admin components (shared)
+  sharedStatusPending: 'Pendiente',
+  sharedStatusConfirmed: 'Confirmada',
+  sharedStatusCancelled: 'Cancelada',
+  sharedUploadError: 'No se pudo obtener la URL del archivo.',
+  sharedUploading: 'Subiendo...',
+  sharedChooseVideo: 'Elegir video',
+  sharedChooseImage: 'Elegir imagen',
+
+  // FASE 7 — Admin components (financial)
+  financialStatusPending: 'Pendiente',
+  financialStatusPaid: 'Pagado',
+  financialStatusOverdue: 'Vencido',
+  financialTypePayable: 'A Pagar',
+  financialTypeReceivable: 'A Cobrar',
+  financialCategoryRent: 'Alquiler',
+  financialCategoryEquipment: 'Equipamiento',
+  financialCategoryMarketing: 'Marketing',
+  financialCategorySalaries: 'Salarios',
+  financialCategoryServices: 'Servicios',
+  financialCategoryOperations: 'Operaciones',
+  financialCategoryClasses: 'Ingresos Clases',
+  financialCategoryExpeditions: 'Ingresos Expediciones',
+  financialCategoryProducts: 'Ingresos Productos',
+  financialCategoryOther: 'Otros',
+  financialUpdated: '¡Cuenta actualizada!',
+  financialCreated: '¡Cuenta creada!',
+  financialDeleted: 'Cuenta eliminada.',
+  financialSummary: 'Resumen Financiero',
+  financialPay: 'Pagar',
+  financialReceive: 'Cobrar',
+  financialBalance: 'Saldo',
+  financialFilters: 'Filtros',
+  financialAllTypes: 'Todos los Tipos',
+  financialAllStatuses: 'Todos los Estados',
+  financialNewEntry: '+ Nuevo Registro',
+  financialEntries: 'Registros',
+  financialItems: ' artículos',
+  financialEmpty: 'Sin registros encontrados',
+  financialFieldDescription: 'Descripción',
+  financialFieldDescriptionPlaceholder: 'Ej: Alquiler espacio, Clase privada...',
+  financialFieldType: 'Tipo',
+  financialFieldValue: 'Monto (R$)',
+  financialFieldDueDate: 'Vencimiento',
+  financialFieldCategory: 'Categoría',
+  financialFieldCategoryPlaceholder: 'Seleccionar...',
+  financialFieldStatus: 'Estado',
+  financialFieldNotes: 'Notas',
+  financialFieldNotesPlaceholder: 'Opcional...',
+  financialCancel: 'Cancelar',
+  financialSaving: 'Guardando...',
+  financialUpdate: 'Actualizar',
+  financialCreate: 'Crear Cuenta',
+  financialDeleteTitle: 'Eliminar Registro',
+  financialDeleteConfirm: '¿Estás seguro de que deseas eliminar "${deleteTarget.description}"?',
+
+  // FASE 7 — Admin components (experiences)
+  expAdminPackage: 'Paquete',
+  expAdminIndividual: 'Individual',
+  expAdminItemsIncluded: ' artículos incluidos',
+  expAdminTypeLabel: 'Tipo de Experiencia',
+  expAdminTypeIndividual: 'Experiencia Individual',
+  expAdminTypeIndividualDesc: 'Clase suelta, downwind, etc.',
+  expAdminTypePackage: 'Paquete Completo',
+  expAdminTypePackageDesc: 'All-Inclusive, curso, etc.',
+  expAdminCategoryPlaceholder: 'Nombre de nueva categoría',
+  expAdminCancel: 'Cancelar',
+  expAdminNew: '+ Nuevo',
+  expAdminOriginalPrice: 'Precio Original (referencia, opcional)',
+  expAdminOriginalPricePlaceholder: 'Ej: 14500.00 (muestra descuento)',
+  expAdminOriginalPriceHelp: 'Si se completa, muestra el precio tachado y el porcentaje de descuento.',
+  expAdminIncludedItems: 'Qué está incluido (1 artículo por línea)',
+  expAdminIncludedPlaceholder: '10 clases prácticas (30h)\nEquipo completo\nCertificación IKO\nSeguro de accidente\nAgua y bocadillos',
+  expAdminIncludedHelp: 'Separa cada artículo por línea...',
+
+  // FASE 7 — Experiencias (landing section)
+  expLandingDiscover: 'Descubre',
+  expLandingTitle: 'Experiencias & Downwinds',
+  expLandingDescription: 'Rutas exclusivas por la Amazonia Atlántica. Cada trayecto es una nueva aventura.',
+  expLandingDetails: 'Ver Detalles →',
+
+  // FASE 7 — KiteSchool component
+  kiteSchoolAlt: 'Clase de kitesurf',
+
+  // FASE 7 — ContactNewsletter
+  contactSendAnother: 'Enviar otro mensaje',
+
+  // FASE 7 — Servicos
+  svcWhatsAppRequired: 'Ingresa el número de WhatsApp para contacto.',
+  svcDepartureAfterArrival: 'La salida debe ser posterior a la Llegada',
+
+  // FASE 7 — Footer
+  footerWhatsApp: 'WhatsApp',
+
+  // FASE 7 — InstallAppBanner
+  bannerClose: 'Cerrar',
+
+  // Accessibility aria-labels
+  ariaAttach: 'Adjuntar archivo',
+  ariaLike: 'Me gusta',
+  ariaUnlike: 'No me gusta',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

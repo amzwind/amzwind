@@ -30,7 +30,7 @@ export default function WishlistPage() {
   function handleSendToCart(item: FavoriteItem) {
     const alreadyInCart = cartItems.some((c) => c.id === item.id && c.type === item.type)
     if (alreadyInCart) {
-      setToast({ message: 'Este item já está no carrinho', type: 'error' })
+      setToast({ message: t.wishlistAlreadyInCart, type: 'error' })
       return
     }
     addItem({
@@ -40,12 +40,12 @@ export default function WishlistPage() {
       price: item.price,
       image_url: item.image_url,
     })
-    setToast({ message: `${item.title} adicionado ao carrinho!`, type: 'success' })
+    setToast({ message: `${item.title} ${t.wishlistAdded}`, type: 'success' })
   }
 
   function handleRemove(item: FavoriteItem) {
     removeFavorite(item.id, item.type)
-    setToast({ message: 'Removido dos favoritos', type: 'success' })
+    setToast({ message: t.wishlistRemoved, type: 'success' })
   }
 
   return (
@@ -59,9 +59,9 @@ export default function WishlistPage() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             {t.adminBack}
           </button>
-          <h1 className="text-2xl font-bold text-amz-terra dark:text-amz-areia">Lista de Desejos</h1>
+          <h1 className="text-2xl font-bold text-amz-terra dark:text-amz-areia">{t.wishlistTitle}</h1>
           <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mt-1">
-            Itens salvos para reserva futura
+            {t.wishlistSubtitle}
           </p>
         </div>
 
@@ -72,9 +72,9 @@ export default function WishlistPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </div>
-            <h2 className="text-lg font-semibold text-amz-terra dark:text-amz-areia mb-2">Nenhum favorito ainda</h2>
+            <h2 className="text-lg font-semibold text-amz-terra dark:text-amz-areia mb-2">{t.wishlistEmpty}</h2>
             <p className="text-sm text-amz-terra-light dark:text-amz-areia/50 mb-6 max-w-sm mx-auto">
-              Toque no ícone de coração em qualquer experiência ou produto para salvá-lo aqui.
+              {t.wishlistEmptyHint}
             </p>
             <Link to="/experiencias" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors inline-block">
               {t.expLabel}
@@ -126,13 +126,13 @@ export default function WishlistPage() {
                           : 'bg-amz-dourado text-white hover:bg-amber-700'
                       }`}
                     >
-                      {inCart ? '✓ No Carrinho' : 'Enviar ao Carrinho'}
+                      {inCart ? t.wishlistInCart : t.wishlistAddToCart}
                     </button>
                     <button
                       onClick={() => handleRemove(item)}
                       className="px-4 py-2 rounded-xl text-xs font-semibold border border-amz-areia-dark/20 dark:border-white/10 text-amz-terra-light dark:text-amz-areia/40 hover:border-red-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors whitespace-nowrap"
                     >
-                      Remover
+                      {t.wishlistRemove}
                     </button>
                   </div>
                 </div>
@@ -146,7 +146,7 @@ export default function WishlistPage() {
                   onClick={() => navigate('/checkout')}
                   className="w-full py-3 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all"
                 >
-                  Ver Carrinho ({cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'})
+                  Ver Carrinho ({cartItems.length} {cartItems.length === 1 ? t.wishlistItem : t.wishlistItems})
                 </button>
               </div>
             )}

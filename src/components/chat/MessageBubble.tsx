@@ -1,4 +1,5 @@
 import { type MessageWithMeta } from '../../services/chat'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 interface MessageBubbleProps {
   message: MessageWithMeta
@@ -26,6 +27,7 @@ export default function MessageBubble({
   contextMenu,
   setContextMenu,
 }: MessageBubbleProps) {
+  const { t } = useLanguage()
   function handleLongPress(e: React.MouseEvent | React.TouchEvent) {
     e.preventDefault()
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -36,7 +38,7 @@ export default function MessageBubble({
     return (
       <div className="flex justify-center py-2">
         <span className="text-xs text-gray-400 dark:text-gray-500 italic">
-          {message.content ?? 'Mensagem apagada'}
+          {message.content ?? (t.chatDeletedMessage || 'Mensagem apagada')}
         </span>
       </div>
     )
@@ -56,7 +58,7 @@ export default function MessageBubble({
             ? 'bg-emerald-600/30 text-emerald-100'
             : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
         }`}>
-          <span className="font-semibold">{message.reply_sender_name ?? 'Rider'}</span>
+          <span className="font-semibold">{message.reply_sender_name ?? (t.chatRiderFallback || 'Rider')}</span>
           <p className="truncate opacity-80">{message.reply_content}</p>
         </div>
       )}
@@ -154,21 +156,21 @@ export default function MessageBubble({
             onClick={() => { onReply(); setContextMenu(null) }}
             className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            Responder
+            {t.chatReply || 'Responder'}
           </button>
           {isOwn && (
             <button
               onClick={() => { onDelete(); setContextMenu(null) }}
               className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              Apagar
+              {t.chatDelete || 'Apagar'}
             </button>
           )}
           <button
             onClick={() => setContextMenu(null)}
             className="w-full text-left px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            Cancelar
+            {t.chatCancel || 'Cancelar'}
           </button>
         </div>
       )}

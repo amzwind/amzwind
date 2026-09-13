@@ -213,7 +213,7 @@ export default function FriendsPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
-                      {friend.full_name ?? 'Rider'}
+                      {friend.full_name ?? (t.friendsRiderFallback || 'Rider')}
                     </p>
                   </div>
                   <div className="flex gap-1.5">
@@ -264,7 +264,7 @@ export default function FriendsPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-white text-sm">
-                        {other?.full_name ?? 'Rider'}
+                        {other?.full_name ?? (t.friendsRiderFallback || 'Rider')}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         {isSender ? (t.friendsRequestSent || 'Pedido enviado') : (t.friendsRequestReceived || 'Pedido recebido')}
@@ -315,7 +315,7 @@ export default function FriendsPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 dark:text-white text-sm">
-                        {user.full_name ?? 'Rider'}
+                        {user.full_name ?? (t.friendsRiderFallback || 'Rider')}
                       </p>
                     </div>
                     {user.is_friend ? (

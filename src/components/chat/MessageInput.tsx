@@ -71,11 +71,12 @@ export default function MessageInput({
               {replyTo.sender_name}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {replyTo.content ?? 'Mensagem'}
+              {replyTo.content ?? (t.chatMessageFallback || 'Mensagem')}
             </p>
           </div>
           <button
             onClick={onCancelReply}
+            aria-label={t.adminCancel}
             className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,6 +97,7 @@ export default function MessageInput({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
+          aria-label={t.ariaAttach}
           className="p-2 text-gray-500 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors flex-shrink-0"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,7 +110,7 @@ export default function MessageInput({
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={t.chatTypeMessage || 'Mensagem...'}
+          placeholder={t.chatMessagePlaceholder || 'Mensagem...'}
           rows={1}
           className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none max-h-[120px]"
           disabled={sending}
@@ -117,6 +119,7 @@ export default function MessageInput({
         <button
           type="submit"
           disabled={!text.trim() || sending}
+          aria-label={t.feedSend}
           className="p-2.5 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
         >
           {sending ? (

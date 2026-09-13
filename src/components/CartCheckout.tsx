@@ -25,14 +25,14 @@ function getItemTypeLabel(type: CartItemType, t: any): string {
 const formatBRL = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
-const testimonials = [
-  { name: 'Marina S.', text: 'Experiência incrível! Tudo foi organizado com perfeição. Recomendo demais!', avatar: '🌊' },
-  { name: 'Carlos M.', text: 'Aula de kite sensacional. Segurança e diversão ao mesmo tempo.', avatar: '🪁' },
-  { name: 'Ana P.', text: 'Roteiro de downwind mais lindo que já fiz. Equipe top!', avatar: '🏄' },
-]
-
 export default function CartCheckout() {
   const { t } = useLanguage()
+
+  const testimonials = [
+    { name: 'Marina S.', text: t.checkoutTestimonial1, avatar: '🌊' },
+    { name: 'Carlos M.', text: t.checkoutTestimonial2, avatar: '🪁' },
+    { name: 'Ana P.', text: t.checkoutTestimonial3, avatar: '🏄' },
+  ]
   const { theme } = useTheme()
   const navigate = useNavigate()
   const { items, removeItem, updateQuantity, clearCart, getSubtotal } = useCart()
@@ -123,11 +123,11 @@ export default function CartCheckout() {
 
   function handleProceedToCheckout() {
     if (items.length === 0) {
-      setToast({ message: 'Adicione um item ao carrinho primeiro', type: 'error' })
+      setToast({ message: t.checkoutAddItemFirst, type: 'error' })
       return
     }
     if (!checkoutWhatsApp.trim() && !profile?.whatsapp) {
-      setToast({ message: 'Informe seu WhatsApp para contato.', type: 'error' })
+      setToast({ message: t.checkoutWhatsAppRequired, type: 'error' })
       return
     }
     if (!sessionUserId) {
@@ -280,7 +280,7 @@ export default function CartCheckout() {
               </div>
               <button type="submit" disabled={authLoading}
                 className="w-full py-2.5 rounded-xl bg-amz-dourado text-white font-bold text-sm hover:bg-amber-700 transition-all disabled:opacity-50 shadow-lg shadow-amz-dourado/20">
-                {authLoading ? '...' : authMode === 'login' ? t.checkoutLoginButton : 'Criar conta'}
+                {authLoading ? '...' : authMode === 'login' ? t.checkoutLoginButton : t.checkoutCreateAccount}
               </button>
             </form>
           </div>
@@ -305,7 +305,7 @@ export default function CartCheckout() {
           <div className="flex-1" />
           <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5">
             <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-            <span className="text-xs font-semibold text-white/90">100% Seguro</span>
+            <span className="text-xs font-semibold text-white/90">{t.checkoutSecurePayment}</span>
           </div>
         </div>
         <div className="relative z-10 mt-4">
@@ -324,9 +324,9 @@ export default function CartCheckout() {
       {/* Trust Badges */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: '🔒', label: 'Pagamento Criptografado', sub: 'SSL/TLS' },
-          { icon: '🛡️', label: 'Garantia Amazon Wind', sub: 'Até 30 dias' },
-          { icon: '💬', label: 'Suporte via WhatsApp', sub: 'Resposta rápida' },
+          { icon: '🔒', label: t.checkoutEncryptedPayment, sub: 'SSL/TLS' },
+          { icon: '🛡️', label: t.checkoutGuarantee, sub: 'Até 30 dias' },
+          { icon: '💬', label: t.checkoutWhatsAppSupport, sub: 'Resposta rápida' },
         ].map((badge) => (
           <div key={badge.label} className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-3 text-center">
             <div className="text-2xl mb-1">{badge.icon}</div>
@@ -346,7 +346,7 @@ export default function CartCheckout() {
           </div>
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t.cartEmpty}</h2>
           <p className="text-sm text-gray-400 dark:text-white/30 mb-6 max-w-sm mx-auto">
-            Explore nossas experiências, produtos e aulas e adicione itens ao carrinho para reservar.
+            {t.checkoutEmpty}
           </p>
           <div className="flex gap-3 justify-center">
             <Link to="/experiencias" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors shadow-lg shadow-amz-dourado/20">
@@ -422,7 +422,7 @@ export default function CartCheckout() {
 
                 {/* Remove */}
                 <button
-                  onClick={() => { removeItem(item.id, item.type); setToast({ message: 'Item removido do carrinho', type: 'success' }) }}
+                  onClick={() => { removeItem(item.id, item.type); setToast({ message: t.checkoutItemRemoved, type: 'success' }) }}
                   className="flex-shrink-0 p-2 rounded-xl text-gray-300 dark:text-white/20 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -441,7 +441,7 @@ export default function CartCheckout() {
               <div className="bg-gradient-to-r from-amz-dourado to-amber-600 px-5 py-4">
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Resumo da Reserva</h3>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">{t.checkoutSummary}</h3>
                 </div>
               </div>
 
@@ -460,20 +460,20 @@ export default function CartCheckout() {
 
                 <div className="border-t border-dashed border-gray-200 dark:border-white/10 pt-3 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-400 dark:text-white/30">Subtotal</span>
+                    <span className="text-gray-400 dark:text-white/30">{t.checkoutSubtotal}</span>
                     <span className="text-gray-600 dark:text-white/50">{formatBRL(subtotal)}</span>
                   </div>
                   {paymentMethod === 'pix' && (
                     <div className="flex justify-between text-xs">
                       <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                        Desconto PIX (5%)
+                        {t.checkoutPixDiscount}
                       </span>
                       <span className="font-semibold text-emerald-600 dark:text-emerald-400">-{formatBRL(pixDiscount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm pt-2 border-t border-gray-100 dark:border-white/[0.06]">
-                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{t.checkoutTotal}</span>
                     <span className="font-bold text-amz-dourado text-lg">{formatBRL(finalTotal)}</span>
                   </div>
                 </div>
@@ -481,8 +481,8 @@ export default function CartCheckout() {
                 {/* WhatsApp */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-1.5">
-                    WhatsApp para contato {!profile?.whatsapp && <span className="text-red-500">*</span>}
-                    {profile?.whatsapp && <span className="text-emerald-500 text-[10px] ml-1">(preenchido)</span>}
+                    {t.checkoutWhatsApp} {!profile?.whatsapp && <span className="text-red-500">*</span>}
+                    {profile?.whatsapp && <span className="text-emerald-500 text-[10px] ml-1">{t.checkoutFilled}</span>}
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -502,13 +502,13 @@ export default function CartCheckout() {
                 {/* Payment Methods */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 dark:text-white/60 mb-2">
-                    Forma de Pagamento
+                    {t.checkoutPaymentMethod}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {([
                       { key: 'pix' as const, icon: '⚡', label: 'PIX', sub: '5% off' },
-                      { key: 'card' as const, icon: '💳', label: 'Cartão', sub: 'Até 6x' },
-                      { key: 'paypal' as const, icon: '🅿️', label: 'PayPal', sub: 'Internacional' },
+                      { key: 'card' as const, icon: '💳', label: t.checkoutCard, sub: t.checkoutUpTo },
+                      { key: 'paypal' as const, icon: '🅿️', label: 'PayPal', sub: t.checkoutInternational },
                     ]).map((m) => (
                       <button
                         key={m.key}
@@ -540,16 +540,16 @@ export default function CartCheckout() {
                         <span className="text-white text-sm font-bold">⚡</span>
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300">Aprovação Instantânea</p>
-                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400">5% de desconto aplicado</p>
+                        <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300">{t.checkoutPixInstant}</p>
+                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400">{t.checkoutPixDiscountApplied}</p>
                       </div>
                     </div>
                     <div className="bg-white dark:bg-black/20 rounded-xl p-3 mb-2">
-                      <p className="text-[10px] text-gray-400 dark:text-white/30 mb-1">Chave PIX (Copia e Cola):</p>
+                      <p className="text-[10px] text-gray-400 dark:text-white/30 mb-1">{t.checkoutPixKey}</p>
                       <p className="text-xs font-mono text-gray-700 dark:text-white/70 break-all">{pixKey}</p>
                     </div>
                     <button onClick={copyPixKey} className="w-full py-2 rounded-lg bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600 transition-colors">
-                      {pixCopied ? '✓ Copiado!' : 'Copiar Chave PIX'}
+                      {pixCopied ? t.checkoutPixCopied : t.checkoutPixCopy}
                     </button>
                   </div>
                 )}
@@ -575,7 +575,7 @@ export default function CartCheckout() {
                     />
                     <input
                       type="text"
-                      placeholder="Nome no cartão"
+                      placeholder={t.checkoutCardName}
                       value={cardName}
                       onChange={(e) => setCardName(e.target.value.toUpperCase())}
                       className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
@@ -597,16 +597,16 @@ export default function CartCheckout() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-semibold text-gray-500 dark:text-white/40 mb-1">Parcelamento</label>
+                      <label className="block text-[10px] font-semibold text-gray-500 dark:text-white/40 mb-1">{t.checkoutInstallments}</label>
                       <select
                         value={cardInstallments}
                         onChange={(e) => setCardInstallments(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
                       >
-                        <option value="1">1x {formatBRL(finalTotal)} (sem juros)</option>
-                        <option value="2">2x {formatBRL(finalTotal / 2)} (sem juros)</option>
-                        <option value="3">3x {formatBRL(finalTotal / 3)} (sem juros)</option>
-                        <option value="6">6x {formatBRL(finalTotal / 6)} (sem juros)</option>
+                        <option value="1">1x {formatBRL(finalTotal)} ({t.checkoutInterestFree})</option>
+                        <option value="2">2x {formatBRL(finalTotal / 2)} ({t.checkoutInterestFree})</option>
+                        <option value="3">3x {formatBRL(finalTotal / 3)} ({t.checkoutInterestFree})</option>
+                        <option value="6">6x {formatBRL(finalTotal / 6)} ({t.checkoutInterestFree})</option>
                       </select>
                     </div>
                   </div>
@@ -618,8 +618,8 @@ export default function CartCheckout() {
                     <div className="w-12 h-12 rounded-full bg-[#003087] flex items-center justify-center mx-auto mb-3">
                       <span className="text-white font-bold text-lg">PP</span>
                     </div>
-                    <p className="text-xs font-semibold text-[#003087] dark:text-[#0070ba] mb-1">PayPal Checkout</p>
-                    <p className="text-[10px] text-gray-500 dark:text-white/30">Você será redirecionado para o PayPal para concluir o pagamento de forma segura.</p>
+                    <p className="text-xs font-semibold text-[#003087] dark:text-[#0070ba] mb-1">{t.checkoutPaypalTitle}</p>
+                    <p className="text-[10px] text-gray-500 dark:text-white/30">{t.checkoutPaypalDescription}</p>
                   </div>
                 )}
 
@@ -642,7 +642,7 @@ export default function CartCheckout() {
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-                      Confirmar Pagamento — {formatBRL(finalTotal)}
+                      {t.checkoutConfirmPayment} — {formatBRL(finalTotal)}
                     </span>
                   )}
                 </button>
@@ -661,7 +661,7 @@ export default function CartCheckout() {
         <div className="bg-white dark:bg-white/[0.03] rounded-3xl border border-gray-100 dark:border-white/[0.06] p-5 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white">O que nossos clientes dizem</h3>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">{t.checkoutTestimonialsTitle}</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {testimonials.map((test) => (

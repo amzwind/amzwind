@@ -45,7 +45,7 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark">
         <Header />
         <div className="pt-24 pb-16 px-4 flex flex-col items-center justify-center min-h-[60vh]">
-          <p className="text-lg text-amz-terra dark:text-amz-areia mb-4">Produto não encontrado.</p>
+          <p className="text-lg text-amz-terra dark:text-amz-areia mb-4">{t.productNotFound}</p>
           <Link to="/produtos" className="btn-primary text-sm">{t.adminBack}</Link>
         </div>
         <Footer />
@@ -72,7 +72,7 @@ export default function ProductDetail() {
       {added && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-semibold flex items-center gap-2 animate-[slideDown_0.3s_ease-out]">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-          Adicionado ao carrinho!
+          {t.productAddedToCart}
         </div>
       )}
 
@@ -110,7 +110,7 @@ export default function ProductDetail() {
                 </span>
                 {cartQty > 0 && (
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-amz-dourado/10 text-amz-dourado">
-                    {cartQty} no carrinho
+                    {cartQty} {t.productInCart}
                   </span>
                 )}
               </div>
@@ -138,18 +138,18 @@ export default function ProductDetail() {
                   {added && (
                     <div className="flex gap-3">
                       <Link to="/produtos" className="flex-1 text-center py-2.5 rounded-xl text-sm font-semibold border border-amz-areia-dark/20 dark:border-white/10 text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors">
-                        Continuar Comprando
+                        {t.productContinueShopping}
                       </Link>
                       <Link to="/checkout" className="flex-1 text-center py-2.5 rounded-xl text-sm font-semibold bg-amz-dourado text-white hover:bg-amber-700 transition-colors">
-                        Ver Carrinho
+                        {t.productViewCart}
                       </Link>
                     </div>
                   )}
                 </div>
               ) : (
                 <div className="bg-red-50 dark:bg-red-500/10 rounded-2xl p-5 text-center">
-                  <p className="text-sm text-red-600 dark:text-red-400 font-semibold">Este produto está esgotado no momento.</p>
-                  <Link to="/produtos" className="inline-block mt-3 text-sm text-amz-dourado hover:underline font-semibold">Ver outros produtos</Link>
+                  <p className="text-sm text-red-600 dark:text-red-400 font-semibold">{t.productOutOfStock}</p>
+                  <Link to="/produtos" className="inline-block mt-3 text-sm text-amz-dourado hover:underline font-semibold">{t.productViewOthers}</Link>
                 </div>
               )}
             </div>

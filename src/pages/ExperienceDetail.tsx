@@ -134,7 +134,7 @@ export default function ExperienceDetail() {
   if (!exp) {
     return (
       <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center">
-        <p className="text-amz-terra dark:text-amz-areia">Experiência não encontrada.</p>
+        <p className="text-amz-terra dark:text-amz-areia">{t.expDetailNotFound}</p>
       </div>
     )
   }
@@ -189,13 +189,13 @@ export default function ExperienceDetail() {
                 {expType === 'package' && (
                   <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 backdrop-blur-sm">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                    Pacote
+                    {t.expDetailPackage}
                   </span>
                 )}
                 {expType === 'individual' && (
                   <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400 backdrop-blur-sm">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                    Avulso
+                    {t.expDetailIndividual}
                   </span>
                 )}
               </div>
@@ -238,7 +238,7 @@ export default function ExperienceDetail() {
               {expType === 'package' && (
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
                   <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-                  <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Pacote Completo</span>
+                  <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{t.expDetailFullPackage}</span>
                 </div>
               )}
             </div>
@@ -253,7 +253,7 @@ export default function ExperienceDetail() {
             {expIncludes && expIncludes.length > 0 && (
               <div className="bg-white dark:bg-white/5 rounded-2xl p-6 border border-amz-areia-dark/20 dark:border-white/5">
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">
-                  {expType === 'package' ? 'O que está incluído no pacote' : 'O que está incluído'}
+                  {expType === 'package' ? t.expDetailWhatIncluded : t.expDetailWhatIncludedShort}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {expIncludes.map((item: string) => (
@@ -318,12 +318,12 @@ export default function ExperienceDetail() {
                 )}
                 <p className="text-3xl font-maybug text-amz-dourado">R$ {Number(exp.price).toFixed(2)}</p>
                 <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 mt-1">
-                  {expType === 'package' ? 'Investimento total do pacote' : 'por pessoa'}
+                  {expType === 'package' ? t.expDetailPackageTotal : t.expDetailPerPerson}
                 </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-amz-terra dark:text-amz-areia/60 mb-1.5">
-                  Data da Reserva
+                  {t.expDetailBookingDate}
                 </label>
                 <input
                   type="date"
@@ -333,11 +333,11 @@ export default function ExperienceDetail() {
                 />
               </div>
               <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">
-                {expType === 'package' ? 'Adicionar Pacote ao Carrinho' : t.expDetailBook}
+                {expType === 'package' ? t.expDetailAddToCart : t.expDetailBook}
               </button>
               {expType === 'package' && (
                 <p className="text-[10px] text-center text-amz-terra-light dark:text-amz-areia/30">
-                  Pagamento seguro via PIX, Cartão ou PayPal
+                  {t.expDetailSecurePayment}
                 </p>
               )}
             </div>

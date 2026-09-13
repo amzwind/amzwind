@@ -61,12 +61,12 @@ export default function NotificationsPage() {
     const now = new Date()
     const diffMs = now.getTime() - d.getTime()
     const diffMin = Math.floor(diffMs / 60000)
-    if (diffMin < 1) return 'Agora'
-    if (diffMin < 60) return `${diffMin}min`
+    if (diffMin < 1) return t.notificationNow || 'Agora'
+    if (diffMin < 60) return `${diffMin}${t.notificationMin || 'min'}`
     const diffH = Math.floor(diffMin / 60)
-    if (diffH < 24) return `${diffH}h`
+    if (diffH < 24) return `${diffH}${t.notificationHour || 'h'}`
     const diffD = Math.floor(diffH / 24)
-    return `${diffD}d`
+    return `${diffD}${t.notificationDay || 'd'}`
   }
 
   return (
@@ -104,6 +104,9 @@ export default function NotificationsPage() {
             {notifications.map((notif) => (
               <div
                 key={notif.id}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNotificationClick(notif) } }}
                 className={`flex items-start gap-3 px-4 py-3 transition-colors cursor-pointer ${
                   !notif.read ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
                 }`}
@@ -122,7 +125,8 @@ export default function NotificationsPage() {
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); dismiss(notif.id) }}
-                  className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  aria-label={t.bannerClose}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

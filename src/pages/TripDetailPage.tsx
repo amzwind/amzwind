@@ -20,9 +20,9 @@ function getInitials(name: string | null | undefined): string {
   return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 }
 
-function getTimeAgo(dateStr: string): string {
+function getTimeAgo(dateStr: string, t: any): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
-  if (diff < 60) return 'agora'
+  if (diff < 60) return t.tripAgo
   if (diff < 3600) return `${Math.floor(diff / 60)}min`
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`
   if (diff < 604800) return `${Math.floor(diff / 86400)}d`
@@ -90,7 +90,7 @@ export default function TripDetailPage() {
         const pending = participantsData.filter((p) => p.status === 'pending').map((p) => p.user_id)
         if (!cancelled) setPendingInvites(pending)
       } catch (err: unknown) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Erro ao carregar viagem')
+        if (!cancelled) setError(err instanceof Error ? err.message : t.tripErrorLoad)
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -111,7 +111,7 @@ export default function TripDetailPage() {
       const conv = await getTripConversation(id).catch(() => null)
       setConversation(conv)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao entrar na viagem')
+      setError(err instanceof Error ? err.message : t.tripErrorJoin)
     } finally {
       setActionLoading(false)
     }
@@ -127,7 +127,7 @@ export default function TripDetailPage() {
       if (userId) setParticipants((prev) => prev.filter((p) => p.user_id !== userId))
       setConversation(null)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao sair da viagem')
+      setError(err instanceof Error ? err.message : t.tripErrorLeave)
     } finally {
       setActionLoading(false)
     }
@@ -139,7 +139,7 @@ export default function TripDetailPage() {
       await inviteToTrip(id, friendId)
       setPendingInvites((prev) => [...prev, friendId])
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao enviar convite')
+      setError(err instanceof Error ? err.message : t.tripErrorInvite)
     }
   }
 
@@ -152,7 +152,7 @@ export default function TripDetailPage() {
       setParticipants((prev) => prev.filter((p) => p.user_id !== participantUserId))
       setTrip((prev) => prev ? { ...prev, participant_count: Math.max(0, prev.participant_count - 1) } : prev)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao remover participante')
+      setError(err instanceof Error ? err.message : t.tripErrorRemove)
     } finally {
       setActionLoading(false)
     }
@@ -190,7 +190,7 @@ export default function TripDetailPage() {
     return (
       <div className="min-h-screen bg-amz-areia dark:bg-[#1a0f08] pb-20 md:pb-4">
         <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#1a0f08]/95 backdrop-blur-lg border-b border-amz-areia-dark/20 dark:border-white/[0.06] px-4 py-3 flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia">
+          <button onClick={() => navigate(-1)} aria-label={t.adminBack} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
           <h1 className="text-xl font-bold text-amz-terra dark:text-amz-areia">{t.tripDetail || 'Viagem'}</h1>
@@ -224,12 +224,12 @@ export default function TripDetailPage() {
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-[#1a0f08] pb-20 md:pb-4">
       <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#1a0f08]/95 backdrop-blur-lg border-b border-amz-areia-dark/20 dark:border-white/[0.06] px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia">
+        <button onClick={() => navigate(-1)} aria-label={t.adminBack} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
         </button>
         <h1 className="text-xl font-bold text-amz-terra dark:text-amz-areia truncate flex-1">{trip.title}</h1>
         {isOrganizer && (
-          <button onClick={() => navigate(`/trips/${id}/edit`)} className="p-2 text-amz-oceano hover:bg-amz-oceano/10 rounded-lg transition-colors">
+          <button onClick={() => navigate(`/trips/${id}/edit`)} aria-label={t.adminEdit} className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-amz-oceano hover:bg-amz-oceano/10 rounded-lg transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
           </button>
         )}
@@ -248,7 +248,7 @@ export default function TripDetailPage() {
           </span>
           {trip.visibility && (
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${trip.visibility === 'private' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'}`}>
-              {trip.visibility === 'private' ? '🔒 Privada' : '🌐 Pública'}
+              {trip.visibility === 'private' ? t.tripStatusPrivate : t.tripStatusPublic}
             </span>
           )}
           {trip.is_participant && (
@@ -331,7 +331,7 @@ export default function TripDetailPage() {
                     <span className="text-xs font-bold text-amz-oceano">{getInitials(trip.creator_name)}</span>
                   )}
                 </div>
-                <span className="text-sm text-amz-terra dark:text-amz-areia">{trip.creator_name || 'Rider'}</span>
+                <span className="text-sm text-amz-terra dark:text-amz-areia">{trip.creator_name || t.chatRiderFallback}</span>
               </div>
             </div>
           </div>
@@ -352,7 +352,7 @@ export default function TripDetailPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{p.full_name || 'Rider'}</p>
+                    <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{p.full_name || t.chatRiderFallback}</p>
                     <p className="text-[10px] text-amz-terra-light dark:text-amz-areia/40">
                       {p.role === 'organizer' ? (t.tripRoleOrganizer || 'Organizador') : (t.tripRoleParticipant || 'Participante')}
                       {p.status === 'pending' && ` · ${t.tripPending || 'Pendente'}`}
@@ -360,7 +360,8 @@ export default function TripDetailPage() {
                   </div>
                   {isOrganizer && p.user_id !== userId && p.role !== 'organizer' && (
                     <button onClick={() => handleRemoveParticipant(p.user_id)} disabled={actionLoading}
-                      className="p-1.5 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-40">
+                      aria-label={t.friendsRemove}
+                      className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-40">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" /></svg>
                     </button>
                   )}
@@ -387,8 +388,8 @@ export default function TripDetailPage() {
                         <span className="text-[9px] font-bold text-amz-oceano">{getInitials(feedAuthors[post.user_id]?.full_name)}</span>
                       )}
                     </div>
-                    <span className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{feedAuthors[post.user_id]?.full_name || 'Rider'}</span>
-                    <span className="text-[10px] text-amz-terra-light dark:text-amz-areia/40">{getTimeAgo(post.created_at)}</span>
+                    <span className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{feedAuthors[post.user_id]?.full_name || t.chatRiderFallback}</span>
+                    <span className="text-[10px] text-amz-terra-light dark:text-amz-areia/40">{getTimeAgo(post.created_at, t)}</span>
                   </div>
                   {post.content && <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap mb-2">{post.content}</p>}
                   {post.media_url && (
@@ -398,6 +399,8 @@ export default function TripDetailPage() {
                   )}
                   <div className="flex items-center gap-3 pt-2 border-t border-amz-areia-dark/10 dark:border-white/5">
                     <button onClick={() => handleLikePost(post.id)}
+                      aria-label={post.liked_by_me ? t.ariaUnlike : t.ariaLike}
+                      aria-pressed={post.liked_by_me}
                       className={`flex items-center gap-1 text-xs transition-colors ${post.liked_by_me ? 'text-red-500' : 'text-amz-terra-light dark:text-amz-areia/40 hover:text-red-400'}`}>
                       <svg className="w-3.5 h-3.5" fill={post.liked_by_me ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -414,10 +417,10 @@ export default function TripDetailPage() {
 
       {showInviteModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50" onClick={() => setShowInviteModal(false)}>
-          <div className="bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-2xl w-full max-w-sm max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-2xl w-full max-w-sm max-h-[80vh] overflow-hidden" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-sm text-gray-900 dark:text-white">{t.tripInviteFriends || 'Convidar Amigos'}</h3>
-              <button onClick={() => setShowInviteModal(false)} className="p-1 text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowInviteModal(false)} aria-label={t.bannerClose} className="min-w-[44px] min-h-[44px] flex items-center justify-center p-1 text-gray-400 hover:text-gray-600">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -438,7 +441,7 @@ export default function TripDetailPage() {
                         <span className="text-xs font-bold text-amz-oceano">{getInitials(friend.full_name)}</span>
                       )}
                     </div>
-                    <span className="flex-1 text-sm text-gray-900 dark:text-white truncate">{friend.full_name || 'Rider'}</span>
+                    <span className="flex-1 text-sm text-gray-900 dark:text-white truncate">{friend.full_name || t.chatRiderFallback}</span>
                     {pendingInvites.includes(friend.id) ? (
                       <span className="text-[10px] text-amz-oceano font-semibold">{t.tripInvited || 'Convidado'}</span>
                     ) : (

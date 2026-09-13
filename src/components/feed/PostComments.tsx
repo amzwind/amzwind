@@ -73,13 +73,13 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
   }
 
   if (loading) {
-    return <div className="text-xs text-amz-terra-light dark:text-amz-areia/40 py-2">{t.feedLoading || 'Carregando...'}</div>
+    return <div className="text-xs text-amz-terra-light dark:text-amz-areia/40 py-2">{t.feedCommentLoading}</div>
   }
 
   return (
     <div className="space-y-3">
       {comments.length === 0 ? (
-        <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 italic">{t.feedNoComments || 'Nenhum comentário ainda.'}</p>
+        <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 italic">{t.feedCommentEmpty}</p>
       ) : (
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {comments.map((c) => (
@@ -92,7 +92,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{c.author?.full_name || 'Rider'}</p>
+                <p className="text-xs font-semibold text-amz-terra dark:text-amz-areia">{c.author?.full_name || t.feedCommentRider}</p>
                 {editingId === c.id ? (
                   <div className="mt-1">
                     <input
@@ -111,14 +111,14 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
                         disabled={!editContent.trim() || savingEdit}
                         className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amz-oceano text-white hover:bg-amz-oceano/90 disabled:opacity-40"
                       >
-                        {savingEdit ? '...' : (t.feedSave || 'Salvar')}
+                        {savingEdit ? '...' : t.feedCommentSave}
                       </button>
                       <button
                         onClick={cancelEdit}
                         disabled={savingEdit}
                         className="px-2 py-0.5 rounded text-[10px] text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5"
                       >
-                        {t.feedCancel || 'Cancelar'}
+                        {t.feedCommentCancel}
                       </button>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder={t.feedWriteComment || 'Escreva um comentário...'}
+          placeholder={t.feedCommentPlaceholder}
           className="flex-1 px-3 py-2 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-sm text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50"
         />
         <button
@@ -160,7 +160,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
           disabled={!newComment.trim() || submitting}
           className="px-4 py-2 rounded-xl bg-amz-oceano text-white text-sm font-semibold hover:bg-amz-oceano/90 transition-colors disabled:opacity-40"
         >
-          {t.feedSend || 'Enviar'}
+          {t.feedCommentSend}
         </button>
       </div>
     </div>

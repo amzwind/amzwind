@@ -44,6 +44,7 @@ export default function Community() {
         <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#1a0f08]/95 backdrop-blur-lg border-b border-amz-areia-dark/20 dark:border-white/[0.06] px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
+            aria-label={t.adminBack}
             className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -67,7 +68,7 @@ export default function Community() {
             onClick={() => navigate('/login')}
             className="mt-4 px-6 py-2.5 rounded-xl bg-amz-dourado text-white font-semibold text-sm hover:bg-amz-dourado/90 transition-colors"
           >
-            {t.navLogin || 'Entrar'}
+            {t.communityLoginButton || 'Entrar'}
           </button>
         </div>
       </div>
@@ -79,6 +80,7 @@ export default function Community() {
       <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#1a0f08]/95 backdrop-blur-lg border-b border-amz-areia-dark/20 dark:border-white/[0.06] px-4 py-3 flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
+          aria-label={t.adminBack}
           className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/60 dark:bg-white/10 text-amz-terra dark:text-amz-areia"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

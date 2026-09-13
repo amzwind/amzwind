@@ -9,6 +9,7 @@ const fallbackName = 'Rider'
 
 export default function ConversationsList() {
   const { t } = useLanguage()
+  const fallback = t.convRiderFallback || fallbackName
   const navigate = useNavigate()
   const [conversations, setConversations] = useState<ConversationPreview[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,7 +66,7 @@ export default function ConversationsList() {
     const diffMs = now.getTime() - d.getTime()
     const diffDays = Math.floor(diffMs / 86400000)
     if (diffDays === 0) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    if (diffDays === 1) return 'Ontem'
+    if (diffDays === 1) return t.convYesterday || 'Ontem'
     if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'short' })
     return d.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
   }
@@ -75,7 +76,7 @@ export default function ConversationsList() {
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white flex-1">
-            {t.chatConversations || 'Conversas'}
+            {t.convTitle || 'Conversas'}
           </h1>
           <NotificationBadge />
         </div>
@@ -84,7 +85,7 @@ export default function ConversationsList() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.chatSearchPlaceholder || 'Buscar riders...'}
+            placeholder={t.convSearchPlaceholder || 'Buscar riders...'}
             className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           {searchResults.length > 0 && (
@@ -99,11 +100,11 @@ export default function ConversationsList() {
                     <img src={user.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
-                      {(user.full_name?.[0] ?? fallbackName[0]).toUpperCase()}
+                      {(user.full_name?.[0] ?? fallback[0]).toUpperCase()}
                     </div>
                   )}
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user.full_name ?? fallbackName}
+                    {user.full_name ?? fallback}
                   </span>
                 </button>
               ))}
@@ -111,7 +112,7 @@ export default function ConversationsList() {
           )}
           {searching && searchQuery.trim() && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 text-center text-sm text-gray-500">
-              Buscando...
+              {t.convSearching || 'Buscando...'}
             </div>
           )}
         </div>
@@ -130,7 +131,7 @@ export default function ConversationsList() {
               </svg>
             </div>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
-              {t.chatNoConversations || 'Nenhuma conversa ainda. Busque um rider acima para iniciar!'}
+              {t.convEmpty || 'Nenhuma conversa ainda. Busque um rider acima para iniciar!'}
             </p>
           </div>
         ) : (
@@ -144,13 +145,13 @@ export default function ConversationsList() {
                 <img src={conv.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
               ) : (
                 <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold flex-shrink-0">
-                  {(conv.name?.[0] ?? fallbackName[0]).toUpperCase()}
+                  {(conv.name?.[0] ?? fallback[0]).toUpperCase()}
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-semibold text-gray-900 dark:text-white truncate">
-                    {conv.name ?? fallbackName}
+                    {conv.name ?? fallback}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                     {formatTime(conv.last_message_at)}
@@ -158,7 +159,7 @@ export default function ConversationsList() {
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                    {conv.last_message ?? (t.chatStartConvo || 'Iniciar conversa...')}
+                    {conv.last_message ?? (t.convStartChat || 'Iniciar conversa...')}
                   </p>
                   {conv.unread_count > 0 && (
                     <span className="flex-shrink-0 bg-emerald-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">

@@ -48,10 +48,10 @@ export default function ShareDialog({ postId, open, onClose, onSuccess }: ShareD
   }
 
   function getConversationLabel(c: ConversationPreview): string {
-    if (c.type === 'direct') return c.name || 'Rider'
-    if (c.type === 'group') return c.name || 'Grupo'
-    if (c.type === 'trip') return c.name || 'Trip'
-    return c.name || 'Conversa'
+    if (c.type === 'direct') return c.name || t.shareRiderFallback
+    if (c.type === 'group') return c.name || t.shareGroupFallback
+    if (c.type === 'trip') return c.name || t.shareTripFallback
+    return c.name || t.shareConvFallback
   }
 
   return (
@@ -87,7 +87,7 @@ export default function ShareDialog({ postId, open, onClose, onSuccess }: ShareD
 
           {!loading && success && (
             <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm rounded-xl px-4 py-3 mt-2 text-center">
-              Enviado!
+              {t.shareSent}
             </div>
           )}
 

@@ -33,6 +33,7 @@ const TripsPage = lazy(() => import('./pages/TripsPage'))
 const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
 const TripCreatePage = lazy(() => import('./pages/TripCreatePage'))
 const TripEditPage = lazy(() => import('./pages/TripEditPage'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -78,25 +79,25 @@ export default function App() {
               <Route path="/experiencias" element={<ExperienciasPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/minha-conta" element={<CustomerDashboard />} />
-              <Route path="/perfil" element={<UserProfile />} />
+              <Route path="/minha-conta" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+              <Route path="/perfil" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
               <Route path="/experiencia/:id" element={<ExperienceDetail />} />
               <Route path="/aula/iniciante" element={<KiteCoursePage />} />
-              <Route path="/favoritos" element={<WishlistPage />} />
-              <Route path="/conversas" element={<ConversationsList />} />
-              <Route path="/chat/:id" element={<Chat />} />
-              <Route path="/amigos" element={<FriendsPage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/favoritos" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+              <Route path="/conversas" element={<ProtectedRoute><ConversationsList /></ProtectedRoute>} />
+              <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/amigos" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
               <Route path="/comunidade" element={<Community />} />
               <Route path="/trips" element={<TripsPage />} />
-              <Route path="/trips/new" element={<TripCreatePage />} />
+              <Route path="/trips/new" element={<ProtectedRoute><TripCreatePage /></ProtectedRoute>} />
               <Route path="/trips/:id" element={<TripDetailPage />} />
-              <Route path="/trips/:id/edit" element={<TripEditPage />} />
+              <Route path="/trips/:id/edit" element={<ProtectedRoute><TripEditPage /></ProtectedRoute>} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
-              <Route path="*" element={<Home />} />
+              <Route path="/checkout" element={<ProtectedRoute><div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
             </Suspense>
             <BottomNav />
