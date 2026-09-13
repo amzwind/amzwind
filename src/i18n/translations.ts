@@ -487,6 +487,20 @@ export type TranslationKeys = {
   communityTitle: string
   communityEmpty: string
   communityLoginPrompt: string
+  homeStartLabel: string
+  homeStartTitle: string
+  homeStartSubtitle: string
+  homeStartExperiences: string
+  homeStartExperiencesDesc: string
+  homeStartTrips: string
+  homeStartTripsDesc: string
+  homeStartCommunity: string
+  homeStartCommunityDesc: string
+  homeStartProfile: string
+  homeStartProfileDesc: string
+  homeStartLogin: string
+  homeStartLoginDesc: string
+  homeStartGo: string
   shareTitle: string
   shareToChat: string
   shareConfirm: string
@@ -1142,6 +1156,195 @@ export type TranslationKeys = {
   ariaAttach: string
   ariaLike: string
   ariaUnlike: string
+
+  // Admin — Hero (additional keys)
+  heroManageSubtitle: string
+  heroDimensionHelp: string
+  heroEmpty: string
+  heroBadgeYouTube: string
+  heroBadgeVideo: string
+  heroBadgeImage: string
+  heroBadgeOfficial: string
+  heroCTA: string
+  heroHighlightTitle: string
+  heroHighlightPlaceholder: string
+  heroMediaType: string
+  heroOrder: string
+  heroUploadFile: string
+  heroOrPasteUrl: string
+  heroButtonText: string
+  heroButtonLink: string
+  heroSaveSlide: string
+  heroLimitReached: string
+  heroOfficialRemoved: string
+
+  // Admin — Financial (additional keys)
+  finPending: string
+  finPaid: string
+  finOverdue: string
+  finPayable: string
+  finReceivable: string
+  finAccountUpdated: string
+  finAccountCreated: string
+  finAccountDeleted: string
+  finSummary: string
+  finToPay: string
+  finToReceive: string
+  finBalance: string
+  finReceived: string
+  finFilters: string
+  finAllTypes: string
+  finAllStatuses: string
+  finNewAccount: string
+  finTransactions: string
+  finItems: string
+  finLoading: string
+  finEmpty: string
+  finDescription: string
+  finType: string
+  finCategory: string
+  finAmount: string
+  finDueDate: string
+  finStatus: string
+  finActions: string
+  finEdit: string
+  finDelete: string
+  finEditAccount: string
+  finNewAccountTitle: string
+  finFormType: string
+  finFormDescription: string
+  finFormDescriptionPlaceholder: string
+  finFormAmount: string
+  finFormDueDate: string
+  finFormCategory: string
+  finFormSelect: string
+  finFormStatus: string
+  finFormNotes: string
+  finFormNotesPlaceholder: string
+  finFormCancel: string
+  finFormSaving: string
+  finFormCreate: string
+  finDeleteTitle: string
+  finDeleteConfirm: string
+  finCategoryRent: string
+  finCategoryEquipment: string
+  finCategoryMarketing: string
+  finCategorySalaries: string
+  finCategoryServices: string
+  finCategoryOperational: string
+  finCategoryClassRevenue: string
+  finCategoryExpeditionRevenue: string
+  finCategoryProductRevenue: string
+  finCategoryOther: string
+
+  // Admin — Trips (additional keys)
+  tripsAll: string
+  tripsParticipants: string
+  tripsDraft: string
+  tripsPublished: string
+  tripsFull: string
+  tripsCancelled: string
+  tripsCompleted: string
+  tripsPublic: string
+  tripsPrivate: string
+  tripsStatusUpdated: string
+  tripsDeleteTitle: string
+  tripsDeleted: string
+
+  // Admin — Classes (additional keys)
+  classesTitle: string
+  classesSubtitle: string
+  classesNew: string
+  classesEmpty: string
+  classesEdit: string
+  classesDelete: string
+  classesEditTitle: string
+  classesNewTitle: string
+  classesFormTitle: string
+  classesFormTitlePlaceholder: string
+  classesFormPrice: string
+  classesFormDuration: string
+  classesFormDurationPlaceholder: string
+  classesFormLevel: string
+  classesFormLevelPlaceholder: string
+  classesFormDescription: string
+  classesFormImage: string
+  classesFormVideo: string
+  classesCancel: string
+  classesSaving: string
+  classesUpdate: string
+  classesCreate: string
+  classesDeleteTitle: string
+  classesDeleteConfirm: string
+  classesUpdated: string
+  classesCreated: string
+  classesDeleted: string
+  classesLoadError: string
+  classesUpdateError: string
+  classesCreateError: string
+  classesDeleteError: string
+  classesLoading: string
+
+  // Admin — About (additional keys)
+  aboutTitleLabel: string
+  aboutSubtitleLabel: string
+  aboutSubtitlePlaceholder: string
+  aboutDescription: string
+  aboutDescriptionPlaceholder: string
+  aboutMissionPlaceholder: string
+  aboutVisionPlaceholder: string
+  aboutGalleryAlt: string
+  aboutAdd: string
+  aboutUnsaved: string
+
+  // Admin — Products (additional keys)
+  prodProduct: string
+  prodPrice: string
+  prodStock: string
+  prodActions: string
+  prodUnit: string
+  prodEdit: string
+  prodDelete: string
+  prodNewCategory: string
+  prodCancel: string
+  prodNew: string
+
+  // Admin — Experiences (additional keys)
+  expTypePackage: string
+  expTypeIndividual: string
+  expItemsIncluded: string
+  expTypeLabel: string
+  expTypeIndividualBtn: string
+  expTypeIndividualDesc: string
+  expTypePackageBtn: string
+  expTypePackageDesc: string
+  expNewCategory: string
+  expCancel: string
+  expNew: string
+  expOriginalPrice: string
+  expOriginalPriceHelp: string
+  expIncludes: string
+  expIncludesHelp: string
+
+  // Admin — Bookings (additional keys)
+  bookingGuest: string
+  bookingPaymentConfirmed: string
+  bookingName: string
+  bookingEmail: string
+  bookingWhatsApp: string
+  bookingPhone: string
+  bookingStatusLabel: string
+  bookingDateLabel: string
+
+  // Admin — Shared (additional keys)
+  sharedPending: string
+  sharedConfirmed: string
+  sharedCancelled: string
+  sharedSending: string
+
+  // Admin — Reviews (additional keys)
+  reviewUser: string
+  reviewDeleted: string
 }
 
 const pt: TranslationKeys = {
@@ -1596,6 +1799,20 @@ const pt: TranslationKeys = {
   communityTitle: 'Comunidade',
   communityEmpty: 'Nenhuma publicação ainda',
   communityLoginPrompt: 'Faça login para acessar a comunidade',
+  homeStartLabel: 'COMECE AQUI',
+  homeStartTitle: 'Sua jornada AMZ Wind começa com um clique',
+  homeStartSubtitle: 'Explore experiências, encontre trips, conecte-se com a comunidade e acompanhe seu perfil em um único fluxo.',
+  homeStartExperiences: 'Experiências',
+  homeStartExperiencesDesc: 'Descubra passeios, aulas e expedições em destaque.',
+  homeStartTrips: 'Trips',
+  homeStartTripsDesc: 'Veja viagens em grupo e participe de programas exclusivos.',
+  homeStartCommunity: 'Comunidade',
+  homeStartCommunityDesc: 'Compartilhe momentos, interaja e conheça outros riders.',
+  homeStartProfile: 'Meu perfil',
+  homeStartProfileDesc: 'Acompanhe reservas, viagens e sua presença na comunidade.',
+  homeStartLogin: 'Entrar',
+  homeStartLoginDesc: 'Crie sua conta e personalize sua jornada AMZ Wind.',
+  homeStartGo: 'Abrir',
   shareTitle: 'Compartilhar',
   shareToChat: 'Compartilhar no chat',
   shareConfirm: 'Compartilhar publicação?',
@@ -2251,6 +2468,195 @@ const pt: TranslationKeys = {
   ariaAttach: 'Anexar arquivo',
   ariaLike: 'Curtir',
   ariaUnlike: 'Descurtir',
+
+  // Admin — Hero (additional keys)
+  heroManageSubtitle: 'Controle as mídias e textos de destaque da página inicial.',
+  heroDimensionHelp: 'Você pode fazer upload de arquivo, colar um link direto (URL) de imagem/vídeo, ou colar um link do YouTube — o tipo de mídia será detectado automaticamente.',
+  heroEmpty: 'Nenhum slide configurado.',
+  heroBadgeYouTube: 'YouTube',
+  heroBadgeVideo: 'Vídeo',
+  heroBadgeImage: 'Imagem',
+  heroBadgeOfficial: 'Oficial',
+  heroCTA: 'CTA: ',
+  heroHighlightTitle: 'Título de Destaque',
+  heroHighlightPlaceholder: 'Ex: Expedições na Costa Norte',
+  heroMediaType: 'Tipo de Mídia',
+  heroOrder: 'Ordem',
+  heroUploadFile: 'Fazer Upload do Arquivo',
+  heroOrPasteUrl: 'Ou cole o link direto (URL)',
+  heroButtonText: 'Texto do Botão',
+  heroButtonLink: 'Link do Botão',
+  heroSaveSlide: 'Criar Slide',
+  heroLimitReached: 'Limite de 6 slides atingido. Exclua um slide antes de criar outro.',
+  heroOfficialRemoved: 'Slide oficial removido da visualização.',
+
+  // Admin — Financial (additional keys)
+  finPending: 'Pendente',
+  finPaid: 'Pago',
+  finOverdue: 'Atrasado',
+  finPayable: 'A Pagar',
+  finReceivable: 'A Receber',
+  finAccountUpdated: 'Conta atualizada!',
+  finAccountCreated: 'Conta criada!',
+  finAccountDeleted: 'Conta excluída.',
+  finSummary: 'Resumo Financeiro',
+  finToPay: 'Pagar',
+  finToReceive: 'Receber',
+  finBalance: 'Saldo',
+  finReceived: 'Recebido',
+  finFilters: 'Filtros',
+  finAllTypes: 'Todos os Tipos',
+  finAllStatuses: 'Todos os Status',
+  finNewAccount: '+ Nova Conta',
+  finTransactions: 'Lançamentos',
+  finItems: ' itens',
+  finLoading: 'Carregando...',
+  finEmpty: 'Nenhum lançamento encontrado',
+  finDescription: 'Descrição',
+  finType: 'Tipo',
+  finCategory: 'Categoria',
+  finAmount: 'Valor',
+  finDueDate: 'Vencimento',
+  finStatus: 'Status',
+  finActions: 'Ações',
+  finEdit: 'Editar',
+  finDelete: 'Excluir',
+  finEditAccount: 'Editar Conta',
+  finNewAccountTitle: 'Nova Conta',
+  finFormType: 'Tipo',
+  finFormDescription: 'Descrição',
+  finFormDescriptionPlaceholder: 'Ex: Aluguel espaço, Aula particular...',
+  finFormAmount: 'Valor (R$)',
+  finFormDueDate: 'Vencimento',
+  finFormCategory: 'Categoria',
+  finFormSelect: 'Selecione...',
+  finFormStatus: 'Status',
+  finFormNotes: 'Observações',
+  finFormNotesPlaceholder: 'Opcional...',
+  finFormCancel: 'Cancelar',
+  finFormSaving: 'Salvando...',
+  finFormCreate: 'Criar Conta',
+  finDeleteTitle: 'Excluir Lançamento',
+  finDeleteConfirm: 'Tem certeza que deseja excluir',
+  finCategoryRent: 'Aluguel',
+  finCategoryEquipment: 'Equipamentos',
+  finCategoryMarketing: 'Marketing',
+  finCategorySalaries: 'Salários',
+  finCategoryServices: 'Serviços',
+  finCategoryOperational: 'Operacional',
+  finCategoryClassRevenue: 'Receita Aulas',
+  finCategoryExpeditionRevenue: 'Receita Expedições',
+  finCategoryProductRevenue: 'Receita Produtos',
+  finCategoryOther: 'Outros',
+
+  // Admin — Trips (additional keys)
+  tripsAll: 'Todas',
+  tripsParticipants: ' participantes',
+  tripsDraft: 'Rascunho',
+  tripsPublished: 'Publicada',
+  tripsFull: 'Lotada',
+  tripsCancelled: 'Cancelada',
+  tripsCompleted: 'Concluída',
+  tripsPublic: 'Pública',
+  tripsPrivate: 'Privada',
+  tripsStatusUpdated: 'Status atualizado!',
+  tripsDeleteTitle: 'Excluir',
+  tripsDeleted: 'Trip excluída!',
+
+  // Admin — Classes (additional keys)
+  classesTitle: 'Gerenciar Aulas',
+  classesSubtitle: 'Configure os pacotes de aulas, mídias e valores.',
+  classesNew: '+ Nova Aula',
+  classesEmpty: 'Nenhuma aula cadastrada',
+  classesEdit: 'Editar',
+  classesDelete: 'Excluir',
+  classesEditTitle: 'Editar Aula',
+  classesNewTitle: 'Nova Aula',
+  classesFormTitle: 'Título',
+  classesFormTitlePlaceholder: 'Ex: Aula Particular de Kite',
+  classesFormPrice: 'Preço (R$)',
+  classesFormDuration: 'Duração',
+  classesFormDurationPlaceholder: 'Ex: 2h30',
+  classesFormLevel: 'Nível',
+  classesFormLevelPlaceholder: 'Ex: Iniciante / Intermediário',
+  classesFormDescription: 'Descrição',
+  classesFormImage: 'Imagem Principal da Aula',
+  classesFormVideo: 'Video Promocional (Opcional)',
+  classesCancel: 'Cancelar',
+  classesSaving: 'Salvando...',
+  classesUpdate: 'Atualizar',
+  classesCreate: 'Criar Aula',
+  classesDeleteTitle: 'Excluir Aula',
+  classesDeleteConfirm: 'Tem certeza que deseja excluir',
+  classesUpdated: 'Aula atualizada com sucesso!',
+  classesCreated: 'Aula criada com sucesso!',
+  classesDeleted: 'Aula excluída.',
+  classesLoadError: 'Erro ao carregar aulas',
+  classesUpdateError: 'Erro ao atualizar aula',
+  classesCreateError: 'Erro ao criar aula',
+  classesDeleteError: 'Erro ao excluir aula',
+  classesLoading: 'Carregando aulas...',
+
+  // Admin — About (additional keys)
+  aboutTitleLabel: 'Título',
+  aboutSubtitleLabel: 'Subtítulo',
+  aboutSubtitlePlaceholder: 'Ex: Escola de Kitesurf & Expedições',
+  aboutDescription: 'Descrição',
+  aboutDescriptionPlaceholder: 'História completa da empresa...',
+  aboutMissionPlaceholder: 'Missão da empresa...',
+  aboutVisionPlaceholder: 'Visão da empresa...',
+  aboutGalleryAlt: 'Galeria ',
+  aboutAdd: '+ Adicionar',
+  aboutUnsaved: 'Dados oficiais (não salvos)',
+
+  // Admin — Products (additional keys)
+  prodProduct: 'Produto',
+  prodPrice: 'Preço',
+  prodStock: 'Estoque',
+  prodActions: 'Ações',
+  prodUnit: ' un.',
+  prodEdit: 'Editar',
+  prodDelete: 'Excluir',
+  prodNewCategory: 'Nome da nova categoria',
+  prodCancel: 'Cancelar',
+  prodNew: '+ Nova',
+
+  // Admin — Experiences (additional keys)
+  expTypePackage: 'Pacote',
+  expTypeIndividual: 'Avulso',
+  expItemsIncluded: ' itens inclusos',
+  expTypeLabel: 'Tipo de Experiência',
+  expTypeIndividualBtn: 'Experiência Individual',
+  expTypeIndividualDesc: 'Aula avulsa, downwind, etc.',
+  expTypePackageBtn: 'Pacote Completo',
+  expTypePackageDesc: 'All-Inclusive, curso, etc.',
+  expNewCategory: 'Nome da nova categoria',
+  expCancel: 'Cancelar',
+  expNew: '+ Nova',
+  expOriginalPrice: 'Preço Original (de referência, opcional)',
+  expOriginalPriceHelp: 'Se preenchido, mostra o preço riscado e o percentual de desconto.',
+  expIncludes: 'O que está incluído (1 item por linha)',
+  expIncludesHelp: 'Separe cada item por linha. Esses itens aparecerão na página de detalhes da experiência.',
+
+  // Admin — Bookings (additional keys)
+  bookingGuest: 'Guest',
+  bookingPaymentConfirmed: 'Pagamento confirmado',
+  bookingName: 'Nome:',
+  bookingEmail: 'Email:',
+  bookingWhatsApp: 'WhatsApp:',
+  bookingPhone: 'Telefone:',
+  bookingStatusLabel: 'Status',
+  bookingDateLabel: 'Data da Reserva',
+
+  // Admin — Shared (additional keys)
+  sharedPending: 'Pendente',
+  sharedConfirmed: 'Confirmada',
+  sharedCancelled: 'Cancelada',
+  sharedSending: 'Enviando...',
+
+  // Admin — Reviews (additional keys)
+  reviewUser: 'User',
+  reviewDeleted: 'Review deleted',
 }
 
 const en: TranslationKeys = {
@@ -2705,6 +3111,20 @@ const en: TranslationKeys = {
   communityTitle: 'Community',
   communityEmpty: 'No posts yet',
   communityLoginPrompt: 'Log in to access the community',
+  homeStartLabel: 'START HERE',
+  homeStartTitle: 'Your AMZ Wind journey starts with one click',
+  homeStartSubtitle: 'Explore experiences, join trips, connect with the community and track your profile in one clear flow.',
+  homeStartExperiences: 'Experiences',
+  homeStartExperiencesDesc: 'Discover expeditions, lessons and featured adventures.',
+  homeStartTrips: 'Trips',
+  homeStartTripsDesc: 'Browse group trips and join trips designed for the rider community.',
+  homeStartCommunity: 'Community',
+  homeStartCommunityDesc: 'Share moments, follow conversations and meet other riders.',
+  homeStartProfile: 'My profile',
+  homeStartProfileDesc: 'Track your bookings, trips and your place in the community.',
+  homeStartLogin: 'Log in',
+  homeStartLoginDesc: 'Create your account and personalize your AMZ Wind journey.',
+  homeStartGo: 'Open',
   shareTitle: 'Share',
   shareToChat: 'Share to chat',
   shareConfirm: 'Share this post?',
@@ -3360,6 +3780,195 @@ const en: TranslationKeys = {
   ariaAttach: 'Attach file',
   ariaLike: 'Like',
   ariaUnlike: 'Unlike',
+
+  // Admin — Hero (additional keys)
+  heroManageSubtitle: 'Control the featured media and text on the homepage.',
+  heroDimensionHelp: 'You can upload a file, paste a direct link (URL) of image/video, or paste a YouTube link — the media type will be detected automatically.',
+  heroEmpty: 'No slides configured.',
+  heroBadgeYouTube: 'YouTube',
+  heroBadgeVideo: 'Video',
+  heroBadgeImage: 'Image',
+  heroBadgeOfficial: 'Official',
+  heroCTA: 'CTA: ',
+  heroHighlightTitle: 'Highlight Title',
+  heroHighlightPlaceholder: 'E.g.: North Coast Expeditions',
+  heroMediaType: 'Media Type',
+  heroOrder: 'Order',
+  heroUploadFile: 'Upload File',
+  heroOrPasteUrl: 'Or paste the direct link (URL)',
+  heroButtonText: 'Button Text',
+  heroButtonLink: 'Button Link',
+  heroSaveSlide: 'Create Slide',
+  heroLimitReached: 'Slide limit of 6 reached. Delete a slide before creating another.',
+  heroOfficialRemoved: 'Official slide removed from display.',
+
+  // Admin — Financial (additional keys)
+  finPending: 'Pending',
+  finPaid: 'Paid',
+  finOverdue: 'Overdue',
+  finPayable: 'To Pay',
+  finReceivable: 'To Receive',
+  finAccountUpdated: 'Account updated!',
+  finAccountCreated: 'Account created!',
+  finAccountDeleted: 'Account deleted.',
+  finSummary: 'Financial Summary',
+  finToPay: 'Pay',
+  finToReceive: 'Receive',
+  finBalance: 'Balance',
+  finReceived: 'Received',
+  finFilters: 'Filters',
+  finAllTypes: 'All Types',
+  finAllStatuses: 'All Statuses',
+  finNewAccount: '+ New Account',
+  finTransactions: 'Transactions',
+  finItems: ' items',
+  finLoading: 'Loading...',
+  finEmpty: 'No transactions found',
+  finDescription: 'Description',
+  finType: 'Type',
+  finCategory: 'Category',
+  finAmount: 'Amount',
+  finDueDate: 'Due Date',
+  finStatus: 'Status',
+  finActions: 'Actions',
+  finEdit: 'Edit',
+  finDelete: 'Delete',
+  finEditAccount: 'Edit Account',
+  finNewAccountTitle: 'New Account',
+  finFormType: 'Type',
+  finFormDescription: 'Description',
+  finFormDescriptionPlaceholder: 'E.g.: Space rent, Private lesson...',
+  finFormAmount: 'Amount (R$)',
+  finFormDueDate: 'Due Date',
+  finFormCategory: 'Category',
+  finFormSelect: 'Select...',
+  finFormStatus: 'Status',
+  finFormNotes: 'Notes',
+  finFormNotesPlaceholder: 'Optional...',
+  finFormCancel: 'Cancel',
+  finFormSaving: 'Saving...',
+  finFormCreate: 'Create Account',
+  finDeleteTitle: 'Delete Transaction',
+  finDeleteConfirm: 'Are you sure you want to delete',
+  finCategoryRent: 'Rent',
+  finCategoryEquipment: 'Equipment',
+  finCategoryMarketing: 'Marketing',
+  finCategorySalaries: 'Salaries',
+  finCategoryServices: 'Services',
+  finCategoryOperational: 'Operational',
+  finCategoryClassRevenue: 'Class Revenue',
+  finCategoryExpeditionRevenue: 'Expedition Revenue',
+  finCategoryProductRevenue: 'Product Revenue',
+  finCategoryOther: 'Other',
+
+  // Admin — Trips (additional keys)
+  tripsAll: 'All',
+  tripsParticipants: ' participants',
+  tripsDraft: 'Draft',
+  tripsPublished: 'Published',
+  tripsFull: 'Full',
+  tripsCancelled: 'Cancelled',
+  tripsCompleted: 'Completed',
+  tripsPublic: 'Public',
+  tripsPrivate: 'Private',
+  tripsStatusUpdated: 'Status updated!',
+  tripsDeleteTitle: 'Delete',
+  tripsDeleted: 'Trip deleted!',
+
+  // Admin — Classes (additional keys)
+  classesTitle: 'Manage Classes',
+  classesSubtitle: 'Configure class packages, media and pricing.',
+  classesNew: '+ New Class',
+  classesEmpty: 'No classes registered',
+  classesEdit: 'Edit',
+  classesDelete: 'Delete',
+  classesEditTitle: 'Edit Class',
+  classesNewTitle: 'New Class',
+  classesFormTitle: 'Title',
+  classesFormTitlePlaceholder: 'E.g.: Private Kite Lesson',
+  classesFormPrice: 'Price (R$)',
+  classesFormDuration: 'Duration',
+  classesFormDurationPlaceholder: 'E.g.: 2h30',
+  classesFormLevel: 'Level',
+  classesFormLevelPlaceholder: 'E.g.: Beginner / Intermediate',
+  classesFormDescription: 'Description',
+  classesFormImage: 'Main Class Image',
+  classesFormVideo: 'Promotional Video (Optional)',
+  classesCancel: 'Cancel',
+  classesSaving: 'Saving...',
+  classesUpdate: 'Update',
+  classesCreate: 'Create Class',
+  classesDeleteTitle: 'Delete Class',
+  classesDeleteConfirm: 'Are you sure you want to delete',
+  classesUpdated: 'Class updated!',
+  classesCreated: 'Class created!',
+  classesDeleted: 'Class deleted.',
+  classesLoadError: 'Error loading classes',
+  classesUpdateError: 'Error updating class',
+  classesCreateError: 'Error creating class',
+  classesDeleteError: 'Error deleting class',
+  classesLoading: 'Loading classes...',
+
+  // Admin — About (additional keys)
+  aboutTitleLabel: 'Title',
+  aboutSubtitleLabel: 'Subtitle',
+  aboutSubtitlePlaceholder: 'E.g.: Kite School & Expeditions',
+  aboutDescription: 'Description',
+  aboutDescriptionPlaceholder: 'Complete company history...',
+  aboutMissionPlaceholder: 'Company mission...',
+  aboutVisionPlaceholder: 'Company vision...',
+  aboutGalleryAlt: 'Gallery ',
+  aboutAdd: '+ Add',
+  aboutUnsaved: 'Official data (not saved)',
+
+  // Admin — Products (additional keys)
+  prodProduct: 'Product',
+  prodPrice: 'Price',
+  prodStock: 'Stock',
+  prodActions: 'Actions',
+  prodUnit: ' ea.',
+  prodEdit: 'Edit',
+  prodDelete: 'Delete',
+  prodNewCategory: 'New category name',
+  prodCancel: 'Cancel',
+  prodNew: '+ New',
+
+  // Admin — Experiences (additional keys)
+  expTypePackage: 'Package',
+  expTypeIndividual: 'Individual',
+  expItemsIncluded: ' items included',
+  expTypeLabel: 'Experience Type',
+  expTypeIndividualBtn: 'Individual Experience',
+  expTypeIndividualDesc: 'Single class, downwind, etc.',
+  expTypePackageBtn: 'Complete Package',
+  expTypePackageDesc: 'All-Inclusive, course, etc.',
+  expNewCategory: 'New category name',
+  expCancel: 'Cancel',
+  expNew: '+ New',
+  expOriginalPrice: 'Original Price (reference, optional)',
+  expOriginalPriceHelp: 'If filled in, shows the struck-through price and discount percentage.',
+  expIncludes: 'What is included (1 item per line)',
+  expIncludesHelp: 'Separate each item by line. These items will appear on the experience details page.',
+
+  // Admin — Bookings (additional keys)
+  bookingGuest: 'Guest',
+  bookingPaymentConfirmed: 'Payment confirmed',
+  bookingName: 'Name:',
+  bookingEmail: 'Email:',
+  bookingWhatsApp: 'WhatsApp:',
+  bookingPhone: 'Phone:',
+  bookingStatusLabel: 'Status',
+  bookingDateLabel: 'Booking Date',
+
+  // Admin — Shared (additional keys)
+  sharedPending: 'Pending',
+  sharedConfirmed: 'Confirmed',
+  sharedCancelled: 'Cancelled',
+  sharedSending: 'Sending...',
+
+  // Admin — Reviews (additional keys)
+  reviewUser: 'User',
+  reviewDeleted: 'Review deleted',
 }
 
 const es: TranslationKeys = {
@@ -3814,6 +4423,20 @@ const es: TranslationKeys = {
   communityTitle: 'Comunidad',
   communityEmpty: 'Sin publicaciones aún',
   communityLoginPrompt: 'Inicia sesión para acceder a la comunidad',
+  homeStartLabel: 'EMPIEZA AQUÍ',
+  homeStartTitle: 'Tu viaje AMZ Wind empieza con un clic',
+  homeStartSubtitle: 'Explora experiencias, encuentra trips, conecta con la comunidad y sigue tu perfil en un solo flujo.',
+  homeStartExperiences: 'Experiencias',
+  homeStartExperiencesDesc: 'Descubre expediciones, clases y aventuras destacadas.',
+  homeStartTrips: 'Trips',
+  homeStartTripsDesc: 'Mira viajes en grupo y participa de experiencias exclusivas.',
+  homeStartCommunity: 'Comunidad',
+  homeStartCommunityDesc: 'Comparte momentos, conversa y conoce a otros riders.',
+  homeStartProfile: 'Mi perfil',
+  homeStartProfileDesc: 'Consulta reservas, viajes y tu presencia en la comunidad.',
+  homeStartLogin: 'Entrar',
+  homeStartLoginDesc: 'Crea tu cuenta y personaliza tu experiencia AMZ Wind.',
+  homeStartGo: 'Abrir',
   shareTitle: 'Compartir',
   shareToChat: 'Compartir en el chat',
   shareConfirm: '¿Compartir publicación?',
@@ -4469,6 +5092,195 @@ const es: TranslationKeys = {
   ariaAttach: 'Adjuntar archivo',
   ariaLike: 'Me gusta',
   ariaUnlike: 'No me gusta',
+
+  // Admin — Hero (additional keys)
+  heroManageSubtitle: 'Controla los medios y textos destacados de la página de inicio.',
+  heroDimensionHelp: 'Puede subir un archivo, pegar un enlace directo (URL) de imagen/video, o pegar un enlace de YouTube — el tipo de medio se detectará automáticamente.',
+  heroEmpty: 'Ningún slide configurado.',
+  heroBadgeYouTube: 'YouTube',
+  heroBadgeVideo: 'Video',
+  heroBadgeImage: 'Imagen',
+  heroBadgeOfficial: 'Oficial',
+  heroCTA: 'CTA: ',
+  heroHighlightTitle: 'Título de Destaque',
+  heroHighlightPlaceholder: 'Ej: Expediciones en la Costa Norte',
+  heroMediaType: 'Tipo de Medio',
+  heroOrder: 'Orden',
+  heroUploadFile: 'Subir Archivo',
+  heroOrPasteUrl: 'O pegue el enlace directo (URL)',
+  heroButtonText: 'Texto del Botón',
+  heroButtonLink: 'Enlace del Botón',
+  heroSaveSlide: 'Crear Slide',
+  heroLimitReached: 'Límite de 6 slides alcanzado. Elimine un slide antes de crear otro.',
+  heroOfficialRemoved: 'Slide oficial eliminado de la visualización.',
+
+  // Admin — Financial (additional keys)
+  finPending: 'Pendiente',
+  finPaid: 'Pagado',
+  finOverdue: 'Vencido',
+  finPayable: 'A Pagar',
+  finReceivable: 'A Recibir',
+  finAccountUpdated: '¡Cuenta actualizada!',
+  finAccountCreated: '¡Cuenta creada!',
+  finAccountDeleted: 'Cuenta eliminada.',
+  finSummary: 'Resumen Financiero',
+  finToPay: 'Pagar',
+  finToReceive: 'Recibir',
+  finBalance: 'Saldo',
+  finReceived: 'Recibido',
+  finFilters: 'Filtros',
+  finAllTypes: 'Todos los Tipos',
+  finAllStatuses: 'Todos los Estados',
+  finNewAccount: '+ Nueva Cuenta',
+  finTransactions: 'Transacciones',
+  finItems: ' elementos',
+  finLoading: 'Cargando...',
+  finEmpty: 'No se encontraron transacciones',
+  finDescription: 'Descripción',
+  finType: 'Tipo',
+  finCategory: 'Categoría',
+  finAmount: 'Valor',
+  finDueDate: 'Vencimiento',
+  finStatus: 'Estado',
+  finActions: 'Acciones',
+  finEdit: 'Editar',
+  finDelete: 'Eliminar',
+  finEditAccount: 'Editar Cuenta',
+  finNewAccountTitle: 'Nueva Cuenta',
+  finFormType: 'Tipo',
+  finFormDescription: 'Descripción',
+  finFormDescriptionPlaceholder: 'Ej: Alquiler espacio, Clase particular...',
+  finFormAmount: 'Valor (R$)',
+  finFormDueDate: 'Vencimiento',
+  finFormCategory: 'Categoría',
+  finFormSelect: 'Seleccione...',
+  finFormStatus: 'Estado',
+  finFormNotes: 'Observaciones',
+  finFormNotesPlaceholder: 'Opcional...',
+  finFormCancel: 'Cancelar',
+  finFormSaving: 'Guardando...',
+  finFormCreate: 'Crear Cuenta',
+  finDeleteTitle: 'Eliminar Transacción',
+  finDeleteConfirm: '¿Está seguro de que desea eliminar',
+  finCategoryRent: 'Alquiler',
+  finCategoryEquipment: 'Equipamiento',
+  finCategoryMarketing: 'Marketing',
+  finCategorySalaries: 'Salarios',
+  finCategoryServices: 'Servicios',
+  finCategoryOperational: 'Operativo',
+  finCategoryClassRevenue: 'Ingresos Clases',
+  finCategoryExpeditionRevenue: 'Ingresos Expediciones',
+  finCategoryProductRevenue: 'Ingresos Productos',
+  finCategoryOther: 'Otros',
+
+  // Admin — Trips (additional keys)
+  tripsAll: 'Todas',
+  tripsParticipants: ' participantes',
+  tripsDraft: 'Borrador',
+  tripsPublished: 'Publicada',
+  tripsFull: 'Llena',
+  tripsCancelled: 'Cancelada',
+  tripsCompleted: 'Completada',
+  tripsPublic: 'Pública',
+  tripsPrivate: 'Privada',
+  tripsStatusUpdated: '¡Estado actualizado!',
+  tripsDeleteTitle: 'Eliminar',
+  tripsDeleted: '¡Viaje eliminado!',
+
+  // Admin — Classes (additional keys)
+  classesTitle: 'Gestionar Clases',
+  classesSubtitle: 'Configure los paquetes de clases, medios y precios.',
+  classesNew: '+ Nueva Clase',
+  classesEmpty: 'No hay clases registradas',
+  classesEdit: 'Editar',
+  classesDelete: 'Eliminar',
+  classesEditTitle: 'Editar Clase',
+  classesNewTitle: 'Nueva Clase',
+  classesFormTitle: 'Título',
+  classesFormTitlePlaceholder: 'Ej: Clase Particular de Kite',
+  classesFormPrice: 'Precio (R$)',
+  classesFormDuration: 'Duración',
+  classesFormDurationPlaceholder: 'Ej: 2h30',
+  classesFormLevel: 'Nivel',
+  classesFormLevelPlaceholder: 'Ej: Principiante / Intermedio',
+  classesFormDescription: 'Descripción',
+  classesFormImage: 'Imagen Principal de la Clase',
+  classesFormVideo: 'Video Promocional (Opcional)',
+  classesCancel: 'Cancelar',
+  classesSaving: 'Guardando...',
+  classesUpdate: 'Actualizar',
+  classesCreate: 'Crear Clase',
+  classesDeleteTitle: 'Eliminar Clase',
+  classesDeleteConfirm: '¿Está seguro de que desea eliminar',
+  classesUpdated: '¡Clase actualizada!',
+  classesCreated: '¡Clase creada!',
+  classesDeleted: 'Clase eliminada.',
+  classesLoadError: 'Error al cargar clases',
+  classesUpdateError: 'Error al actualizar clase',
+  classesCreateError: 'Error al crear clase',
+  classesDeleteError: 'Error al eliminar clase',
+  classesLoading: 'Cargando clases...',
+
+  // Admin — About (additional keys)
+  aboutTitleLabel: 'Título',
+  aboutSubtitleLabel: 'Subtítulo',
+  aboutSubtitlePlaceholder: 'Ej: Escuela de Kitesurf & Expediciones',
+  aboutDescription: 'Descripción',
+  aboutDescriptionPlaceholder: 'Historia completa de la empresa...',
+  aboutMissionPlaceholder: 'Misión de la empresa...',
+  aboutVisionPlaceholder: 'Visión de la empresa...',
+  aboutGalleryAlt: 'Galería ',
+  aboutAdd: '+ Agregar',
+  aboutUnsaved: 'Datos oficiales (no guardados)',
+
+  // Admin — Products (additional keys)
+  prodProduct: 'Producto',
+  prodPrice: 'Precio',
+  prodStock: 'Stock',
+  prodActions: 'Acciones',
+  prodUnit: ' ud.',
+  prodEdit: 'Editar',
+  prodDelete: 'Eliminar',
+  prodNewCategory: 'Nombre de nueva categoría',
+  prodCancel: 'Cancelar',
+  prodNew: '+ Nueva',
+
+  // Admin — Experiences (additional keys)
+  expTypePackage: 'Paquete',
+  expTypeIndividual: 'Individual',
+  expItemsIncluded: ' elementos incluidos',
+  expTypeLabel: 'Tipo de Experiencia',
+  expTypeIndividualBtn: 'Experiencia Individual',
+  expTypeIndividualDesc: 'Clase individual, downwind, etc.',
+  expTypePackageBtn: 'Paquete Completo',
+  expTypePackageDesc: 'All-Inclusive, curso, etc.',
+  expNewCategory: 'Nombre de nueva categoría',
+  expCancel: 'Cancelar',
+  expNew: '+ Nueva',
+  expOriginalPrice: 'Precio Original (referencia, opcional)',
+  expOriginalPriceHelp: 'Si se completa, muestra el precio tachado y el porcentaje de descuento.',
+  expIncludes: 'Qué está incluido (1 elemento por línea)',
+  expIncludesHelp: 'Separe cada elemento por línea. Estos elementos aparecerán en la página de detalles de la experiencia.',
+
+  // Admin — Bookings (additional keys)
+  bookingGuest: 'Guest',
+  bookingPaymentConfirmed: 'Pago confirmado',
+  bookingName: 'Nombre:',
+  bookingEmail: 'Email:',
+  bookingWhatsApp: 'WhatsApp:',
+  bookingPhone: 'Teléfono:',
+  bookingStatusLabel: 'Estado',
+  bookingDateLabel: 'Fecha de la Reserva',
+
+  // Admin — Shared (additional keys)
+  sharedPending: 'Pendiente',
+  sharedConfirmed: 'Confirmada',
+  sharedCancelled: 'Cancelada',
+  sharedSending: 'Enviando...',
+
+  // Admin — Reviews (additional keys)
+  reviewUser: 'User',
+  reviewDeleted: 'Reseña eliminada',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }
