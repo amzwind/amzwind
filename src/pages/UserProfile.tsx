@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import Feed from '../components/feed/Feed'
 import ConversationsList from './ConversationsList'
 import FriendsPage from './FriendsPage'
+import { listUserTrips, type UserTrip } from '../services/trips'
 
 type Profile = Tables<'profiles'>
 type Booking = Tables<'bookings'>
@@ -32,7 +33,7 @@ function parseNotes(notes: string | null): BookingNotes | null {
   try { return JSON.parse(notes) as BookingNotes } catch { return null }
 }
 
-const TABS = ['portal', 'reservas', 'produtos', 'galeria', 'comunidade', 'amigos', 'conversas'] as const
+const TABS = ['portal', 'reservas', 'produtos', 'galeria', 'viagens', 'comunidade', 'amigos', 'conversas'] as const
 type Tab = typeof TABS[number]
 
 export default function UserProfile() {
@@ -52,6 +53,7 @@ export default function UserProfile() {
   const [avatarUrl, setAvatarUrl] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null)
+  const [userTrips, setUserTrips] = useState<UserTrip[]>([])
 
   useEffect(() => {
     async function loadProfile() {
@@ -76,6 +78,9 @@ export default function UserProfile() {
         setAvatarUrl(pRes.data.avatar_url || '')
       }
       if (bRes.data) setBookings(bRes.data)
+
+      listUserTrips().then(setUserTrips).catch(() => {})
+
       setLoading(false)
     }
     loadProfile()
@@ -257,6 +262,7 @@ export default function UserProfile() {
               { key: 'reservas' as const, icon: '🌊', label: 'Minhas Reservas' },
               { key: 'produtos' as const, icon: '🛍️', label: 'Produtos' },
               { key: 'galeria' as const, icon: '📸', label: 'Galeria' },
+              { key: 'viagens' as const, icon: '🏔️', label: 'Trips' },
               { key: 'comunidade' as const, icon: '🏄', label: 'Feed' },
               { key: 'amigos' as const, icon: '🤝', label: 'Amigos' },
               { key: 'conversas' as const, icon: '💬', label: 'Chat' },
@@ -599,6 +605,77 @@ export default function UserProfile() {
                         </div>
                       )
                     })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Tab: Minhas Trips */}
+          {activeTab === 'viagens' && (
+            <div className="space-y-4">
+              <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia flex items-center gap-2">
+                <svg className="w-5 h-5 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                Minhas Trips
+              </h3>
+              <p className="text-sm text-amz-terra-light dark:text-amz-areia/50">
+                Trips que você organizou ou participa.
+              </p>
+
+              {userTrips.length === 0 ? (
+                <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
+                  <div className="text-4xl mb-3">🏔️</div>
+                  <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma trip ainda</p>
+                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Crie ou participe de uma trip</p>
+                  <a href="/trips" className="btn-primary inline-block text-sm">Ver Trips</a>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {userTrips.map((trip) => {
+                    const statusColors: Record<string, string> = {
+                      draft: 'bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-white/40',
+                      published: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+                      full: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+                      cancelled: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',
+                      completed: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+                    }
+                    const statusLabels: Record<string, string> = {
+                      draft: 'Rascunho', published: 'Publicada', full: 'Lotada', cancelled: 'Cancelada', completed: 'Concluída',
+                    }
+                    return (
+                      <button
+                        key={trip.id}
+                        onClick={() => navigate(`/trips/${trip.id}`)}
+                        className="w-full bg-white dark:bg-white/5 rounded-2xl border border-amz-areia-dark/20 dark:border-white/5 p-4 text-left hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-amz-areia/30 dark:bg-white/[0.03] shrink-0">
+                            {trip.cover_url ? (
+                              <img src={trip.cover_url} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-amz-terra-light dark:text-amz-areia/30 text-lg">🏔️</div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{trip.title}</p>
+                            {trip.destination && (
+                              <p className="text-xs text-amz-terra-light dark:text-amz-areia/40 truncate">{trip.destination}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${statusColors[trip.status] || statusColors.draft}`}>
+                                {statusLabels[trip.status] || trip.status}
+                              </span>
+                              <span className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">
+                                {trip.participant_count || 0} participantes
+                              </span>
+                            </div>
+                          </div>
+                          <svg className="w-4 h-4 text-amz-terra-light dark:text-amz-areia/30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>
