@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { supabase } from '../services/supabase'
 import { useNotifications } from '../hooks/useNotifications'
@@ -17,14 +18,43 @@ const typeIcons: Record<string, string> = {
   group_message: '👥',
 }
 
+function getNotificationRoute(type: string, entityType: string | null, entityId: string | null): string | null {
+  switch (type) {
+    case 'friend_request':
+    case 'friend_accepted':
+      return '/amigos'
+    case 'new_message':
+    case 'group_message':
+      return entityId ? `/chat/${entityId}` : '/conversas'
+    case 'reaction':
+    case 'comment':
+    case 'share':
+    case 'mention':
+      return entityType === 'post' ? '/comunidade' : null
+    case 'trip_invite':
+      return entityId ? `/trips/${entityId}` : '/trips'
+    case 'group_invite':
+      return '/conversas'
+    default:
+      return null
+  }
+}
+
 export default function NotificationsPage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const [userId, setUserId] = useState<string | null>(null)
   const { notifications, unreadCount, loading, markAsRead, markAllAsRead, dismiss } = useNotifications(userId)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
   }, [])
+
+  function handleNotificationClick(notif: { id: string; read: boolean; type: string; entity_type: string | null; entity_id: string | null }) {
+    if (!notif.read) markAsRead(notif.id)
+    const route = getNotificationRoute(notif.type, notif.entity_type, notif.entity_id)
+    if (route) navigate(route)
+  }
 
   function formatTime(iso: string): string {
     const d = new Date(iso)
@@ -74,10 +104,10 @@ export default function NotificationsPage() {
             {notifications.map((notif) => (
               <div
                 key={notif.id}
-                className={`flex items-start gap-3 px-4 py-3 transition-colors ${
+                className={`flex items-start gap-3 px-4 py-3 transition-colors cursor-pointer ${
                   !notif.read ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : ''
                 }`}
-                onClick={() => !notif.read && markAsRead(notif.id)}
+                onClick={() => handleNotificationClick(notif)}
               >
                 <span className="text-xl mt-0.5 flex-shrink-0">
                   {typeIcons[notif.type] ?? '🔔'}

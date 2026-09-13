@@ -54,6 +54,7 @@ export default function CreatePost({ userId, userName, avatarUrl, onPostCreated 
         comments_count: 0,
         shares_count: 0,
         liked_by_me: false,
+        updated_at: post.created_at,
       })
       setContent('')
       removeMedia()

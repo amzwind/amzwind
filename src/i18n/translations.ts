@@ -488,6 +488,41 @@ export type TranslationKeys = {
   postComments: string
   postLikes: string
   postShares: string
+  feedGlobal: string
+  feedFriends: string
+  feedEdited: string
+  feedSaving: string
+  feedSave: string
+  feedCancel: string
+  feedConfirmDelete: string
+  feedLoading: string
+  feedRetry: string
+  feedEmpty: string
+  feedEmptyHint: string
+  feedLoadMore: string
+  feedNoComments: string
+  feedWriteComment: string
+  feedSend: string
+  feedComment: string
+  feedShare: string
+  navTrips: string
+  tripsTitle: string
+  tripsEmpty: string
+  tripsEmptyHint: string
+  tripParticipants: string
+  tripJoined: string
+  tripJoin: string
+  tripLeave: string
+  tripLeaveConfirm: string
+  tripFull: string
+  tripDetail: string
+  tripNotFound: string
+  tripOrganizedBy: string
+  tripStatusPublished: string
+  tripStatusFull: string
+  tripStatusCancelled: string
+  tripStatusCompleted: string
+  tripStatusDraft: string
 }
 
 const pt: TranslationKeys = {
@@ -943,6 +978,41 @@ const pt: TranslationKeys = {
   postComments: 'comentários',
   postLikes: 'curtidas',
   postShares: 'compartilhamentos',
+  feedGlobal: 'Global',
+  feedFriends: 'Amigos',
+  feedEdited: 'editado',
+  feedSaving: 'Salvando...',
+  feedSave: 'Salvar',
+  feedCancel: 'Cancelar',
+  feedConfirmDelete: 'Excluir esta publicação?',
+  feedLoading: 'Carregando...',
+  feedRetry: 'Tentar novamente',
+  feedEmpty: 'Nenhuma publicação ainda',
+  feedEmptyHint: 'Seja o primeiro a compartilhar uma session!',
+  feedLoadMore: 'Carregar mais',
+  feedNoComments: 'Nenhum comentário ainda.',
+  feedWriteComment: 'Escreva um comentário...',
+  feedSend: 'Enviar',
+  feedComment: 'Comentar',
+  feedShare: 'Compartilhar',
+  navTrips: 'Trips',
+  tripsTitle: 'Trips',
+  tripsEmpty: 'Nenhuma trip disponível',
+  tripsEmptyHint: 'Embreve novas trips serão anunciadas!',
+  tripParticipants: 'participantes',
+  tripJoined: 'Participando',
+  tripJoin: 'Participar',
+  tripLeave: 'Sair da Trip',
+  tripLeaveConfirm: 'Sair desta viagem?',
+  tripFull: 'Lotada',
+  tripDetail: 'Viagem',
+  tripNotFound: 'Viagem não encontrada',
+  tripOrganizedBy: 'Organizado por',
+  tripStatusPublished: 'Aberta',
+  tripStatusFull: 'Lotada',
+  tripStatusCancelled: 'Cancelada',
+  tripStatusCompleted: 'Concluída',
+  tripStatusDraft: 'Rascunho',
 }
 
 const en: TranslationKeys = {
@@ -1398,6 +1468,41 @@ const en: TranslationKeys = {
   postComments: 'comments',
   postLikes: 'likes',
   postShares: 'shares',
+  feedGlobal: 'Global',
+  feedFriends: 'Friends',
+  feedEdited: 'edited',
+  feedSaving: 'Saving...',
+  feedSave: 'Save',
+  feedCancel: 'Cancel',
+  feedConfirmDelete: 'Delete this post?',
+  feedLoading: 'Loading...',
+  feedRetry: 'Try again',
+  feedEmpty: 'No posts yet',
+  feedEmptyHint: 'Be the first to share a session!',
+  feedLoadMore: 'Load more',
+  feedNoComments: 'No comments yet.',
+  feedWriteComment: 'Write a comment...',
+  feedSend: 'Send',
+  feedComment: 'Comment',
+  feedShare: 'Share',
+  navTrips: 'Trips',
+  tripsTitle: 'Trips',
+  tripsEmpty: 'No trips available',
+  tripsEmptyHint: 'New trips will be announced soon!',
+  tripParticipants: 'participants',
+  tripJoined: 'Joined',
+  tripJoin: 'Join',
+  tripLeave: 'Leave Trip',
+  tripLeaveConfirm: 'Leave this trip?',
+  tripFull: 'Full',
+  tripDetail: 'Trip',
+  tripNotFound: 'Trip not found',
+  tripOrganizedBy: 'Organized by',
+  tripStatusPublished: 'Open',
+  tripStatusFull: 'Full',
+  tripStatusCancelled: 'Cancelled',
+  tripStatusCompleted: 'Completed',
+  tripStatusDraft: 'Draft',
 }
 
 const es: TranslationKeys = {
@@ -1853,6 +1958,41 @@ const es: TranslationKeys = {
   postComments: 'comentarios',
   postLikes: 'me gusta',
   postShares: 'compartidos',
+  feedGlobal: 'Global',
+  feedFriends: 'Amigos',
+  feedEdited: 'editado',
+  feedSaving: 'Guardando...',
+  feedSave: 'Guardar',
+  feedCancel: 'Cancelar',
+  feedConfirmDelete: '¿Eliminar esta publicación?',
+  feedLoading: 'Cargando...',
+  feedRetry: 'Intentar de nuevo',
+  feedEmpty: 'Sin publicaciones aún',
+  feedEmptyHint: '¡Sé el primero en compartir una session!',
+  feedLoadMore: 'Cargar más',
+  feedNoComments: 'Sin comentarios aún.',
+  feedWriteComment: 'Escribe un comentario...',
+  feedSend: 'Enviar',
+  feedComment: 'Comentar',
+  feedShare: 'Compartir',
+  navTrips: 'Trips',
+  tripsTitle: 'Trips',
+  tripsEmpty: 'Sin trips disponibles',
+  tripsEmptyHint: '¡Próximamente nuevas trips!',
+  tripParticipants: 'participantes',
+  tripJoined: 'Unierto',
+  tripJoin: 'Unirse',
+  tripLeave: 'Salir del Trip',
+  tripLeaveConfirm: '¿Salir de este viaje?',
+  tripFull: 'Lleno',
+  tripDetail: 'Viaje',
+  tripNotFound: 'Viaje no encontrado',
+  tripOrganizedBy: 'Organizado por',
+  tripStatusPublished: 'Abierta',
+  tripStatusFull: 'Llena',
+  tripStatusCancelled: 'Cancelada',
+  tripStatusCompleted: 'Completada',
+  tripStatusDraft: 'Borrador',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

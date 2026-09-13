@@ -17,6 +17,7 @@ export interface PostFeedItem {
   shares_count: number
   liked_by_me: boolean
   created_at: string
+  updated_at: string
 }
 
 export interface PostAuthor {
@@ -119,6 +120,32 @@ export async function toggleLike(postId: string): Promise<boolean> {
 export async function loadFeed(limit = 20, offset = 0): Promise<FeedResult> {
   const { data: feedPosts, error } = await supabase
     .rpc('get_posts_feed', { p_limit: limit, p_offset: offset })
+
+  if (error) throw new Error('Falha ao carregar feed: ' + error.message)
+
+  const posts = (feedPosts || []) as PostFeedItem[]
+  const authors: Record<string, PostAuthor> = {}
+
+  const userIds = [...new Set(posts.map((p) => p.user_id))]
+  if (userIds.length > 0) {
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url')
+      .in('id', userIds)
+
+    if (profilesData) {
+      profilesData.forEach((p) => {
+        authors[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }
+      })
+    }
+  }
+
+  return { posts, authors }
+}
+
+export async function loadFriendsFeed(limit = 20, offset = 0): Promise<FeedResult> {
+  const { data: feedPosts, error } = await supabase
+    .rpc('get_friends_feed', { p_limit: limit, p_offset: offset })
 
   if (error) throw new Error('Falha ao carregar feed: ' + error.message)
 

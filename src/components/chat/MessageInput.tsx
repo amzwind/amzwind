@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import type { MessageWithMeta } from '../../services/chat'
 
@@ -20,14 +20,32 @@ export default function MessageInput({
   const { t } = useLanguage()
   const [text, setText] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  function autoResize() {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+  }
+
+  useEffect(() => {
+    autoResize()
+  }, [text])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!text.trim() || sending) return
     onSend(text)
     setText('')
-    inputRef.current?.focus()
+    textareaRef.current?.focus()
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmit(e)
+    }
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -45,7 +63,6 @@ export default function MessageInput({
 
   return (
     <div className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2">
-      {/* Reply preview */}
       {replyTo && (
         <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
           <div className="w-0.5 h-8 bg-emerald-500 rounded-full flex-shrink-0" />
@@ -68,8 +85,7 @@ export default function MessageInput({
         </div>
       )}
 
-      {/* Input row */}
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="flex items-end gap-2">
         <input
           type="file"
           ref={fileInputRef}
@@ -80,27 +96,28 @@ export default function MessageInput({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-500 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors"
+          className="p-2 text-gray-500 dark:text-gray-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors flex-shrink-0"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
           </svg>
         </button>
 
-        <input
-          ref={inputRef}
-          type="text"
+        <textarea
+          ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={t.chatTypeMessage || 'Mensagem...'}
-          className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          rows={1}
+          className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none max-h-[120px]"
           disabled={sending}
         />
 
         <button
           type="submit"
           disabled={!text.trim() || sending}
-          className="p-2.5 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="p-2.5 bg-emerald-500 text-white rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
         >
           {sending ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

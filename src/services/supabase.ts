@@ -447,6 +447,7 @@ export type Database = {
           likes_count: number
           comments_count: number
           shares_count: number
+          trip_id: string | null
           created_at: string
           updated_at: string
         }
@@ -458,6 +459,7 @@ export type Database = {
           likes_count?: number
           comments_count?: number
           shares_count?: number
+          trip_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -469,6 +471,7 @@ export type Database = {
           likes_count?: number
           comments_count?: number
           shares_count?: number
+          trip_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -776,6 +779,7 @@ export type Database = {
           conversation_id: string
           name: string
           trip_date: string | null
+          trip_id: string | null
           created_by: string | null
           created_at: string
         }
@@ -785,6 +789,7 @@ export type Database = {
           conversation_id: string
           name: string
           trip_date?: string | null
+          trip_id?: string | null
           created_by?: string | null
           created_at?: string
         }
@@ -794,8 +799,82 @@ export type Database = {
           conversation_id?: string
           name?: string
           trip_date?: string | null
+          trip_id?: string | null
           created_by?: string | null
           created_at?: string
+        }
+      }
+      trips: {
+        Row: {
+          id: string
+          title: string
+          slug: string | null
+          description: string | null
+          destination: string | null
+          start_date: string | null
+          end_date: string | null
+          cover_url: string | null
+          status: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          max_participants: number | null
+          created_by: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug?: string | null
+          description?: string | null
+          destination?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          cover_url?: string | null
+          status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          max_participants?: number | null
+          created_by: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string | null
+          description?: string | null
+          destination?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          cover_url?: string | null
+          status?: 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+          max_participants?: number | null
+          created_by?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      trip_participants: {
+        Row: {
+          id: string
+          trip_id: string
+          user_id: string
+          role: 'organizer' | 'participant'
+          status: 'pending' | 'confirmed' | 'cancelled'
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          trip_id: string
+          user_id: string
+          role?: 'organizer' | 'participant'
+          status?: 'pending' | 'confirmed' | 'cancelled'
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          trip_id?: string
+          user_id?: string
+          role?: 'organizer' | 'participant'
+          status?: 'pending' | 'confirmed' | 'cancelled'
+          joined_at?: string
         }
       }
       sticker_packs: {
@@ -922,6 +1001,22 @@ export type Database = {
           shares_count: number
           liked_by_me: boolean
           created_at: string
+          updated_at: string
+        }>
+      }
+      get_friends_feed: {
+        Args: { p_limit?: number; p_offset?: number }
+        Returns: Array<{
+          id: string
+          user_id: string
+          content: string | null
+          media_url: string | null
+          likes_count: number
+          comments_count: number
+          shares_count: number
+          liked_by_me: boolean
+          created_at: string
+          updated_at: string
         }>
       }
       get_or_create_direct_conversation: {
@@ -1027,6 +1122,67 @@ export type Database = {
           full_name: string | null
           avatar_url: string | null
         }>
+      }
+      list_trips: {
+        Args: { p_limit?: number; p_offset?: number; p_status?: string | null }
+        Returns: Array<{
+          id: string
+          title: string
+          slug: string | null
+          description: string | null
+          destination: string | null
+          start_date: string | null
+          end_date: string | null
+          cover_url: string | null
+          status: string
+          max_participants: number | null
+          created_by: string
+          created_at: string
+          updated_at: string
+          participant_count: number
+          is_participant: boolean
+        }>
+      }
+      get_trip: {
+        Args: { p_trip_id: string }
+        Returns: Array<{
+          id: string
+          title: string
+          slug: string | null
+          description: string | null
+          destination: string | null
+          start_date: string | null
+          end_date: string | null
+          cover_url: string | null
+          status: string
+          max_participants: number | null
+          created_by: string
+          created_at: string
+          updated_at: string
+          participant_count: number
+          is_participant: boolean
+          creator_name: string | null
+          creator_avatar: string | null
+        }>
+      }
+      join_trip: {
+        Args: { p_trip_id: string }
+        Returns: void
+      }
+      leave_trip: {
+        Args: { p_trip_id: string }
+        Returns: void
+      }
+      create_trip: {
+        Args: {
+          p_title: string
+          p_description?: string | null
+          p_destination?: string | null
+          p_start_date?: string | null
+          p_end_date?: string | null
+          p_max_participants?: number | null
+        }
+        Returns: string
       }
     }
   }

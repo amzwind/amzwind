@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { toggleLike, deletePost, type PostFeedItem, type PostAuthor } from '../../services/feed'
+import { updatePost } from '../../services/community'
 import PostComments from './PostComments'
 import ShareDialog from '../community/ShareDialog'
 
@@ -8,6 +10,7 @@ interface PostCardProps {
   author: PostAuthor | undefined
   currentUserId: string
   onDelete: (postId: string) => void
+  onUpdate?: (postId: string, newContent: string) => void
 }
 
 function getTimeAgo(dateStr: string): string {
@@ -28,16 +31,22 @@ function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|ogg)$/i.test(url) || url.includes('video')
 }
 
-export default function PostCard({ post, author, currentUserId, onDelete }: PostCardProps) {
+export default function PostCard({ post, author, currentUserId, onDelete, onUpdate }: PostCardProps) {
+  const { t } = useLanguage()
   const [liked, setLiked] = useState(post.liked_by_me)
   const [likesCount, setLikesCount] = useState(post.likes_count)
   const [showComments, setShowComments] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showShareDialog, setShowShareDialog] = useState(false)
   const [sharesCount, setSharesCount] = useState(post.shares_count ?? 0)
+  const [editing, setEditing] = useState(false)
+  const [editContent, setEditContent] = useState(post.content || '')
+  const [saving, setSaving] = useState(false)
+  const [editError, setEditError] = useState('')
 
   const isOwn = post.user_id === currentUserId
   const displayName = author?.full_name || 'Rider'
+  const isEdited = post.updated_at && post.updated_at !== post.created_at
 
   async function handleLike() {
     try {
@@ -49,7 +58,7 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
   }
 
   async function handleDelete() {
-    if (!window.confirm('Excluir esta publicação?') || deleting) return
+    if (!window.confirm(t.feedConfirmDelete || 'Excluir esta publicação?') || deleting) return
     setDeleting(true)
     try {
       await deletePost(post.id, currentUserId)
@@ -57,6 +66,27 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
     } catch {
       setDeleting(false)
     }
+  }
+
+  async function handleSaveEdit() {
+    if (!editContent.trim() || saving) return
+    setSaving(true)
+    setEditError('')
+    try {
+      await updatePost(post.id, currentUserId, editContent)
+      onUpdate?.(post.id, editContent.trim())
+      setEditing(false)
+    } catch (err: unknown) {
+      setEditError(err instanceof Error ? err.message : 'Erro ao salvar')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function handleCancelEdit() {
+    setEditContent(post.content || '')
+    setEditing(false)
+    setEditError('')
   }
 
   return (
@@ -72,31 +102,72 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-amz-terra dark:text-amz-areia text-sm truncate">{displayName}</p>
-            <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">{getTimeAgo(post.created_at)}</p>
+            <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40">
+              {getTimeAgo(post.created_at)}
+              {isEdited && <span className="ml-1 italic">({t.feedEdited || 'editado'})</span>}
+            </p>
           </div>
-          {isOwn && (
-            <button
-              onClick={handleDelete}
-              disabled={deleting}
-              className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-            </button>
+          {isOwn && !editing && (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setEditing(true)}
+                className="p-1.5 rounded-lg text-amz-oceano hover:bg-amz-oceano/10 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            </div>
           )}
         </div>
 
-        {post.content && (
-          <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap mb-3">{post.content}</p>
-        )}
-
-        {post.media_url && (
-          <div className="mb-3 rounded-xl overflow-hidden">
-            {isVideoUrl(post.media_url) ? (
-              <video src={post.media_url} controls preload="metadata" className="w-full max-h-80 object-cover" />
-            ) : (
-              <img src={post.media_url} alt="" className="w-full max-h-80 object-cover" loading="lazy" />
-            )}
+        {editing ? (
+          <div className="mb-3">
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 rounded-xl border border-amz-oceano/30 bg-gray-50 dark:bg-white/5 text-sm text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 resize-none"
+            />
+            {editError && <p className="text-xs text-red-500 mt-1">{editError}</p>}
+            <div className="flex items-center gap-2 mt-2">
+              <button
+                onClick={handleSaveEdit}
+                disabled={!editContent.trim() || saving}
+                className="px-3 py-1.5 rounded-lg bg-amz-oceano text-white text-xs font-semibold hover:bg-amz-oceano/90 transition-colors disabled:opacity-40"
+              >
+                {saving ? (t.feedSaving || 'Salvando...') : (t.feedSave || 'Salvar')}
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                disabled={saving}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+              >
+                {t.feedCancel || 'Cancelar'}
+              </button>
+            </div>
           </div>
+        ) : (
+          <>
+            {post.content && (
+              <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap mb-3">{post.content}</p>
+            )}
+
+            {post.media_url && (
+              <div className="mb-3 rounded-xl overflow-hidden">
+                {isVideoUrl(post.media_url) ? (
+                  <video src={post.media_url} controls preload="metadata" className="w-full max-h-80 object-cover" />
+                ) : (
+                  <img src={post.media_url} alt="" className="w-full max-h-80 object-cover" loading="lazy" />
+                )}
+              </div>
+            )}
+          </>
         )}
 
         <div className="flex items-center gap-4 pt-2 border-t border-amz-areia-dark/10 dark:border-white/5">
@@ -119,7 +190,7 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
             {post.comments_count > 0 && <span>{post.comments_count}</span>}
-            <span className="hidden sm:inline">Comentar</span>
+            <span className="hidden sm:inline">{t.feedComment || 'Comentar'}</span>
           </button>
           <button
             onClick={() => setShowShareDialog(true)}
@@ -127,7 +198,7 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8m-4-6l-4-4m0 0L8 6m4-4v13" /></svg>
             {sharesCount > 0 && <span>{sharesCount}</span>}
-            <span className="hidden sm:inline">Compartilhar</span>
+            <span className="hidden sm:inline">{t.feedShare || 'Compartilhar'}</span>
           </button>
         </div>
       </div>

@@ -27,6 +27,8 @@ import Chat from './pages/Chat'
 import FriendsPage from './pages/FriendsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import Community from './pages/Community'
+import TripsPage from './pages/TripsPage'
+import TripDetailPage from './pages/TripDetailPage'
 import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
@@ -82,6 +84,8 @@ export default function App() {
               <Route path="/amigos" element={<FriendsPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/comunidade" element={<Community />} />
+              <Route path="/trips" element={<TripsPage />} />
+              <Route path="/trips/:id" element={<TripDetailPage />} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />

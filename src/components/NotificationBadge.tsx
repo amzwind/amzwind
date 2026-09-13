@@ -5,14 +5,16 @@ import { supabase } from '../services/supabase'
 export default function NotificationBadge() {
   const navigate = useNavigate()
   const [unreadCount, setUnreadCount] = useState(0)
+  const [userId, setUserId] = useState<string | null>(null)
   const instanceId = useRef(Math.random().toString(36).slice(2))
 
   useEffect(() => {
     let cancelled = false
 
-    async function fetchCount() {
+    async function init() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user || cancelled) return
+      setUserId(user.id)
 
       const { count } = await supabase
         .from('notifications')
@@ -25,7 +27,14 @@ export default function NotificationBadge() {
       }
     }
 
-    fetchCount()
+    init()
+
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    if (!userId) return
+    let cancelled = false
 
     const channel = supabase
       .channel(`badge-${instanceId.current}`)
@@ -35,11 +44,11 @@ export default function NotificationBadge() {
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
           if (cancelled) return
-          const newNotif = payload.new as { user_id?: string; read?: boolean }
-          // Only increment if it's for the current user and unread
+          const newNotif = payload.new as { read?: boolean }
           if (newNotif && !newNotif.read) {
             setUnreadCount((prev) => prev + 1)
           }
@@ -51,12 +60,12 @@ export default function NotificationBadge() {
           event: 'UPDATE',
           schema: 'public',
           table: 'notifications',
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
           if (cancelled) return
           const old = payload.old as { read?: boolean }
           const updated = payload.new as { read?: boolean }
-          // If was unread and now read, decrement
           if (old && !old.read && updated && updated.read) {
             setUnreadCount((prev) => Math.max(0, prev - 1))
           }
@@ -68,7 +77,7 @@ export default function NotificationBadge() {
       cancelled = true
       supabase.removeChannel(channel)
     }
-  }, [])
+  }, [userId])
 
   return (
     <button
