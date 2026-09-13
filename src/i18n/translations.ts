@@ -447,6 +447,35 @@ export type TranslationKeys = {
   // About Page - Regions & Products
   aboutRegions: string
   aboutProducts: string
+
+  // Chat & Social
+  chatConversations: string
+  chatSearchPlaceholder: string
+  chatNoConversations: string
+  chatStartConvo: string
+  chatSendMessage: string
+  chatTypeMessage: string
+  chatOnline: string
+  chatEmpty: string
+  friendsTitle: string
+  friendsList: string
+  friendsRequests: string
+  friendsFind: string
+  friendsEmpty: string
+  friendsNoRequests: string
+  friendsSearchPlaceholder: string
+  friendsNoResults: string
+  friendsAdd: string
+  friendsPending: string
+  friendsAlreadyFriend: string
+  friendsAccept: string
+  friendsReject: string
+  friendsRemove: string
+  friendsRequestSent: string
+  friendsRequestReceived: string
+  notificationsTitle: string
+  notificationsMarkAll: string
+  notificationsEmpty: string
 }
 
 const pt: TranslationKeys = {
@@ -862,6 +891,34 @@ const pt: TranslationKeys = {
 
   aboutRegions: 'Áreas de Atuação',
   aboutProducts: 'Nossos Produtos',
+
+  chatConversations: 'Conversas',
+  chatSearchPlaceholder: 'Buscar riders...',
+  chatNoConversations: 'Nenhuma conversa ainda. Busque um rider acima para iniciar!',
+  chatStartConvo: 'Iniciar conversa...',
+  chatSendMessage: 'Enviar mensagem',
+  chatTypeMessage: 'Mensagem...',
+  chatOnline: 'Online',
+  chatEmpty: 'Inicie a conversa! Envie a primeira mensagem.',
+  friendsTitle: 'Amigos',
+  friendsList: 'Amigos',
+  friendsRequests: 'Pedidos',
+  friendsFind: 'Encontrar',
+  friendsEmpty: 'Nenhum amigo ainda. Vá para "Encontrar" para adicionar riders!',
+  friendsNoRequests: 'Nenhum pedido pendente.',
+  friendsSearchPlaceholder: 'Buscar riders por nome...',
+  friendsNoResults: 'Nenhum rider encontrado.',
+  friendsAdd: 'Adicionar',
+  friendsPending: 'Pendente',
+  friendsAlreadyFriend: 'Amigo',
+  friendsAccept: 'Aceitar',
+  friendsReject: 'Rejeitar',
+  friendsRemove: 'Remover',
+  friendsRequestSent: 'Pedido enviado',
+  friendsRequestReceived: 'Pedido recebido',
+  notificationsTitle: 'Notificações',
+  notificationsMarkAll: 'Marcar tudo como lido',
+  notificationsEmpty: 'Nenhuma notificação ainda.',
 }
 
 const en: TranslationKeys = {
@@ -1277,6 +1334,34 @@ const en: TranslationKeys = {
 
   aboutRegions: 'Areas of Operation',
   aboutProducts: 'Our Products',
+
+  chatConversations: 'Conversations',
+  chatSearchPlaceholder: 'Search riders...',
+  chatNoConversations: 'No conversations yet. Search for a rider above to start!',
+  chatStartConvo: 'Start conversation...',
+  chatSendMessage: 'Send message',
+  chatTypeMessage: 'Message...',
+  chatOnline: 'Online',
+  chatEmpty: 'Start the conversation! Send the first message.',
+  friendsTitle: 'Friends',
+  friendsList: 'Friends',
+  friendsRequests: 'Requests',
+  friendsFind: 'Find',
+  friendsEmpty: 'No friends yet. Go to "Find" to add riders!',
+  friendsNoRequests: 'No pending requests.',
+  friendsSearchPlaceholder: 'Search riders by name...',
+  friendsNoResults: 'No riders found.',
+  friendsAdd: 'Add',
+  friendsPending: 'Pending',
+  friendsAlreadyFriend: 'Friend',
+  friendsAccept: 'Accept',
+  friendsReject: 'Reject',
+  friendsRemove: 'Remove',
+  friendsRequestSent: 'Request sent',
+  friendsRequestReceived: 'Request received',
+  notificationsTitle: 'Notifications',
+  notificationsMarkAll: 'Mark all as read',
+  notificationsEmpty: 'No notifications yet.',
 }
 
 const es: TranslationKeys = {
@@ -1692,6 +1777,34 @@ const es: TranslationKeys = {
 
   aboutRegions: 'Áreas de Operación',
   aboutProducts: 'Nuestros Productos',
+
+  chatConversations: 'Conversaciones',
+  chatSearchPlaceholder: 'Buscar riders...',
+  chatNoConversations: 'Sin conversaciones aún. ¡Busca un rider arriba para empezar!',
+  chatStartConvo: 'Iniciar conversación...',
+  chatSendMessage: 'Enviar mensaje',
+  chatTypeMessage: 'Mensaje...',
+  chatOnline: 'En línea',
+  chatEmpty: '¡Inicia la conversación! Envía el primer mensaje.',
+  friendsTitle: 'Amigos',
+  friendsList: 'Amigos',
+  friendsRequests: 'Solicitudes',
+  friendsFind: 'Encontrar',
+  friendsEmpty: 'Sin amigos aún. ¡Ve a "Encontrar" para agregar riders!',
+  friendsNoRequests: 'Sin solicitudes pendientes.',
+  friendsSearchPlaceholder: 'Buscar riders por nombre...',
+  friendsNoResults: 'No se encontraron riders.',
+  friendsAdd: 'Agregar',
+  friendsPending: 'Pendiente',
+  friendsAlreadyFriend: 'Amigo',
+  friendsAccept: 'Aceptar',
+  friendsReject: 'Rechazar',
+  friendsRemove: 'Eliminar',
+  friendsRequestSent: 'Solicitud enviada',
+  friendsRequestReceived: 'Solicitud recibida',
+  notificationsTitle: 'Notificaciones',
+  notificationsMarkAll: 'Marcar todo como leído',
+  notificationsEmpty: 'Sin notificaciones aún.',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

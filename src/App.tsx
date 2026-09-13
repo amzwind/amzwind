@@ -22,6 +22,10 @@ import GaleriaPage from './pages/GaleriaPage'
 import ExperienciasPage from './pages/ExperienciasPage'
 import KiteCoursePage from './pages/KiteCoursePage'
 import WishlistPage from './pages/WishlistPage'
+import ConversationsList from './pages/ConversationsList'
+import Chat from './pages/Chat'
+import FriendsPage from './pages/FriendsPage'
+import NotificationsPage from './pages/NotificationsPage'
 import { Analytics } from '@vercel/analytics/react'
 
 export default function App() {
@@ -72,6 +76,10 @@ export default function App() {
               <Route path="/experiencia/:id" element={<ExperienceDetail />} />
               <Route path="/aula/iniciante" element={<KiteCoursePage />} />
               <Route path="/favoritos" element={<WishlistPage />} />
+              <Route path="/conversas" element={<ConversationsList />} />
+              <Route path="/chat/:id" element={<Chat />} />
+              <Route path="/amigos" element={<FriendsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/produtos" element={<ProductCategory />} />
               <Route path="/produtos/:slug" element={<ProductCategory />} />
               <Route path="/produto/:id" element={<ProductDetail />} />
