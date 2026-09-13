@@ -103,18 +103,18 @@ export default function Chat() {
           filter: `conversation_id=eq.${conversationId}`,
         },
         async () => {
-          // Refetch with full metadata
+          // Refetch last 5 messages to avoid race conditions with rapid inserts
           const { data: fullMsgs } = await supabase.rpc('get_conversation_messages', {
             p_conversation_id: conversationId,
-            p_limit: 1,
+            p_limit: 5,
             p_before: null,
           })
           if (fullMsgs && fullMsgs.length > 0) {
-            const latest = fullMsgs[0]
-            // Only add if not already present
             setMessages((prev) => {
-              if (prev.some((m) => m.id === latest.id)) return prev
-              return [...prev, latest]
+              const existingIds = new Set(prev.map((msg) => msg.id))
+              const newMsgs = fullMsgs.filter((msg: MessageWithMeta) => !existingIds.has(msg.id))
+              if (newMsgs.length === 0) return prev
+              return [...prev, ...newMsgs]
             })
             scrollToBottom()
             markAsRead(conversationId).catch(() => {})

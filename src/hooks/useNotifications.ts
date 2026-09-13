@@ -1,13 +1,16 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '../services/supabase'
 import type { Tables } from '../services/supabase'
 
 type Notification = Tables<'notifications'>
 
+let channelCounter = 0
+
 export function useNotifications(userId: string | null) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const instanceId = useRef(++channelCounter)
 
   useEffect(() => {
     if (!userId) {
@@ -34,8 +37,9 @@ export function useNotifications(userId: string | null) {
 
     fetchNotifications()
 
+    const channelName = `notifications-realtime-${instanceId.current}`
     const channel = supabase
-      .channel('notifications-realtime')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -66,10 +70,13 @@ export function useNotifications(userId: string | null) {
       .eq('id', notifId)
 
     if (!error) {
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notifId ? { ...n, read: true } : n))
-      )
-      setUnreadCount((prev) => Math.max(0, prev - 1))
+      setNotifications((prev) => {
+        const target = prev.find((n) => n.id === notifId)
+        if (target && !target.read) {
+          setUnreadCount((c) => Math.max(0, c - 1))
+        }
+        return prev.map((n) => (n.id === notifId ? { ...n, read: true } : n))
+      })
     }
   }, [])
 
@@ -94,13 +101,15 @@ export function useNotifications(userId: string | null) {
       .eq('id', notifId)
 
     if (!error) {
-      setNotifications((prev) => prev.filter((n) => n.id !== notifId))
-      setUnreadCount((prev) => {
-        const notif = notifications.find((n) => n.id === notifId)
-        return notif && !notif.read ? Math.max(0, prev - 1) : prev
+      setNotifications((prev) => {
+        const target = prev.find((n) => n.id === notifId)
+        if (target && !target.read) {
+          setUnreadCount((c) => Math.max(0, c - 1))
+        }
+        return prev.filter((n) => n.id !== notifId)
       })
     }
-  }, [notifications])
+  }, [])
 
   return {
     notifications,

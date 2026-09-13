@@ -1,15 +1,73 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useNotifications } from '../hooks/useNotifications'
 import { supabase } from '../services/supabase'
 
 export default function NotificationBadge() {
   const navigate = useNavigate()
-  const [userId, setUserId] = useState<string | null>(null)
-  const { unreadCount } = useNotifications(userId)
+  const [unreadCount, setUnreadCount] = useState(0)
+  const instanceId = useRef(Math.random().toString(36).slice(2))
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
+    let cancelled = false
+
+    async function fetchCount() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user || cancelled) return
+
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('read', false)
+
+      if (!cancelled && count !== null) {
+        setUnreadCount(count)
+      }
+    }
+
+    fetchCount()
+
+    const channel = supabase
+      .channel(`badge-${instanceId.current}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+        },
+        (payload) => {
+          if (cancelled) return
+          const newNotif = payload.new as { user_id?: string; read?: boolean }
+          // Only increment if it's for the current user and unread
+          if (newNotif && !newNotif.read) {
+            setUnreadCount((prev) => prev + 1)
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'notifications',
+        },
+        (payload) => {
+          if (cancelled) return
+          const old = payload.old as { read?: boolean }
+          const updated = payload.new as { read?: boolean }
+          // If was unread and now read, decrement
+          if (old && !old.read && updated && updated.read) {
+            setUnreadCount((prev) => Math.max(0, prev - 1))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      cancelled = true
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return (
