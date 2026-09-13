@@ -571,6 +571,8 @@ export type TranslationKeys = {
   tripInvite: string
   tripInviteFriends: string
   tripInviteButton: string
+  tripInviteAccept: string
+  tripInviteDecline: string
   tripInvited: string
   tripNoFriendsToInvite: string
   tripChat: string
@@ -1883,6 +1885,8 @@ const pt: TranslationKeys = {
   tripInvite: 'Convidar',
   tripInviteFriends: 'Convidar Amigos',
   tripInviteButton: 'Convidar',
+  tripInviteAccept: 'Aceitar',
+  tripInviteDecline: 'Recusar',
   tripInvited: 'Convidado',
   tripNoFriendsToInvite: 'Nenhum amigo disponível',
   tripChat: 'Chat',
@@ -3195,6 +3199,8 @@ const en: TranslationKeys = {
   tripInvite: 'Invite',
   tripInviteFriends: 'Invite Friends',
   tripInviteButton: 'Invite',
+  tripInviteAccept: 'Accept',
+  tripInviteDecline: 'Decline',
   tripInvited: 'Invited',
   tripNoFriendsToInvite: 'No friends available',
   tripChat: 'Chat',
@@ -4507,6 +4513,8 @@ const es: TranslationKeys = {
   tripInvite: 'Invitar',
   tripInviteFriends: 'Invitar Amigos',
   tripInviteButton: 'Invitar',
+  tripInviteAccept: 'Aceptar',
+  tripInviteDecline: 'Rechazar',
   tripInvited: 'Invitado',
   tripNoFriendsToInvite: 'Sin amigos disponibles',
   tripChat: 'Chat',

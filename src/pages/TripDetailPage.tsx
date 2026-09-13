@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import type { TranslationKeys } from '../i18n/translations'
 import { supabase } from '../services/supabase'
 import {
   getTrip, joinTrip, leaveTrip, getTripParticipants, getTripConversation,
   getTripFeed, getTripInvitableFriends, inviteToTrip, removeTripParticipant,
+  respondTripInvite,
   type TripDetail as TripDetailType, type TripParticipant,
   type TripConversation, type TripFeedPost, type InvitableFriend,
 } from '../services/trips'
@@ -20,7 +22,7 @@ function getInitials(name: string | null | undefined): string {
   return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 }
 
-function getTimeAgo(dateStr: string, t: any): string {
+function getTimeAgo(dateStr: string, t: TranslationKeys): string {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
   if (diff < 60) return t.tripAgo
   if (diff < 3600) return `${Math.floor(diff / 60)}min`
@@ -49,6 +51,7 @@ export default function TripDetailPage() {
   const [invitableFriends, setInvitableFriends] = useState<InvitableFriend[]>([])
   const [loadingFriends, setLoadingFriends] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<string[]>([])
+  const userPendingInvite = userId ? participants.some((p) => p.user_id === userId && p.status === 'pending') : false
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null))
@@ -140,6 +143,36 @@ export default function TripDetailPage() {
       setPendingInvites((prev) => [...prev, friendId])
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : t.tripErrorInvite)
+    }
+  }
+
+  async function handleRespondInvite(accept: boolean) {
+    if (!id || !userId || actionLoading) return
+    setActionLoading(true)
+    try {
+      await respondTripInvite(id, accept)
+      setParticipants((prev) =>
+        accept
+          ? prev.map((p) => (p.user_id === userId ? { ...p, status: 'confirmed' } : p))
+          : prev.filter((p) => p.user_id !== userId)
+      )
+      setTrip((prev) =>
+        prev
+          ? {
+              ...prev,
+              is_participant: accept,
+              participant_count: accept ? prev.participant_count + 1 : Math.max(0, prev.participant_count - 1),
+            }
+          : prev
+      )
+      if (!accept) {
+        setConversation(null)
+      }
+      setError('')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Não foi possível responder ao convite desta trip.')
+    } finally {
+      setActionLoading(false)
     }
   }
 
@@ -274,8 +307,21 @@ export default function TripDetailPage() {
           </p>
         )}
 
-        <div className="flex items-center gap-2 mb-4">
-          {userId && trip.status === 'published' && !isOrganizer && (
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          {userPendingInvite && (
+            <>
+              <button onClick={() => handleRespondInvite(true)} disabled={actionLoading}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors disabled:opacity-40">
+                {actionLoading ? '...' : (t.tripInviteAccept || 'Aceitar')}
+              </button>
+              <button onClick={() => handleRespondInvite(false)} disabled={actionLoading}
+                className="px-4 py-2 rounded-xl text-xs font-semibold border-2 border-red-300 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40">
+                {actionLoading ? '...' : (t.tripInviteDecline || 'Recusar')}
+              </button>
+            </>
+          )}
+
+          {userId && trip.status === 'published' && !isOrganizer && !userPendingInvite && (
             trip.is_participant ? (
               <button onClick={handleLeave} disabled={actionLoading}
                 className="px-4 py-2 rounded-xl text-xs font-semibold border-2 border-red-300 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-40">
