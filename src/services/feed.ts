@@ -14,6 +14,7 @@ export interface PostFeedItem {
   media_url: string | null
   likes_count: number
   comments_count: number
+  shares_count: number
   liked_by_me: boolean
   created_at: string
 }

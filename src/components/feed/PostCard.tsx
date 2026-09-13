@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { toggleLike, deletePost, type PostFeedItem, type PostAuthor } from '../../services/feed'
 import PostComments from './PostComments'
+import ShareDialog from '../community/ShareDialog'
 
 interface PostCardProps {
-  post: PostFeedItem
+  post: PostFeedItem & { shares_count?: number }
   author: PostAuthor | undefined
   currentUserId: string
   onDelete: (postId: string) => void
@@ -32,6 +33,8 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
   const [likesCount, setLikesCount] = useState(post.likes_count)
   const [showComments, setShowComments] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [showShareDialog, setShowShareDialog] = useState(false)
+  const [sharesCount, setSharesCount] = useState(post.shares_count ?? 0)
 
   const isOwn = post.user_id === currentUserId
   const displayName = author?.full_name || 'Rider'
@@ -118,6 +121,14 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
             {post.comments_count > 0 && <span>{post.comments_count}</span>}
             <span className="hidden sm:inline">Comentar</span>
           </button>
+          <button
+            onClick={() => setShowShareDialog(true)}
+            className="flex items-center gap-1.5 text-sm text-amz-terra-light dark:text-amz-areia/40 hover:text-emerald-500 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8m-4-6l-4-4m0 0L8 6m4-4v13" /></svg>
+            {sharesCount > 0 && <span>{sharesCount}</span>}
+            <span className="hidden sm:inline">Compartilhar</span>
+          </button>
         </div>
       </div>
 
@@ -126,6 +137,13 @@ export default function PostCard({ post, author, currentUserId, onDelete }: Post
           <PostComments postId={post.id} currentUserId={currentUserId} />
         </div>
       )}
+
+      <ShareDialog
+        postId={post.id}
+        open={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        onSuccess={() => setSharesCount((prev) => prev + 1)}
+      />
     </div>
   )
 }

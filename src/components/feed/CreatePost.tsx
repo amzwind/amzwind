@@ -52,6 +52,7 @@ export default function CreatePost({ userId, userName, avatarUrl, onPostCreated 
       onPostCreated({
         ...post,
         comments_count: 0,
+        shares_count: 0,
         liked_by_me: false,
       })
       setContent('')

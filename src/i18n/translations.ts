@@ -476,6 +476,18 @@ export type TranslationKeys = {
   notificationsTitle: string
   notificationsMarkAll: string
   notificationsEmpty: string
+  navCommunity: string
+  communityTitle: string
+  communityEmpty: string
+  communityLoginPrompt: string
+  shareTitle: string
+  shareToChat: string
+  shareConfirm: string
+  shareSuccess: string
+  shareError: string
+  postComments: string
+  postLikes: string
+  postShares: string
 }
 
 const pt: TranslationKeys = {
@@ -919,6 +931,18 @@ const pt: TranslationKeys = {
   notificationsTitle: 'Notificações',
   notificationsMarkAll: 'Marcar tudo como lido',
   notificationsEmpty: 'Nenhuma notificação ainda.',
+  navCommunity: 'Comunidade',
+  communityTitle: 'Comunidade',
+  communityEmpty: 'Nenhuma publicação ainda',
+  communityLoginPrompt: 'Faça login para acessar a comunidade',
+  shareTitle: 'Compartilhar',
+  shareToChat: 'Compartilhar no chat',
+  shareConfirm: 'Compartilhar publicação?',
+  shareSuccess: 'Compartilhado com sucesso!',
+  shareError: 'Erro ao compartilhar',
+  postComments: 'comentários',
+  postLikes: 'curtidas',
+  postShares: 'compartilhamentos',
 }
 
 const en: TranslationKeys = {
@@ -1362,6 +1386,18 @@ const en: TranslationKeys = {
   notificationsTitle: 'Notifications',
   notificationsMarkAll: 'Mark all as read',
   notificationsEmpty: 'No notifications yet.',
+  navCommunity: 'Community',
+  communityTitle: 'Community',
+  communityEmpty: 'No posts yet',
+  communityLoginPrompt: 'Log in to access the community',
+  shareTitle: 'Share',
+  shareToChat: 'Share to chat',
+  shareConfirm: 'Share this post?',
+  shareSuccess: 'Shared successfully!',
+  shareError: 'Error sharing',
+  postComments: 'comments',
+  postLikes: 'likes',
+  postShares: 'shares',
 }
 
 const es: TranslationKeys = {
@@ -1805,6 +1841,18 @@ const es: TranslationKeys = {
   notificationsTitle: 'Notificaciones',
   notificationsMarkAll: 'Marcar todo como leído',
   notificationsEmpty: 'Sin notificaciones aún.',
+  navCommunity: 'Comunidad',
+  communityTitle: 'Comunidad',
+  communityEmpty: 'Sin publicaciones aún',
+  communityLoginPrompt: 'Inicia sesión para acceder a la comunidad',
+  shareTitle: 'Compartir',
+  shareToChat: 'Compartir en el chat',
+  shareConfirm: '¿Compartir publicación?',
+  shareSuccess: '¡Compartido con éxito!',
+  shareError: 'Error al compartir',
+  postComments: 'comentarios',
+  postLikes: 'me gusta',
+  postShares: 'compartidos',
 }
 
 export const translations: Record<Locale, TranslationKeys> = { pt, en, es }

@@ -445,7 +445,10 @@ export type Database = {
           content: string | null
           media_url: string | null
           likes_count: number
+          comments_count: number
+          shares_count: number
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
@@ -453,7 +456,10 @@ export type Database = {
           content?: string | null
           media_url?: string | null
           likes_count?: number
+          comments_count?: number
+          shares_count?: number
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
@@ -461,7 +467,10 @@ export type Database = {
           content?: string | null
           media_url?: string | null
           likes_count?: number
+          comments_count?: number
+          shares_count?: number
           created_at?: string
+          updated_at?: string
         }
       }
       post_likes: {
@@ -490,21 +499,27 @@ export type Database = {
           post_id: string
           user_id: string
           content: string
+          parent_id: string | null
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
           post_id: string
           user_id: string
           content: string
+          parent_id?: string | null
           created_at?: string
+          updated_at?: string
         }
         Update: {
           id?: string
           post_id?: string
           user_id?: string
           content?: string
+          parent_id?: string | null
           created_at?: string
+          updated_at?: string
         }
       }
       friendships: {
@@ -904,6 +919,7 @@ export type Database = {
           media_url: string | null
           likes_count: number
           comments_count: number
+          shares_count: number
           liked_by_me: boolean
           created_at: string
         }>
@@ -984,6 +1000,32 @@ export type Database = {
           avatar_url: string | null
           is_friend: boolean
           request_status: string
+        }>
+      }
+      share_post: {
+        Args: { p_post_id: string; p_conversation_id?: string | null }
+        Returns: string
+      }
+      get_post_comments: {
+        Args: { p_post_id: string }
+        Returns: Array<{
+          id: string
+          post_id: string
+          user_id: string
+          content: string
+          created_at: string
+          updated_at: string
+          parent_id: string | null
+          author_name: string
+          author_avatar: string | null
+        }>
+      }
+      get_post_authors: {
+        Args: { p_user_ids: string[] }
+        Returns: Array<{
+          id: string
+          full_name: string | null
+          avatar_url: string | null
         }>
       }
     }
