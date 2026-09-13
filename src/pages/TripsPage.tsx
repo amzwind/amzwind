@@ -108,7 +108,7 @@ export default function TripsPage() {
               >
                 {trip.cover_url && (
                   <div className="h-40 overflow-hidden">
-                    <img src={trip.cover_url} alt="" className="w-full h-full object-cover" />
+                    <img src={trip.cover_url} alt={trip.title || 'Trip cover'} className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div className="p-4">

@@ -181,7 +181,6 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
   return (
     <div className="space-y-4">
       <CreatePost
-        userId={currentUserId}
         userName={currentUserName}
         avatarUrl={currentUserAvatar}
         onPostCreated={handlePostCreated}

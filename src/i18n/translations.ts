@@ -300,6 +300,13 @@ export type TranslationKeys = {
   checkoutLoginNoAccount: string
   checkoutLoggedInAs: string
   checkoutGuest: string
+  loginLoading: string
+  loginSubtitle: string
+  loginEmail: string
+  loginPassword: string
+  loginButton: string
+  loginAuthenticating: string
+  loginBack: string
 
   // Common
   adminSave: string
@@ -841,6 +848,13 @@ const pt: TranslationKeys = {
   checkoutLoginNoAccount: 'Nao tem conta?',
   checkoutLoggedInAs: 'Conectado como',
   checkoutGuest: 'Continuar como visitante',
+  loginLoading: 'Carregando...',
+  loginSubtitle: 'Acesse sua conta',
+  loginEmail: 'E-mail',
+  loginPassword: 'Senha',
+  loginButton: 'Entrar',
+  loginAuthenticating: 'Autenticando...',
+  loginBack: '← Voltar para o site principal',
 
   adminSave: 'Salvar',
   adminCancel: 'Cancelar',
@@ -1374,6 +1388,13 @@ const en: TranslationKeys = {
   checkoutLoginNoAccount: "Don't have an account?",
   checkoutLoggedInAs: 'Signed in as',
   checkoutGuest: 'Continue as guest',
+  loginLoading: 'Loading...',
+  loginSubtitle: 'Access your account',
+  loginEmail: 'Email',
+  loginPassword: 'Password',
+  loginButton: 'Sign in',
+  loginAuthenticating: 'Authenticating...',
+  loginBack: '← Back to main site',
 
   adminSave: 'Save',
   adminCancel: 'Cancel',
@@ -1907,6 +1928,13 @@ const es: TranslationKeys = {
   checkoutLoginNoAccount: 'No tienes cuenta?',
   checkoutLoggedInAs: 'Conectado como',
   checkoutGuest: 'Continuar como invitado',
+  loginLoading: 'Cargando...',
+  loginSubtitle: 'Accede a tu cuenta',
+  loginEmail: 'Correo',
+  loginPassword: 'Contrasena',
+  loginButton: 'Iniciar sesion',
+  loginAuthenticating: 'Autenticando...',
+  loginBack: '← Volver al sitio principal',
 
   adminSave: 'Guardar',
   adminCancel: 'Cancelar',

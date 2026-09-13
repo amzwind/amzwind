@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
@@ -180,7 +180,7 @@ export default function CustomerDashboard() {
               {bookings.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <p className="text-amz-terra-light dark:text-amz-areia/40">{t.customerNoBookings}</p>
-                  <a href="/#experiencias" className="btn-primary inline-block mt-4 text-sm">{t.heroCTA1}</a>
+                   <Link to="/#experiencias" className="btn-primary inline-block mt-4 text-sm">{t.heroCTA1}</Link>
                 </div>
               ) : (
                 bookings.map((b) => {

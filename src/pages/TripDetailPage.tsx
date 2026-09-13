@@ -237,7 +237,7 @@ export default function TripDetailPage() {
 
       {trip.cover_url && (
         <div className="h-48 overflow-hidden">
-          <img src={trip.cover_url} alt="" className="w-full h-full object-cover" />
+          <img src={trip.cover_url} alt={trip.title || 'Trip cover'} className="w-full h-full object-cover" />
         </div>
       )}
 
@@ -393,7 +393,7 @@ export default function TripDetailPage() {
                   {post.content && <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap mb-2">{post.content}</p>}
                   {post.media_url && (
                     <div className="mb-2 rounded-lg overflow-hidden">
-                      <img src={post.media_url} alt="" className="w-full max-h-60 object-cover" loading="lazy" />
+                      <img src={post.media_url} alt={post.content || 'Post media'} className="w-full max-h-60 object-cover" loading="lazy" />
                     </div>
                   )}
                   <div className="flex items-center gap-3 pt-2 border-t border-amz-areia-dark/10 dark:border-white/5">

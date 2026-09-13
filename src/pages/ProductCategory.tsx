@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
@@ -88,7 +88,7 @@ export default function ProductCategory() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {filtered.map((p) => (
-                <a key={p.id} href={`/produto/${p.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative">
+                <Link key={p.id} to={`/produto/${p.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group relative">
                   {p.image_url ? (
                     <div className="h-40 overflow-hidden"><img src={p.image_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
                   ) : (
@@ -107,7 +107,7 @@ export default function ProductCategory() {
                       </span>
                     </div>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           )}

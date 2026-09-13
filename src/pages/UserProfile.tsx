@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -378,7 +378,7 @@ export default function UserProfile() {
                   <div className="text-4xl mb-3">🌊</div>
                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma reserva ainda</p>
                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Suas experiências, aulas e downwinds aparecerão aqui</p>
-                  <a href="/#experiencias" className="btn-primary inline-block text-sm">{t.heroCTA1}</a>
+                   <Link to="/#experiencias" className="btn-primary inline-block text-sm">{t.heroCTA1}</Link>
                 </div>
               ) : (
                 reservaBookings.map((b) => {
@@ -468,7 +468,7 @@ export default function UserProfile() {
                   <div className="text-4xl mb-3">🛍️</div>
                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhum produto comprado</p>
                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Lycras, chapéus, acessórios e mais</p>
-                  <a href="/loja" className="btn-primary inline-block text-sm">Ir à Loja</a>
+                   <Link to="/produtos" className="btn-primary inline-block text-sm">Ir à Loja</Link>
                 </div>
               ) : (
                 produtoBookings.map((b) => {
@@ -626,7 +626,7 @@ export default function UserProfile() {
                   <div className="text-4xl mb-3">🏔️</div>
                   <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">Nenhuma trip ainda</p>
                   <p className="text-xs text-amz-terra-light dark:text-amz-areia/30 mb-4">Crie ou participe de uma trip</p>
-                  <a href="/trips" className="btn-primary inline-block text-sm">Ver Trips</a>
+                   <Link to="/trips" className="btn-primary inline-block text-sm">Ver Trips</Link>
                 </div>
               ) : (
                 <div className="space-y-3">

@@ -4,7 +4,6 @@ import { createPost, type PostFeedItem } from '../../services/feed'
 type Status = 'idle' | 'uploading' | 'publishing' | 'success' | 'error'
 
 interface CreatePostProps {
-  userId: string
   userName: string | null
   avatarUrl: string | null
   onPostCreated: (post: PostFeedItem) => void
@@ -21,7 +20,7 @@ function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|ogg)$/i.test(url) || url.includes('video')
 }
 
-export default function CreatePost({ userId, userName, avatarUrl, onPostCreated, tripId, tripName }: CreatePostProps) {
+export default function CreatePost({ userName, avatarUrl, onPostCreated, tripId, tripName }: CreatePostProps) {
   const [content, setContent] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaPreview, setMediaPreview] = useState<string | null>(null)
@@ -50,7 +49,7 @@ export default function CreatePost({ userId, userName, avatarUrl, onPostCreated,
     setErrorMessage('')
 
     try {
-      const post = await createPost(userId, content, mediaFile, tripId)
+      const post = await createPost(content, mediaFile, tripId)
       onPostCreated({
         ...post,
         comments_count: 0,

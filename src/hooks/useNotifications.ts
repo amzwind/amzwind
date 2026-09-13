@@ -6,7 +6,7 @@ type Notification = Tables<'notifications'>
 
 let channelCounter = 0
 
-export function useNotifications(userId: string | null) {
+export function useNotifications(userId?: string | null) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -21,10 +21,17 @@ export function useNotifications(userId: string | null) {
     let cancelled = false
 
     async function fetchNotifications() {
+      const { data: { user } } = await supabase.auth.getUser()
+      const uid = userId || user?.id
+      if (!uid) {
+        if (!cancelled) setLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', uid)
         .order('created_at', { ascending: false })
         .limit(50)
 

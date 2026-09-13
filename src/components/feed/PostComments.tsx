@@ -28,7 +28,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
     if (!newComment.trim() || submitting) return
     setSubmitting(true)
     try {
-      const comment = await addComment(postId, currentUserId, newComment)
+      const comment = await addComment(postId, newComment)
       const author = { full_name: null, avatar_url: null }
       setComments((prev) => [...prev, { ...comment, author }])
       setNewComment('')
@@ -40,7 +40,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
 
   async function handleDelete(commentId: string) {
     try {
-      await deleteComment(commentId, currentUserId)
+      await deleteComment(commentId)
       setComments((prev) => prev.filter((c) => c.id !== commentId))
     } catch {
     }
@@ -60,7 +60,7 @@ export default function PostComments({ postId, currentUserId }: PostCommentsProp
     if (!editContent.trim() || savingEdit) return
     setSavingEdit(true)
     try {
-      await updateComment(commentId, currentUserId, editContent)
+      await updateComment(commentId, editContent)
       setComments((prev) => prev.map((c) =>
         c.id === commentId ? { ...c, content: editContent.trim() } : c
       ))

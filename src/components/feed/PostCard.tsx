@@ -61,7 +61,7 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
     if (!window.confirm(t.feedConfirmDelete || 'Excluir esta publicação?') || deleting) return
     setDeleting(true)
     try {
-      await deletePost(post.id, currentUserId)
+      await deletePost(post.id)
       onDelete(post.id)
     } catch {
       setDeleting(false)
@@ -73,7 +73,7 @@ export default function PostCard({ post, author, currentUserId, onDelete, onUpda
     setSaving(true)
     setEditError('')
     try {
-      await updatePost(post.id, currentUserId, editContent)
+      await updatePost(post.id, editContent)
       onUpdate?.(post.id, editContent.trim())
       setEditing(false)
     } catch (err: unknown) {

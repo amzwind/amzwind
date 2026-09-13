@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabase'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export function Login() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(true)
@@ -46,7 +48,7 @@ export function Login() {
         await redirectByRole(data.user.id)
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Credenciais inválidas. Verifique seu e-mail e senha.')
+      setErrorMessage(err.message || 'Credenciais inválidas.')
     } finally {
       setSubmitting(false)
     }
@@ -56,7 +58,7 @@ export function Login() {
     return (
       <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center">
         <div className="text-amz-terra dark:text-amz-areia font-maybug text-lg animate-pulse">
-          Carregando...
+          {t.loginLoading}
         </div>
       </div>
     )
@@ -66,7 +68,7 @@ export function Login() {
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark flex items-center justify-center p-4">
       <div className="bg-white dark:bg-[#3D1D0F] max-w-md w-full p-8 rounded-2xl shadow-xl border border-amber-900/20 text-amz-terra-dark dark:text-amz-areia">
         <h1 className="font-maybug text-3xl mb-2 text-center text-amz-terra dark:text-amz-dourado">Amazon Wind</h1>
-        <p className="text-xs uppercase tracking-widest text-center text-amz-terra-light dark:text-amz-areia/60 mb-6">Acesse sua conta</p>
+        <p className="text-xs uppercase tracking-widest text-center text-amz-terra-light dark:text-amz-areia/60 mb-6">{t.loginSubtitle}</p>
 
         {errorMessage && (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500 text-red-600 dark:text-red-400 text-xs rounded-lg text-center font-medium">
@@ -76,7 +78,7 @@ export function Login() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-xs uppercase font-semibold mb-1">E-mail</label>
+            <label className="block text-xs uppercase font-semibold mb-1">{t.loginEmail}</label>
             <input
               type="email"
               value={email}
@@ -87,7 +89,7 @@ export function Login() {
             />
           </div>
           <div>
-            <label className="block text-xs uppercase font-semibold mb-1">Senha</label>
+            <label className="block text-xs uppercase font-semibold mb-1">{t.loginPassword}</label>
             <input
               type="password"
               value={password}
@@ -102,7 +104,7 @@ export function Login() {
             disabled={submitting}
             className="w-full bg-amz-terra text-white hover:bg-amz-terra-dark dark:bg-amz-dourado dark:text-amz-terra-dark py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition disabled:opacity-50 mt-4"
           >
-            {submitting ? 'Autenticando...' : 'Entrar'}
+            {submitting ? t.loginAuthenticating : t.loginButton}
           </button>
         </form>
 
@@ -111,7 +113,7 @@ export function Login() {
             onClick={() => navigate('/')}
             className="text-xs font-semibold text-amz-terra-light dark:text-amz-areia/70 hover:text-amz-terra dark:hover:text-white transition"
           >
-            ← Voltar para o site principal
+            {t.loginBack}
           </button>
         </div>
       </div>

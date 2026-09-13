@@ -162,7 +162,7 @@ export default function ProductDetail() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {related.map((r) => (
                   <Link key={r.id} to={`/produto/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
-                    {r.image_url && <div className="h-28 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
+                    {r.image_url && <div className="h-28 overflow-hidden"><img src={r.image_url} alt={r.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
                     <div className="p-3">
                       <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{r.title}</p>
                       <p className="text-xs text-amz-dourado font-bold mt-1">R$ {Number(r.price).toFixed(2)}</p>

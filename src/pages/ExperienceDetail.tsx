@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useCart } from '../contexts/CartContext'
@@ -291,13 +291,13 @@ export default function ExperienceDetail() {
                 <h3 className="font-maybug text-lg text-amz-terra dark:text-amz-areia mb-4">{t.expDetailRelated}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {related.map((r) => (
-                    <a key={r.id} href={`/experiencia/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
-                      {r.image_url ? <div className="h-24 overflow-hidden"><img src={r.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div> : <div className="h-24 overflow-hidden"><img src={getExpFallback(r.id)} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
+                    <Link key={r.id} to={`/experiencia/${r.id}`} className="bg-white dark:bg-white/5 rounded-2xl overflow-hidden border border-amz-areia-dark/20 dark:border-white/5 hover:shadow-lg transition-all group">
+                      {r.image_url ? <div className="h-24 overflow-hidden"><img src={r.image_url} alt={getName(r)} className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div> : <div className="h-24 overflow-hidden"><img src={getExpFallback(r.id)} alt={getName(r)} className="w-full h-full object-cover group-hover:scale-105 transition-transform" /></div>}
                       <div className="p-3">
                         <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia truncate">{getName(r)}</p>
                         <p className="text-xs text-amz-dourado font-bold mt-1">R$ {r.price}</p>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>

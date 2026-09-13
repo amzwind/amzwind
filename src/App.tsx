@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { CartProvider } from './contexts/CartContext'
@@ -7,31 +7,32 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import SplashScreen from './components/SplashScreen'
 import InstallAppBanner from './components/InstallAppBanner'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import Home from './pages/Home'
-import Sobre from './pages/Sobre'
-import { AdminDashboard } from './pages/AdminDashboard'
-import Login from './pages/Login'
-import ExperienceDetail from './pages/ExperienceDetail'
-import ProductCategory from './pages/ProductCategory'
-import ProductDetail from './pages/ProductDetail'
-import CustomerDashboard from './pages/CustomerDashboard'
-import UserProfile from './pages/UserProfile'
-import CartCheckout from './components/CartCheckout'
 import BottomNav from './components/BottomNav'
-import GaleriaPage from './pages/GaleriaPage'
-import ExperienciasPage from './pages/ExperienciasPage'
-import KiteCoursePage from './pages/KiteCoursePage'
-import WishlistPage from './pages/WishlistPage'
-import ConversationsList from './pages/ConversationsList'
-import Chat from './pages/Chat'
-import FriendsPage from './pages/FriendsPage'
-import NotificationsPage from './pages/NotificationsPage'
-import Community from './pages/Community'
-import TripsPage from './pages/TripsPage'
-import TripDetailPage from './pages/TripDetailPage'
-import TripCreatePage from './pages/TripCreatePage'
-import TripEditPage from './pages/TripEditPage'
 import { Analytics } from '@vercel/analytics/react'
+
+const Home = lazy(() => import('./pages/Home'))
+const Sobre = lazy(() => import('./pages/Sobre'))
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })))
+const Login = lazy(() => import('./pages/Login'))
+const ExperienceDetail = lazy(() => import('./pages/ExperienceDetail'))
+const ProductCategory = lazy(() => import('./pages/ProductCategory'))
+const ProductDetail = lazy(() => import('./pages/ProductDetail'))
+const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'))
+const UserProfile = lazy(() => import('./pages/UserProfile'))
+const CartCheckout = lazy(() => import('./components/CartCheckout'))
+const GaleriaPage = lazy(() => import('./pages/GaleriaPage'))
+const ExperienciasPage = lazy(() => import('./pages/ExperienciasPage'))
+const KiteCoursePage = lazy(() => import('./pages/KiteCoursePage'))
+const WishlistPage = lazy(() => import('./pages/WishlistPage'))
+const ConversationsList = lazy(() => import('./pages/ConversationsList'))
+const Chat = lazy(() => import('./pages/Chat'))
+const FriendsPage = lazy(() => import('./pages/FriendsPage'))
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
+const Community = lazy(() => import('./pages/Community'))
+const TripsPage = lazy(() => import('./pages/TripsPage'))
+const TripDetailPage = lazy(() => import('./pages/TripDetailPage'))
+const TripCreatePage = lazy(() => import('./pages/TripCreatePage'))
+const TripEditPage = lazy(() => import('./pages/TripEditPage'))
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true)
@@ -69,6 +70,7 @@ export default function App() {
         <FavoritesProvider>
           <CartProvider>
             <BrowserRouter>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-amz-dourado border-t-transparent rounded-full" /></div>}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/sobre" element={<Sobre />} />
@@ -96,6 +98,7 @@ export default function App() {
               <Route path="/checkout" element={<div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div>} />
               <Route path="*" element={<Home />} />
             </Routes>
+            </Suspense>
             <BottomNav />
             <InstallAppBanner />
             <Analytics />

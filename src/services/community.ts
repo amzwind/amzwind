@@ -63,9 +63,11 @@ export async function getPostAuthors(
 
 export async function updatePost(
   postId: string,
-  userId: string,
   content: string
 ): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
   const trimmed = content.trim()
   if (!trimmed) throw new Error('Conteúdo não pode ser vazio.')
 
@@ -76,7 +78,7 @@ export async function updatePost(
     .single()
 
   if (fetchError || !post) throw new Error('Publicação não encontrada.')
-  if (post.user_id !== userId) throw new Error('Você não tem permissão para editar esta publicação.')
+  if (post.user_id !== user.id) throw new Error('Você não tem permissão para editar esta publicação.')
 
   const { error } = await supabase
     .from('posts')
