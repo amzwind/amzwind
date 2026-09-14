@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import { sortTrips, type TripSortMode } from '../lib/tripSort'
 import { supabase } from '../services/supabase'
 import { listTrips, type TripListItem } from '../services/trips'
 
@@ -13,6 +14,9 @@ export default function TripsPage() {
   const { t } = useLanguage()
   const navigate = useNavigate()
   const [trips, setTrips] = useState<TripListItem[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [sortMode, setSortMode] = useState<TripSortMode>('upcoming')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -53,6 +57,17 @@ export default function TripsPage() {
     draft: t.tripStatusDraft || 'Rascunho',
   }
 
+  const filteredTrips = sortTrips(
+    trips.filter((trip) => {
+      const matchesStatus = statusFilter === 'all' || trip.status === statusFilter
+      const query = searchTerm.trim().toLowerCase()
+      const haystack = [trip.title, trip.destination, trip.description].filter(Boolean).join(' ').toLowerCase()
+      const matchesSearch = !query || haystack.includes(query)
+      return matchesStatus && matchesSearch
+    }),
+    sortMode,
+  )
+
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-[#1a0f08] pb-20 md:pb-4">
       <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#1a0f08]/95 backdrop-blur-lg border-b border-amz-areia-dark/20 dark:border-white/[0.06] px-4 py-3 flex items-center gap-3">
@@ -76,6 +91,56 @@ export default function TripsPage() {
       </header>
 
       <main className="px-4 py-4 max-w-2xl mx-auto">
+        {!loading && (
+          <div className="mb-4 space-y-3">
+            <div className="relative">
+              <input
+                aria-label="Buscar trip"
+                placeholder="Buscar trip..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="w-full rounded-2xl border border-amz-areia-dark/20 bg-white px-4 py-3 pr-11 text-sm text-amz-terra outline-none transition focus:border-amz-dourado focus:ring-2 focus:ring-amz-dourado/20 dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amz-terra-light dark:text-white/30">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-amz-terra-light dark:text-white/40">
+                <span>Status</span>
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  className="rounded-xl border border-amz-areia-dark/20 bg-white px-3 py-2 text-xs font-medium text-amz-terra outline-none focus:border-amz-dourado dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+                >
+                  <option value="all">Todas</option>
+                  <option value="published">Aberta</option>
+                  <option value="full">Lotada</option>
+                  <option value="cancelled">Cancelada</option>
+                  <option value="completed">Concluída</option>
+                  <option value="draft">Rascunho</option>
+                </select>
+              </label>
+
+              <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-amz-terra-light dark:text-white/40">
+                <span>Ordenar</span>
+                <select
+                  value={sortMode}
+                  onChange={(event) => setSortMode(event.target.value as TripSortMode)}
+                  className="rounded-xl border border-amz-areia-dark/20 bg-white px-3 py-2 text-xs font-medium text-amz-terra outline-none focus:border-amz-dourado dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+                >
+                  <option value="upcoming">Próximas</option>
+                  <option value="recent">Recentes</option>
+                  <option value="popular">Populares</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
@@ -92,15 +157,29 @@ export default function TripsPage() {
           <div className="bg-red-50 dark:bg-red-500/10 rounded-xl p-4 text-center">
             <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
-        ) : trips.length === 0 ? (
+        ) : filteredTrips.length === 0 ? (
           <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
             <div className="text-4xl mb-3">🏍️</div>
-            <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.tripsEmpty || 'Nenhuma trip disponível'}</p>
-            <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.tripsEmptyHint || 'Embreve novas trips serão anunciadas!'}</p>
+            <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">
+              {searchTerm || statusFilter !== 'all'
+                ? 'Nenhuma trip encontrada com estes filtros.'
+                : t.tripsEmpty || 'Nenhuma trip disponível'}
+            </p>
+            {(searchTerm || statusFilter !== 'all') && (
+              <button
+                onClick={() => { setSearchTerm(''); setStatusFilter('all') }}
+                className="mt-4 inline-flex items-center rounded-full bg-amz-dourado px-4 py-2 text-sm font-semibold text-white"
+              >
+                Limpar filtros
+              </button>
+            )}
+            {!(searchTerm || statusFilter !== 'all') && (
+              <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.tripsEmptyHint || 'Embreve novas trips serão anunciadas!'}</p>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
-            {trips.map((trip) => (
+            {filteredTrips.map((trip) => (
               <button
                 key={trip.id}
                 onClick={() => navigate(`/trips/${trip.id}`)}
