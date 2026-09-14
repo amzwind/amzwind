@@ -11,6 +11,7 @@ import {
   getOrCreateDirectConversation,
   type UserProfile,
 } from '../services/chat'
+import { filterPeopleByQuery, sortPeopleByName } from '../lib/friendFilters'
 
 type FriendRequestRow = Tables<'friend_requests'>
 
@@ -28,6 +29,7 @@ export default function FriendsPage() {
     receiver_profile?: { full_name: string | null; avatar_url: string | null }
   }>>([])
   const [searchQuery, setSearchQuery] = useState('')
+  const [friendSearch, setFriendSearch] = useState('')
   const [searchResults, setSearchResults] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -160,6 +162,9 @@ export default function FriendsPage() {
     { key: 'find' as const, label: t.friendsFind || 'Encontrar' },
   ]
 
+  const filteredFriends = filterPeopleByQuery(friends, friendSearch)
+  const orderedSearchResults = sortPeopleByName(searchResults)
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-20 md:pb-4">
       <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
@@ -194,30 +199,43 @@ export default function FriendsPage() {
             <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : tab === 'friends' ? (
-          friends.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                {t.friendsEmpty || 'Nenhum amigo ainda. Vá para "Encontrar" para adicionar riders!'}
-              </p>
+          <>
+            <div className="mb-4">
+              <input
+                aria-label="Buscar amigos"
+                placeholder={t.friendsSearchPlaceholder || 'Buscar amigos por nome...'}
+                value={friendSearch}
+                onChange={(event) => setFriendSearch(event.target.value)}
+                className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
             </div>
-          ) : (
-            <div className="space-y-1">
-              {friends.map((friend) => (
-                <div key={friend.id} className="flex items-center gap-3 py-3">
-                  {friend.avatar_url ? (
-                    <img src={friend.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
-                      {(friend.full_name?.[0] ?? 'R').toUpperCase()}
+
+            {filteredFriends.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  {friendSearch
+                    ? 'Nenhum amigo encontrado para esta busca.'
+                    : t.friendsEmpty || 'Nenhum amigo ainda. Vá para "Encontrar" para adicionar riders!'}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {filteredFriends.map((friend) => (
+                  <div key={friend.id} className="flex items-center gap-3 py-3">
+                    {friend.avatar_url ? (
+                      <img src={friend.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+                        {(friend.full_name?.[0] ?? 'R').toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
+                        {friend.full_name ?? (t.friendsRiderFallback || 'Rider')}
+                      </p>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
-                      {friend.full_name ?? (t.friendsRiderFallback || 'Rider')}
-                    </p>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <button
+                    <div className="flex gap-1.5">
+                      <button
                       onClick={() => handleMessage(friend.id)}
                       className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
                       title={t.chatSendMessage || 'Enviar mensagem'}
@@ -236,11 +254,12 @@ export default function FriendsPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" />
                       </svg>
                     </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )
+                ))}
+              </div>
+            )}
+          </>
         ) : tab === 'requests' ? (
           requests.length === 0 ? (
             <div className="text-center py-16">
@@ -302,9 +321,9 @@ export default function FriendsPage() {
               placeholder={t.friendsSearchPlaceholder || 'Buscar riders por nome...'}
               className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4"
             />
-            {searchResults.length > 0 && (
+            {orderedSearchResults.length > 0 && (
               <div className="space-y-1">
-                {searchResults.map((user) => (
+                {orderedSearchResults.map((user) => (
                   <div key={user.id} className="flex items-center gap-3 py-3">
                     {user.avatar_url ? (
                       <img src={user.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
@@ -342,7 +361,7 @@ export default function FriendsPage() {
                 ))}
               </div>
             )}
-            {searchQuery.trim() && searchResults.length === 0 && (
+            {searchQuery.trim() && orderedSearchResults.length === 0 && (
               <div className="text-center py-10">
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
                   {t.friendsNoResults || 'Nenhum rider encontrado.'}
