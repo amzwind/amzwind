@@ -11,6 +11,7 @@ import {
   type TripConversation, type TripFeedPost, type InvitableFriend,
 } from '../services/trips'
 import { toggleLike, type PostAuthor } from '../services/feed'
+import { TripInteractiveMap } from '../components/trips/TripInteractiveMap'
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return ''
@@ -31,7 +32,7 @@ function getTimeAgo(dateStr: string, t: TranslationKeys): string {
   return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
 }
 
-type Tab = 'info' | 'participants' | 'feed'
+type Tab = 'info' | 'route' | 'participants' | 'feed'
 
 export default function TripDetailPage() {
   const { t } = useLanguage()
@@ -350,18 +351,73 @@ export default function TripDetailPage() {
         </div>
 
         <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1 mb-4">
-          {(['info', 'participants', 'feed'] as Tab[]).map((tab) => (
+          {(['info', 'route', 'participants', 'feed'] as Tab[]).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
                 activeTab === tab ? 'bg-amz-oceano text-white' : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
               }`}>
-              {tab === 'info' ? (t.tripTabInfo || 'Info') : tab === 'participants' ? (t.tripTabParticipants || 'Pessoas') : (t.tripTabFeed || 'Feed')}
+              {tab === 'info'
+                ? (t.tripTabInfo || 'Info')
+                : tab === 'route'
+                ? '🗺️ Downwind & Rota'
+                : tab === 'participants'
+                ? (t.tripTabParticipants || 'Pessoas')
+                : (t.tripTabFeed || 'Feed')}
             </button>
           ))}
         </div>
 
+        {activeTab === 'route' && (
+          <div className="space-y-4">
+            <TripInteractiveMap
+              tripId={trip.id}
+              tripTitle={trip.title}
+              destination={trip.destination}
+              startPoint={trip.start_point}
+              endPoint={trip.end_point}
+              startCoords={trip.start_coords}
+              endCoords={trip.end_coords}
+              officialRoutePoints={trip.route_points}
+              distanceKm={trip.distance_km}
+              estimatedDuration={trip.estimated_duration}
+              windCondition={trip.wind_condition}
+              canEdit={isOrganizer}
+            />
+          </div>
+        )}
+
         {activeTab === 'info' && (
           <div className="space-y-4">
+            {/* Card de Resumo da Rota de Downwind com atalho para o mapa interativo */}
+            <div className="bg-gradient-to-r from-emerald-900/20 via-slate-900/30 to-teal-900/20 rounded-xl border border-emerald-500/30 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl flex-shrink-0">
+                  🗺️
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-500 dark:text-emerald-400">
+                    Rota de Downwind & Spots
+                  </h4>
+                  <p className="text-sm font-semibold text-amz-terra dark:text-amz-areia">
+                    {trip.start_point || 'Ponto de Partida'} ➔ {trip.end_point || 'Ponto de Chegada'}
+                  </p>
+                  <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">
+                    {trip.distance_km ? `${trip.distance_km} km` : 'Percurso guiado'} • {trip.estimated_duration || 'Downwind costeiro'} • Vento {trip.wind_condition?.direction || 'NE'} ({trip.wind_condition?.speed_min_kts || 18}-{trip.wind_condition?.speed_max_kts || 26} kts)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('route')}
+                className="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl shadow-md transition-all self-start sm:self-center flex items-center gap-1.5"
+              >
+                <span>Abrir no Mapa</span>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
             {trip.description && (
               <div className="bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-4">
                 <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap leading-relaxed">{trip.description}</p>

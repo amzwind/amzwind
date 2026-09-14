@@ -6,6 +6,22 @@
  * src/data/products.ts.
  */
 
+export interface RoutePoint {
+  lat: number
+  lng: number
+  name: string
+  type: 'start' | 'waypoint' | 'end'
+  notes?: string
+}
+
+export interface WindCondition {
+  direction: string
+  speed_min_kts: number
+  speed_max_kts: number
+  tide?: string
+  best_swell?: string
+}
+
 export interface StaticTrip {
   id: string
   title: string
@@ -27,6 +43,14 @@ export interface StaticTrip {
   created_at: string
   updated_at: string
   schedule: Array<{ day: number; title: string; description: string }>
+  start_point?: string | null
+  end_point?: string | null
+  start_coords?: [number, number] | null
+  end_coords?: [number, number] | null
+  route_points?: RoutePoint[]
+  distance_km?: number
+  estimated_duration?: string
+  wind_condition?: WindCondition
 }
 
 function offsetDate(days: number): string {
@@ -62,6 +86,25 @@ export const staticTrips: StaticTrip[] = [
     created_by: '00000000-0000-0000-0000-000000000001',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    start_point: 'Praia do Farol Velho, Salinas (PA)',
+    end_point: 'Ilha da Marieta (PA)',
+    start_coords: [-0.602, -47.356],
+    end_coords: [-0.591, -47.319],
+    distance_km: 38.5,
+    estimated_duration: '3h 30min',
+    wind_condition: {
+      direction: 'NE',
+      speed_min_kts: 20,
+      speed_max_kts: 28,
+      tide: 'Vazante',
+      best_swell: '1.2m',
+    },
+    route_points: [
+      { lat: -0.602, lng: -47.356, name: 'Largada: Farol Velho (Salinas)', type: 'start', notes: 'Decolagem com suporte de praia e vento constante' },
+      { lat: -0.5965, lng: -47.338, name: 'Praia do Atalaia', type: 'waypoint', notes: 'Ponto de apoio, transição e hidratação' },
+      { lat: -0.594, lng: -47.329, name: 'Canal da Marieta', type: 'waypoint', notes: 'Água flat espelhada na maré seca' },
+      { lat: -0.591, lng: -47.319, name: 'Chegada: Ilha de Marieta', type: 'end', notes: 'Pouso dos kites e almoço com frutos do mar frescos' },
+    ],
     schedule: [
       { day: 1, title: 'Briefing e Preparação', description: 'Encontro em Salinas às 7h. Check de equipamentos, briefing meteorológico.' },
       { day: 1, title: 'Largada às 9h', description: 'Saída de Salinas com vento alísio. Primeira parada em praia isolada após 15km.' },
@@ -95,6 +138,24 @@ export const staticTrips: StaticTrip[] = [
     created_by: '00000000-0000-0000-0000-000000000001',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    start_point: 'Soure - Canal do Rio Paracauari (PA)',
+    end_point: 'Praia do Pesqueiro - Marajó (PA)',
+    start_coords: [-0.725, -48.515],
+    end_coords: [-0.662, -48.475],
+    distance_km: 22.0,
+    estimated_duration: '2h 15min',
+    wind_condition: {
+      direction: 'E/SE',
+      speed_min_kts: 16,
+      speed_max_kts: 22,
+      tide: 'Enchendo',
+      best_swell: 'Flat',
+    },
+    route_points: [
+      { lat: -0.725, lng: -48.515, name: 'Largada: Soure', type: 'start', notes: 'Saída no canal com barco de apoio náutico' },
+      { lat: -0.69, lng: -48.49, name: 'Barra do Paracauari', type: 'waypoint', notes: 'Canal de transição com avistamento de botos' },
+      { lat: -0.662, lng: -48.475, name: 'Chegada: Praia do Pesqueiro', type: 'end', notes: 'Dunas e gastronomia típica marajoara' },
+    ],
     schedule: [
       { day: 1, title: 'Belém → Soure', description: 'Voo para Belém, barco até Soure. Check-in na pousada e briefing da expedição.' },
       { day: 2, title: 'Downwind Principal', description: 'Rota Soure > Pesqueiro (22km). Vento constante, golfinhos cor-de-rosa no canal.' },
@@ -128,6 +189,25 @@ export const staticTrips: StaticTrip[] = [
     created_by: '00000000-0000-0000-0000-000000000001',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    start_point: 'Praia do Preá (CE)',
+    end_point: 'Lagoa de Tatajuba (CE)',
+    start_coords: [-2.812, -40.42],
+    end_coords: [-2.871, -40.575],
+    distance_km: 28.0,
+    estimated_duration: '2h 45min',
+    wind_condition: {
+      direction: 'E',
+      speed_min_kts: 22,
+      speed_max_kts: 30,
+      tide: 'Média',
+      best_swell: '1.5m',
+    },
+    route_points: [
+      { lat: -2.812, lng: -40.42, name: 'Largada: Preá', type: 'start', notes: 'Mar aberto com vento terral forte' },
+      { lat: -2.796, lng: -40.513, name: 'Ponta de Jericoacoara', type: 'waypoint', notes: 'Contorno panorâmico do Parque Nacional' },
+      { lat: -2.835, lng: -40.55, name: 'Guriú', type: 'waypoint', notes: 'Travessia de balsa e manguezal' },
+      { lat: -2.871, lng: -40.575, name: 'Chegada: Tatajuba', type: 'end', notes: 'Água doce morna e lagoa dos sonhos' },
+    ],
     schedule: [
       { day: 1, title: 'Chegada e Check-in', description: 'Recepção no aeroporto de Fortaleza, transfer para Preá, jantar de boas-vindas.' },
       { day: 2, title: 'Primeira Sessão', description: 'Manhã: avaliação de nível e sessão guiada na lagoa. Tarde: kite no mar com instrutor.' },
@@ -162,6 +242,24 @@ export const staticTrips: StaticTrip[] = [
     created_by: '00000000-0000-0000-0000-000000000001',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    start_point: 'Atins (MA)',
+    end_point: 'Caburé / Paulino Neves (MA)',
+    start_coords: [-2.571, -42.748],
+    end_coords: [-2.658, -42.664],
+    distance_km: 35.0,
+    estimated_duration: '3h 15min',
+    wind_condition: {
+      direction: 'NE',
+      speed_min_kts: 18,
+      speed_max_kts: 25,
+      tide: 'Secando',
+      best_swell: 'Flat',
+    },
+    route_points: [
+      { lat: -2.571, lng: -42.748, name: 'Largada: Atins', type: 'start', notes: 'Foz do Rio Preguiças e água salgada' },
+      { lat: -2.61, lng: -42.71, name: 'Boca da Barra', type: 'waypoint', notes: 'Transição mar/rio e resting spot' },
+      { lat: -2.658, lng: -42.664, name: 'Chegada: Caburé', type: 'end', notes: 'Península entre o rio Preguiças e o Oceano Atlântico' },
+    ],
     schedule: [
       { day: 1, title: 'São Luís → Barreirinhas', description: 'Voo para São Luís, traslado até Barreirinhas. Jantar e briefing.' },
       { day: 2, title: 'Lagoa Azul e Lagoa Bonita', description: 'Trekking/kite até as lagoas mais famosas. Sessão de fotos ao meio-dia.' },

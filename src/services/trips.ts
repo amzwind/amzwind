@@ -1,6 +1,6 @@
 import { supabase, type Tables } from './supabase'
 import { isMissingRpcError } from './rpcDiagnostics'
-import { staticTrips, type StaticTrip } from '../data/trips'
+import { staticTrips, type StaticTrip, type RoutePoint, type WindCondition } from '../data/trips'
 
 export type Trip = Tables<'trips'>
 export type TripParticipant = Tables<'trip_participants'>
@@ -26,6 +26,14 @@ export interface TripListItem {
   updated_at: string
   participant_count: number
   is_participant: boolean
+  start_point?: string | null
+  end_point?: string | null
+  start_coords?: [number, number] | null
+  end_coords?: [number, number] | null
+  route_points?: RoutePoint[]
+  distance_km?: number
+  estimated_duration?: string
+  wind_condition?: WindCondition
 }
 
 export interface TripDetail extends TripListItem {
@@ -109,6 +117,14 @@ function staticTripToListItem(t: StaticTrip): TripListItem {
     updated_at: t.updated_at,
     participant_count: t.participant_count,
     is_participant: t.is_participant,
+    start_point: t.start_point ?? null,
+    end_point: t.end_point ?? null,
+    start_coords: t.start_coords ?? null,
+    end_coords: t.end_coords ?? null,
+    route_points: t.route_points ?? [],
+    distance_km: t.distance_km ?? 0,
+    estimated_duration: t.estimated_duration ?? '',
+    wind_condition: t.wind_condition,
   }
 }
 
@@ -182,6 +198,54 @@ export async function listTrips(limit = 20, offset = 0): Promise<TripListItem[]>
   }
 }
 
+function safeJsonParse<T>(val: unknown, fallback: T): T {
+  if (!val) return fallback
+  if (typeof val === 'object') return val as T
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val) as T
+    } catch {
+      return fallback
+    }
+  }
+  return fallback
+}
+
+function normalizeTripDetail(raw: Record<string, unknown>): TripDetail {
+  return {
+    id: String(raw.id),
+    title: String(raw.title || ''),
+    slug: raw.slug ? String(raw.slug) : null,
+    description: raw.description ? String(raw.description) : null,
+    body_text: raw.body_text ? String(raw.body_text) : null,
+    destination: raw.destination ? String(raw.destination) : null,
+    start_date: raw.start_date ? String(raw.start_date) : null,
+    end_date: raw.end_date ? String(raw.end_date) : null,
+    cover_url: raw.cover_url ? String(raw.cover_url) : null,
+    gallery_urls: Array.isArray(raw.gallery_urls) ? (raw.gallery_urls as string[]) : [],
+    video_url: raw.video_url ? String(raw.video_url) : null,
+    schedule: safeJsonParse<Array<{ day: number; title: string; description: string }>>(raw.schedule, []),
+    status: String(raw.status || 'published'),
+    visibility: (raw.visibility as 'public' | 'private') || 'public',
+    max_participants: raw.max_participants ? Number(raw.max_participants) : null,
+    created_by: String(raw.created_by || ''),
+    created_at: String(raw.created_at || new Date().toISOString()),
+    updated_at: String(raw.updated_at || new Date().toISOString()),
+    participant_count: Number(raw.participant_count || 0),
+    is_participant: Boolean(raw.is_participant),
+    creator_name: raw.creator_name ? String(raw.creator_name) : null,
+    creator_avatar: raw.creator_avatar ? String(raw.creator_avatar) : null,
+    start_point: raw.start_point ? String(raw.start_point) : null,
+    end_point: raw.end_point ? String(raw.end_point) : null,
+    start_coords: safeJsonParse<[number, number] | null>(raw.start_coords, null),
+    end_coords: safeJsonParse<[number, number] | null>(raw.end_coords, null),
+    route_points: safeJsonParse<RoutePoint[]>(raw.route_points, []),
+    distance_km: raw.distance_km != null ? Number(raw.distance_km) : 0,
+    estimated_duration: raw.estimated_duration ? String(raw.estimated_duration) : '',
+    wind_condition: safeJsonParse<WindCondition | undefined>(raw.wind_condition, undefined),
+  }
+}
+
 export async function getTrip(tripId: string): Promise<TripDetail | null> {
   const staticMatch = isStaticTrip(tripId)
   if (staticMatch) {
@@ -191,30 +255,57 @@ export async function getTrip(tripId: string): Promise<TripDetail | null> {
   try {
     const { data, error } = await supabase.rpc('get_trip', { p_trip_id: tripId })
     if (error) {
-      if (isMissingRpcError(error)) {
-        const { data: tripRow } = await supabase
-          .from('trips')
-          .select('*')
-          .eq('id', tripId)
-          .maybeSingle()
-        if (!tripRow) return null
-        return {
-          ...tripRow,
-          creator_name: null,
-          creator_avatar: null,
-          participant_count: 0,
-          is_participant: false,
-        } as unknown as TripDetail
-      }
-      throw new Error('Falha ao carregar viagem: ' + error.message)
+      // Caso a RPC falhe por cache de schema ou não exista remotamente, fallback seguro
+      return await fallbackFetchSingleTrip(tripId)
     }
-    if (!data || data.length === 0) return null
-    return data[0] as TripDetail
-  } catch (err) {
+    if (!data || data.length === 0) {
+      return await fallbackFetchSingleTrip(tripId)
+    }
+    return normalizeTripDetail(data[0] as Record<string, unknown>)
+  } catch {
+    return await fallbackFetchSingleTrip(tripId)
+  }
+}
+
+async function fallbackFetchSingleTrip(tripId: string): Promise<TripDetail | null> {
+  const { data: tripRow, error } = await supabase
+    .from('trips')
+    .select('*')
+    .or(`id.eq.${tripId},slug.eq.${tripId}`)
+    .maybeSingle()
+
+  if (error || !tripRow) {
     const fallbackMatch = isStaticTrip(tripId)
     if (fallbackMatch) return staticTripToDetail(fallbackMatch)
-    throw err
+    return null
   }
+
+  // Buscar contagem de participantes e perfil do criador
+  const [participantsRes, profileRes] = await Promise.all([
+    supabase.from('trip_participants').select('user_id', { count: 'exact' }).eq('trip_id', tripRow.id).eq('status', 'confirmed'),
+    tripRow.created_by ? supabase.from('profiles').select('full_name, avatar_url').eq('id', tripRow.created_by).maybeSingle() : Promise.resolve({ data: null })
+  ])
+
+  const { data: { user } } = await supabase.auth.getUser()
+  let isParticipant = false
+  if (user) {
+    const { data: myParticipant } = await supabase
+      .from('trip_participants')
+      .select('id')
+      .eq('trip_id', tripRow.id)
+      .eq('user_id', user.id)
+      .eq('status', 'confirmed')
+      .maybeSingle()
+    isParticipant = !!myParticipant
+  }
+
+  return normalizeTripDetail({
+    ...tripRow,
+    participant_count: participantsRes.count ?? 0,
+    is_participant: isParticipant,
+    creator_name: profileRes.data?.full_name ?? 'Equipe Amazon Wind',
+    creator_avatar: profileRes.data?.avatar_url ?? null,
+  })
 }
 
 export async function notifyFriendsOfNewTrip(tripId: string, title: string): Promise<void> {
