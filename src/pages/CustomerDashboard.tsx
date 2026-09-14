@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
+import { listTrips, type TripListItem } from '../services/trips'
+import { summarizeTrips } from '../lib/tripSummary'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -32,11 +34,37 @@ function getInitials(name: string | null): string {
   return name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
 }
 
+function loadLocalOrders(): Booking[] {
+  if (typeof window === 'undefined') return []
+
+  try {
+    const raw = localStorage.getItem('amzwind-local-purchases')
+    if (!raw) return []
+
+    const parsed = JSON.parse(raw) as Array<Partial<Booking>>
+    return parsed.map((item) => ({
+      id: item.id || `local-${Date.now()}-${Math.random()}`,
+      user_id: item.user_id || 'guest',
+      item_type: item.item_type || 'product',
+      item_id: item.item_id || 'local-order',
+      status: item.status || 'confirmed',
+      booking_date: item.booking_date || new Date().toISOString().slice(0, 10),
+      notes: item.notes || null,
+      created_at: item.created_at || new Date().toISOString(),
+      updated_at: item.updated_at || new Date().toISOString(),
+    })) as Booking[]
+  } catch {
+    return []
+  }
+}
+
 export default function CustomerDashboard() {
   const navigate = useNavigate()
   const { t } = useLanguage()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [localOrders, setLocalOrders] = useState<Booking[]>([])
+  const [userTrips, setUserTrips] = useState<TripListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'bookings' | 'profile'>('bookings')
   const [fullName, setFullName] = useState('')
@@ -54,9 +82,10 @@ export default function CustomerDashboard() {
 
       setUserEmail(session.user.email || '')
 
-      const [pRes, bRes] = await Promise.all([
+      const [pRes, bRes, tripRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', session.user.id).single(),
         supabase.from('bookings').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
+        listTrips(50, 0),
       ])
       if (pRes.data) {
         setProfile(pRes.data)
@@ -64,6 +93,8 @@ export default function CustomerDashboard() {
         setPhone(pRes.data.phone || '')
       }
       if (bRes.data) setBookings(bRes.data)
+      setUserTrips(tripRes.filter((trip) => trip.is_participant || trip.created_by === session.user.id))
+      setLocalOrders(loadLocalOrders())
       setLoading(false)
     }
     load()
@@ -128,8 +159,10 @@ export default function CustomerDashboard() {
     product: '📦',
   }
 
-  const confirmedCount = bookings.filter((b) => b.status === 'confirmed').length
-  const pendingCount = bookings.filter((b) => b.status === 'pending').length
+  const bookingsToRender = [...localOrders, ...bookings].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const confirmedCount = bookingsToRender.filter((b) => b.status === 'confirmed').length
+  const pendingCount = bookingsToRender.filter((b) => b.status === 'pending').length
+  const tripSummary = summarizeTrips(userTrips)
 
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500">
@@ -151,7 +184,7 @@ export default function CustomerDashboard() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mb-8">
             <div className="bg-white dark:bg-white/5 rounded-2xl p-4 border border-amz-areia-dark/20 dark:border-white/5 text-center">
-              <p className="text-2xl font-bold text-amz-terra dark:text-amz-areia">{bookings.length}</p>
+              <p className="text-2xl font-bold text-amz-terra dark:text-amz-areia">{bookingsToRender.length}</p>
               <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40 font-semibold uppercase tracking-wider mt-1">{t.customerStatsTotal}</p>
             </div>
             <div className="bg-white dark:bg-white/5 rounded-2xl p-4 border border-amz-areia-dark/20 dark:border-white/5 text-center">
@@ -163,6 +196,40 @@ export default function CustomerDashboard() {
               <p className="text-[11px] text-amz-terra-light dark:text-amz-areia/40 font-semibold uppercase tracking-wider mt-1">{t.customerStatsPending}</p>
             </div>
           </div>
+
+          {userTrips.length > 0 && (
+            <div className="mb-8 rounded-2xl border border-amz-areia-dark/20 dark:border-white/5 bg-white dark:bg-white/5 p-4">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amz-terra-light dark:text-amz-areia/40">Minhas trips</p>
+                  <h2 className="mt-1 text-lg font-bold text-amz-terra dark:text-amz-areia">
+                    {tripSummary.nextTrip ? tripSummary.nextTrip.title : 'Sem trips próximas'}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => navigate('/trips')}
+                  className="rounded-full bg-amz-oceano/10 dark:bg-amz-oceano/20 px-3 py-1.5 text-xs font-semibold text-amz-oceano dark:text-amz-areia"
+                >
+                  Ver todas
+                </button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-xl bg-amz-areia/40 dark:bg-white/[0.03] p-3 text-center">
+                  <p className="text-lg font-bold text-amz-terra dark:text-amz-areia">{tripSummary.totalTrips}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/40">Ativas</p>
+                </div>
+                <div className="rounded-xl bg-amz-areia/40 dark:bg-white/[0.03] p-3 text-center">
+                  <p className="text-lg font-bold text-amz-terra dark:text-amz-areia">{tripSummary.upcomingTrips}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/40">Próximas</p>
+                </div>
+                <div className="rounded-xl bg-amz-areia/40 dark:bg-white/[0.03] p-3 text-center">
+                  <p className="text-lg font-bold text-amz-terra dark:text-amz-areia">{tripSummary.totalParticipants}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-amz-terra-light dark:text-amz-areia/40">Riders</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tabs */}
           <div className="flex gap-2 mb-8">
@@ -177,13 +244,13 @@ export default function CustomerDashboard() {
           {/* Bookings */}
           {activeTab === 'bookings' && (
             <div className="space-y-3">
-              {bookings.length === 0 ? (
+              {bookingsToRender.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
                   <p className="text-amz-terra-light dark:text-amz-areia/40">{t.customerNoBookings}</p>
                    <Link to="/#experiencias" className="btn-primary inline-block mt-4 text-sm">{t.heroCTA1}</Link>
                 </div>
               ) : (
-                bookings.map((b) => {
+                bookingsToRender.map((b) => {
                   const notes = parseNotes(b.notes)
                   const isExpanded = expandedBooking === b.id
 
