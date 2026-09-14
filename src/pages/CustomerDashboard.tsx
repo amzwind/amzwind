@@ -3,12 +3,25 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase, type Tables } from '../services/supabase'
 import { listTrips, type TripListItem } from '../services/trips'
 import { summarizeTrips } from '../lib/tripSummary'
+import { filterBookings, type BookingStatusFilter } from '../lib/bookingFilters'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 type Booking = Tables<'bookings'>
 type Profile = Tables<'profiles'>
+
+type DashboardBooking = {
+  id: string
+  user_id: string | null
+  item_type: string
+  item_id: string
+  status: string
+  booking_date: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
 
 interface BookingNotes {
   items?: { id: string; type: string; title: string; price: number; quantity: number }[]
@@ -74,6 +87,8 @@ export default function CustomerDashboard() {
   const [saveError, setSaveError] = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null)
+  const [bookingQuery, setBookingQuery] = useState('')
+  const [bookingStatusFilter, setBookingStatusFilter] = useState<BookingStatusFilter>('all')
 
   useEffect(() => {
     async function load() {
@@ -159,7 +174,21 @@ export default function CustomerDashboard() {
     product: '📦',
   }
 
-  const bookingsToRender = [...localOrders, ...bookings].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const bookingsToRender: DashboardBooking[] = [...localOrders, ...bookings]
+    .map((booking) => ({
+      id: booking.id,
+      user_id: booking.user_id,
+      item_type: booking.item_type || 'product',
+      item_id: booking.item_id || 'local-order',
+      status: booking.status || 'pending',
+      booking_date: booking.booking_date ?? null,
+      notes: booking.notes ?? null,
+      created_at: booking.created_at || new Date().toISOString(),
+      updated_at: booking.updated_at || new Date().toISOString(),
+    }))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+  const filteredBookings = filterBookings(bookingsToRender, bookingQuery, bookingStatusFilter)
   const confirmedCount = bookingsToRender.filter((b) => b.status === 'confirmed').length
   const pendingCount = bookingsToRender.filter((b) => b.status === 'pending').length
   const tripSummary = summarizeTrips(userTrips)
@@ -243,14 +272,45 @@ export default function CustomerDashboard() {
 
           {/* Bookings */}
           {activeTab === 'bookings' && (
-            <div className="space-y-3">
-              {bookingsToRender.length === 0 ? (
+            <div className="space-y-4">
+              <div className="bg-white dark:bg-white/5 rounded-2xl border border-amz-areia-dark/20 dark:border-white/5 p-3 sm:p-4 space-y-3">
+                <div className="relative">
+                  <input
+                    value={bookingQuery}
+                    onChange={(event) => setBookingQuery(event.target.value)}
+                    placeholder="Buscar reservas..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-amz-terra dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-oceano/50 text-sm"
+                  />
+                  <svg className="w-4 h-4 text-amz-terra-light dark:text-amz-areia/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {(['all', 'confirmed', 'pending', 'cancelled'] as BookingStatusFilter[]).map((status) => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setBookingStatusFilter(status)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                        bookingStatusFilter === status
+                          ? 'bg-amz-dourado text-white'
+                          : 'bg-gray-100 dark:bg-white/5 text-amz-terra-light dark:text-amz-areia/60 hover:bg-gray-200 dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {status === 'all' ? 'Todas' : status === 'confirmed' ? 'Confirmadas' : status === 'pending' ? 'Pendentes' : 'Canceladas'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {filteredBookings.length === 0 ? (
                 <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
-                  <p className="text-amz-terra-light dark:text-amz-areia/40">{t.customerNoBookings}</p>
+                  <p className="text-amz-terra-light dark:text-amz-areia/40">{bookingQuery ? 'Nenhuma reserva encontrada para sua busca.' : t.customerNoBookings}</p>
                    <Link to="/#experiencias" className="btn-primary inline-block mt-4 text-sm">{t.heroCTA1}</Link>
                 </div>
               ) : (
-                bookingsToRender.map((b) => {
+                filteredBookings.map((b) => {
                   const notes = parseNotes(b.notes)
                   const isExpanded = expandedBooking === b.id
 
