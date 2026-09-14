@@ -47,8 +47,9 @@ export function Login() {
       if (data.user) {
         await redirectByRole(data.user.id)
       }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Credenciais inválidas.')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Credenciais inválidas.'
+      setErrorMessage(message)
     } finally {
       setSubmitting(false)
     }

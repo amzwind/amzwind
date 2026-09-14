@@ -36,8 +36,8 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
   )
 }
 
-function isStaticExp(exp: any): exp is StaticExperience {
-  return exp && ('gallery' in exp || ('includes' in exp && !Array.isArray(exp.includes)))
+function isStaticExp(exp: unknown): exp is StaticExperience {
+  return !!exp && (typeof exp === 'object') && ('gallery' in exp || ('includes' in exp && !Array.isArray((exp as StaticExperience).includes)))
 }
 
 export default function ExperienceDetail() {
@@ -145,9 +145,9 @@ export default function ExperienceDetail() {
 
   // Build gallery from static data or fallback
   const staticData = isStaticExp(exp) ? exp : null
-  const expType = staticData?.type || (exp as any)?.type || 'individual'
-  const expIncludes = staticData?.includes || (exp as any)?.includes || []
-  const expOriginalPrice = staticData?.originalPrice || (exp as any)?.original_price || null
+  const expType = staticData?.type || (exp as unknown as { type?: string })?.type || 'individual'
+  const expIncludes = staticData?.includes || (exp as unknown as { includes?: string[] })?.includes || []
+  const expOriginalPrice = staticData?.originalPrice || (exp as unknown as { original_price?: number })?.original_price || null
 
   const galleryImages: { src: string; alt: string }[] = staticData?.gallery?.length
     ? staticData.gallery.map((src, i) => ({ src, alt: `${exp.title} — ${i + 1}` }))

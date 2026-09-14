@@ -114,10 +114,10 @@ export function ProductsManager() {
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-white/[0.06]">
-                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">Produto</th>
-                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">Preço</th>
-                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">Estoque</th>
-                    <th className="text-right px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">Ações</th>
+                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">{t.productAdminName}</th>
+                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">{t.productAdminPrice}</th>
+                    <th className="text-left px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">{t.productAdminStock}</th>
+                    <th className="text-right px-4 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40">{t.productAdminActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 dark:divide-white/[0.03]">
@@ -135,7 +135,7 @@ export function ProductsManager() {
                       <td className="px-4 py-3 font-semibold text-gray-900 dark:text-white">R$ {p.price}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${p.stock > 0 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'}`}>
-                          {p.stock} un.
+                          {p.stock}{t.productAdminUnit}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -171,11 +171,11 @@ export function ProductsManager() {
                   </div>
                 </div>
                 <div className="flex gap-2 pt-1">
-                  <button onClick={() => openEdit(p)} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40 active:scale-[0.97] transition-all">
-                    Editar
+                    <button onClick={() => openEdit(p)} className="flex-1 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40 active:scale-[0.97] transition-all">
+                    {t.productAdminEdit}
                   </button>
                   <button onClick={() => setDeleteTarget(p)} className="py-2.5 px-4 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-red-500 dark:text-red-400 active:scale-[0.97] transition-all">
-                    Excluir
+                    {t.productAdminDelete}
                   </button>
                 </div>
               </div>
@@ -196,8 +196,8 @@ export function ProductsManager() {
             <FormField label={t.adminProdFormCategory}>
               {showNewCat ? (
                 <div className="flex gap-2">
-                  <Input required value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Nome da nova categoria" className="flex-1" />
-                  <button type="button" onClick={() => { setShowNewCat(false); setNewCatName('') }} className="px-3 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40">Cancelar</button>
+                  <Input required value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder={t.productAdminCategoryPlaceholder} className="flex-1" />
+                  <button type="button" onClick={() => { setShowNewCat(false); setNewCatName('') }} className="px-3 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-white/40">{t.productAdminCancel}</button>
                 </div>
               ) : (
                 <div className="flex gap-2">
@@ -205,7 +205,7 @@ export function ProductsManager() {
                     <option value="">{t.adminExpFormSelectCategory}</option>
                     {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </Select>
-                  <button type="button" onClick={() => setShowNewCat(true)} className="px-3 rounded-xl text-xs font-semibold bg-amz-dourado/10 text-amz-dourado hover:bg-amz-dourado/20 transition-colors whitespace-nowrap">+ Nova</button>
+                  <button type="button" onClick={() => setShowNewCat(true)} className="px-3 rounded-xl text-xs font-semibold bg-amz-dourado/10 text-amz-dourado hover:bg-amz-dourado/20 transition-colors whitespace-nowrap">+ {t.productAdminNew}</button>
                 </div>
               )}
             </FormField>

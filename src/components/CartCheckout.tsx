@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useCart, type CartItemType } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import type { TranslationKeys } from '../i18n/translations'
 import { useTheme } from '../contexts/ThemeContext'
 import { useProfile } from '../hooks/useProfile'
 import { isValidUUID, FALLBACK_UUID } from '../lib/uuid'
@@ -16,7 +17,7 @@ function getItemLink(item: { id: string; type: string }): string {
   return '/aula/iniciante'
 }
 
-function getItemTypeLabel(type: CartItemType, t: any): string {
+function getItemTypeLabel(type: CartItemType, t: TranslationKeys): string {
   if (type === 'experience') return t.expLabel || 'Experiência'
   if (type === 'product') return t.prodCategoryTitle || 'Produto'
   return t.customerTypeClass || 'Aula'
@@ -106,8 +107,9 @@ export default function CartCheckout() {
         }
         setShowAuthModal(false)
       }
-    } catch (err: any) {
-      setAuthError(err.message || 'Authentication failed')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Authentication failed'
+      setAuthError(message)
     }
     setAuthLoading(false)
   }
@@ -135,6 +137,40 @@ export default function CartCheckout() {
       return
     }
     handlePaymentConfirm()
+  }
+
+  function saveLocalPurchaseHistory() {
+    if (typeof window === 'undefined') return
+
+    const snapshot = {
+      id: `local-order-${Date.now()}`,
+      user_id: sessionUserId ?? 'guest',
+      item_type: items[0]?.type ?? 'product',
+      item_id: items[0]?.id ?? 'local-order',
+      status: 'confirmed',
+      booking_date: items[0]?.booking_date || new Date().toISOString().slice(0, 10),
+      notes: JSON.stringify({
+        items: items.map((i) => ({
+          id: i.id,
+          type: i.type,
+          title: i.title,
+          price: i.price,
+          quantity: i.quantity,
+          booking_date: i.booking_date,
+        })),
+        total: getSubtotal(),
+        payment_method: paymentMethod,
+        contact_whatsapp: checkoutWhatsApp.trim() || profile?.whatsapp || '',
+        created_at: new Date().toISOString(),
+      }),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }
+
+    const key = 'amzwind-local-purchases'
+    const current = JSON.parse(localStorage.getItem(key) || '[]') as Array<typeof snapshot>
+    const next = [snapshot, ...current].slice(0, 25)
+    localStorage.setItem(key, JSON.stringify(next))
   }
 
   async function handlePaymentConfirm() {
@@ -183,8 +219,10 @@ export default function CartCheckout() {
 
     if (errors.length > 0) {
       setToast({ message: `${t.checkoutError}: ${errors[0]}`, type: 'error' })
+      saveLocalPurchaseHistory()
     } else {
       setSuccessIds(ids)
+      saveLocalPurchaseHistory()
       clearCart()
     }
     setPaymentProcessing(false)

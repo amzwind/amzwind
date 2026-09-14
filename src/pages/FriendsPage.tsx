@@ -107,7 +107,9 @@ export default function FriendsPage() {
       setSearchResults((prev) =>
         prev.map((u) => u.id === userId ? { ...u, request_status: 'pending' } : u)
       )
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Falha ao enviar pedido de amizade:', err)
+    }
     setActionLoading(null)
   }
 
@@ -138,7 +140,9 @@ export default function FriendsPage() {
           }
         }
       }
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Falha ao responder pedido de amizade:', err)
+    }
     setActionLoading(null)
   }
 
@@ -147,7 +151,9 @@ export default function FriendsPage() {
     try {
       await removeFriend(userId)
       setFriends((prev) => prev.filter((f) => f.id !== userId))
-    } catch { /* silent */ }
+    } catch (err) {
+      console.error('Falha ao remover amigo:', err)
+    }
     setActionLoading(null)
   }
 
@@ -270,7 +276,7 @@ export default function FriendsPage() {
           ) : (
             <div className="space-y-2">
               {requests.map((req) => {
-                const isSender = req.sender_id !== currentUserId
+                const isSender = req.sender_id === currentUserId
                 const other = isSender ? req.sender_profile : req.receiver_profile
                 return (
                   <div key={req.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">

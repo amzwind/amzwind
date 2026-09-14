@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { supabase, Tables } from '../../services/supabase'
 import { FileUpload, Toast, ConfirmModal } from './SharedUI'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 type ClassRow = Tables<'classes'>
 
 export function ClassesManager() {
+  const { t } = useLanguage()
   const [classes, setClasses] = useState<ClassRow[]>([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -33,7 +35,7 @@ export function ClassesManager() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      setToast({ message: 'Erro ao carregar aulas: ' + error.message, type: 'error' })
+      setToast({ message: t.classesLoadError + error.message, type: 'error' })
     } else if (data) {
       setClasses(data)
     }
@@ -86,9 +88,9 @@ export function ClassesManager() {
         .eq('id', editingId)
 
       if (error) {
-        setToast({ message: 'Erro ao atualizar aula: ' + error.message, type: 'error' })
+        setToast({ message: t.classesUpdateError + error.message, type: 'error' })
       } else {
-        setToast({ message: 'Aula atualizada com sucesso!', type: 'success' })
+        setToast({ message: t.classesUpdated, type: 'success' })
         setIsModalOpen(false)
         fetchClasses()
       }
@@ -96,9 +98,9 @@ export function ClassesManager() {
       const { error } = await supabase.from('classes').insert(payload)
 
       if (error) {
-        setToast({ message: 'Erro ao criar aula: ' + error.message, type: 'error' })
+        setToast({ message: t.classesCreateError + error.message, type: 'error' })
       } else {
-        setToast({ message: 'Aula criada com sucesso!', type: 'success' })
+        setToast({ message: t.classesCreated, type: 'success' })
         setIsModalOpen(false)
         fetchClasses()
       }
@@ -115,9 +117,9 @@ export function ClassesManager() {
       .eq('id', deleteTarget.id)
 
     if (error) {
-      setToast({ message: 'Erro ao excluir aula: ' + error.message, type: 'error' })
+      setToast({ message: t.classesDeleteError + error.message, type: 'error' })
     } else {
-      setToast({ message: 'Aula excluída.', type: 'success' })
+      setToast({ message: t.classesDeleted, type: 'success' })
       fetchClasses()
     }
     setDeleteTarget(null)
@@ -126,7 +128,7 @@ export function ClassesManager() {
   if (loading) {
     return (
       <div className="p-6 text-sm text-gray-400 dark:text-white/40 animate-pulse">
-        Carregando aulas...
+        {t.classesLoading}
       </div>
     )
   }
@@ -137,16 +139,16 @@ export function ClassesManager() {
 
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-maybug text-gray-900 dark:text-white">Gerenciar Aulas</h2>
+          <h2 className="text-xl font-maybug text-gray-900 dark:text-white">{t.classesTitle}</h2>
           <p className="text-xs text-amz-terra-light dark:text-amz-areia/60">
-            Configure os pacotes de aulas, mídias e valores.
+            {t.classesSubtitle}
           </p>
         </div>
         <button
           onClick={openCreateModal}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amz-dourado text-white text-sm font-semibold hover:bg-amber-700 active:bg-amber-800 transition-all"
         >
-          + Nova Aula
+          + {t.classesNew}
         </button>
       </div>
 
@@ -157,7 +159,7 @@ export function ClassesManager() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <p className="text-sm text-gray-400 dark:text-white/30">Nenhuma aula cadastrada</p>
+          <p className="text-sm text-gray-400 dark:text-white/30">{t.classesEmpty}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -195,13 +197,13 @@ export function ClassesManager() {
                   onClick={() => openEditModal(cls)}
                   className="px-3 py-1.5 rounded-lg bg-amz-dourado/10 text-amz-dourado text-xs font-semibold hover:bg-amz-dourado/20 transition-colors cursor-pointer"
                 >
-                  Editar
+                  {t.classesEdit}
                 </button>
                 <button
                   onClick={() => setDeleteTarget(cls)}
                   className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors cursor-pointer"
                 >
-                  Excluir
+                  {t.classesDelete}
                 </button>
               </div>
             </div>
@@ -219,7 +221,7 @@ export function ClassesManager() {
             <div className="px-6 pt-5 pb-6">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                  {editingId ? 'Editar Aula' : 'Nova Aula'}
+                  {editingId ? t.classesEditTitle : t.classesNewTitle}
                 </h3>
                 <button
                   onClick={() => !saving && setIsModalOpen(false)}
@@ -234,7 +236,7 @@ export function ClassesManager() {
               <form onSubmit={handleSave} className="space-y-4">
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40 mb-1.5">
-                    Titulo
+                    {t.classesFormTitle}
                   </label>
                   <input
                     type="text"
@@ -242,14 +244,14 @@ export function ClassesManager() {
                     onChange={(e) => setTitle(e.target.value)}
                     required
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 focus:border-amz-dourado transition-all"
-                    placeholder="Ex: Aula Particular de Kite"
+                    placeholder={t.classesFormTitlePlaceholder}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40 mb-1.5">
-                      Preco (R$)
+                      {t.classesFormPrice}
                     </label>
                     <input
                       type="number"
@@ -263,34 +265,34 @@ export function ClassesManager() {
                   </div>
                   <div>
                     <label className="block text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40 mb-1.5">
-                      Duracao
+                      {t.classesFormDuration}
                     </label>
                     <input
                       type="text"
                       value={duration}
                       onChange={(e) => setDuration(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 focus:border-amz-dourado transition-all"
-                      placeholder="Ex: 2h30"
+                      placeholder={t.classesFormDurationPlaceholder}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40 mb-1.5">
-                    Nivel
+                    {t.classesFormLevel}
                   </label>
                   <input
                     type="text"
                     value={level}
                     onChange={(e) => setLevel(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 focus:border-amz-dourado transition-all"
-                    placeholder="Ex: Iniciante / Intermediario"
+                    placeholder={t.classesFormLevelPlaceholder}
                   />
                 </div>
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-white/40 mb-1.5">
-                    Descricao
+                    {t.classesFormDescription}
                   </label>
                   <textarea
                     value={description}

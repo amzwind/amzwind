@@ -367,6 +367,39 @@ export default function TripDetailPage() {
                 <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap leading-relaxed">{trip.description}</p>
               </div>
             )}
+
+            {trip.body_text && (
+              <div className="bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amz-terra-light dark:text-white/40 mb-2">Detalhes da Expedição</h4>
+                <p className="text-sm text-amz-terra dark:text-amz-areia whitespace-pre-wrap leading-relaxed">{trip.body_text}</p>
+              </div>
+            )}
+
+            {trip.schedule && trip.schedule.length > 0 && (
+              <div className="bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amz-terra-light dark:text-white/40 mb-3">Cronograma</h4>
+                <div className="space-y-3">
+                  {trip.schedule.map((item, idx) => (
+                    <div key={idx} className="border-l-2 border-amz-dourado pl-3 py-1">
+                      <span className="text-xs font-bold text-amz-dourado block">Dia {item.day || idx + 1}: {item.title}</span>
+                      <p className="text-xs text-amz-terra-light dark:text-amz-areia/70 mt-0.5">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {trip.gallery_urls && trip.gallery_urls.length > 0 && (
+              <div className="bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-4">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amz-terra-light dark:text-white/40 mb-3">Galeria de Fotos</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {trip.gallery_urls.map((imgUrl, i) => (
+                    <img key={i} src={imgUrl} alt={`Foto ${i + 1}`} className="w-full h-24 sm:h-32 object-cover rounded-lg" />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-4">
               <p className="text-xs font-semibold text-amz-terra dark:text-amz-areia mb-1">{t.tripOrganizedBy || 'Organizado por'}</p>
               <div className="flex items-center gap-2">

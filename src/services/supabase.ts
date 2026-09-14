@@ -1,24 +1,22 @@
 /// <reference types="vite/client" />
 import { createClient } from '@supabase/supabase-js'
 
-// Tenta pegar de todas as formas possíveis para evitar que quebre em produção
-const supabaseUrl =
-  (import.meta.env.SUPABASE_URL as string) ||
-  (import.meta.env.VITE_SUPABASE_URL as string) ||
-  (typeof window !== 'undefined' && (window as any).__SUPABASE_URL__)
-
-const supabaseAnonKey =
-  (import.meta.env.SUPABASE_ANON_KEY as string) ||
-  (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ||
-  (typeof window !== 'undefined' && (window as any).__SUPABASE_ANON_KEY__)
+// No Vite, apenas variáveis prefixadas com VITE_ são expostas ao client-side.
+// As leituras sem prefixo (SUPABASE_URL, SUPABASE_ANON_KEY) nunca funcionam
+// no browser e foram removidas para evitar fallback silencioso para URL placeholder.
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase URL ou Anon Key ausentes. Verifique as configurações na Vercel.')
+  console.error(
+    '[AMZWind] Supabase URL ou Anon Key ausentes. ' +
+    'Verifique VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY nas variáveis de ambiente (Vercel ou .env local).'
+  )
 }
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key',
+  supabaseUrl ?? '',
+  supabaseAnonKey ?? '',
   {
     auth: {
       autoRefreshToken: true,
@@ -27,6 +25,7 @@ export const supabase = createClient(
     },
   }
 )
+
 
 // Types para as tabelas do banco
 export type Database = {
@@ -1140,6 +1139,7 @@ export type Database = {
           end_date: string | null
           cover_url: string | null
           status: string
+          visibility: 'public' | 'private'
           max_participants: number | null
           created_by: string
           created_at: string
@@ -1160,6 +1160,7 @@ export type Database = {
           end_date: string | null
           cover_url: string | null
           status: string
+          visibility: 'public' | 'private'
           max_participants: number | null
           created_by: string
           created_at: string
@@ -1186,6 +1187,7 @@ export type Database = {
           p_start_date?: string | null
           p_end_date?: string | null
           p_max_participants?: number | null
+          p_visibility?: 'public' | 'private' | null
         }
         Returns: string
       }
@@ -1200,6 +1202,7 @@ export type Database = {
           p_max_participants?: number | null
           p_cover_url?: string | null
           p_status?: string | null
+          p_visibility?: 'public' | 'private' | null
         }
         Returns: void
       }
@@ -1218,7 +1221,7 @@ export type Database = {
       }
       join_trip_with_group: {
         Args: { p_trip_id: string }
-        Returns: string | null
+        Returns: void
       }
       leave_trip_with_group: {
         Args: { p_trip_id: string }

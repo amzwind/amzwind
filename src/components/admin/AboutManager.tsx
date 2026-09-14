@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../services/supabase'
 import { ABOUT_FALLBACK, type AboutLocale, type AboutFallbackData } from '../../data/aboutFallback'
+import { useLanguage } from '../../contexts/LanguageContext'
 import {
   FormField,
   Input,
@@ -48,6 +49,7 @@ const LOCALE_LABELS: Record<Locale, string> = {
 }
 
 export function AboutManager() {
+  const { t } = useLanguage()
   const [activeLocale, setActiveLocale] = useState<Locale>('pt')
   const [aboutData, setAboutData] = useState<AboutPage | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,7 +67,7 @@ export function AboutManager() {
     setLoading(true)
     try {
       const { data, error } = await supabase
-        .from('about_page' as any)
+        .from('about_page')
         .select('*')
         .eq('locale', activeLocale)
         .single()
@@ -119,7 +121,7 @@ export function AboutManager() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     if (!formData.title.trim()) {
-      setToast({ message: 'O título é obrigatório.', type: 'error' })
+      setToast({ message: t.aboutTitleRequired, type: 'error' })
       return
     }
 
@@ -140,19 +142,19 @@ export function AboutManager() {
 
     if (aboutData) {
       const { error } = await supabase
-        .from('about_page' as any)
+        .from('about_page')
         .update(payload)
         .eq('id', aboutData.id)
 
       if (error) {
         setToast({ message: error.message, type: 'error' })
       } else {
-        setToast({ message: 'Página "Sobre" atualizada!', type: 'success' })
+        setToast({ message: t.aboutUpdated, type: 'success' })
         setEditMode(false)
         loadAboutData()
       }
     } else {
-      const { error } = await supabase.from('about_page' as any).insert({
+      const { error } = await supabase.from('about_page').insert({
         ...payload,
         created_at: new Date().toISOString(),
       })
@@ -160,7 +162,7 @@ export function AboutManager() {
       if (error) {
         setToast({ message: error.message, type: 'error' })
       } else {
-        setToast({ message: 'Página "Sobre" criada!', type: 'success' })
+        setToast({ message: t.aboutCreated, type: 'success' })
         setEditMode(false)
         loadAboutData()
       }
@@ -201,13 +203,13 @@ export function AboutManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Gerenciar Página "Sobre"</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.aboutManageTitle}</h2>
           <p className="text-xs text-gray-500 dark:text-white/40 mt-1">
-            Edite o conteúdo da página sobre em cada idioma.
+            {t.aboutManageDescription}
           </p>
         </div>
         {!editMode && (
-          <PrimaryButton onClick={enterEditMode}>Editar Conteúdo</PrimaryButton>
+          <PrimaryButton onClick={enterEditMode}>{t.aboutEditContent}</PrimaryButton>
         )}
       </div>
 
@@ -231,75 +233,75 @@ export function AboutManager() {
       {/* Content */}
       {loading ? (
         <div className="p-8 text-center text-sm text-gray-400 dark:text-white/30 animate-pulse">
-          Carregando conteúdo...
+          {t.aboutLoading}
         </div>
       ) : editMode ? (
         /* Edit Mode */
         <form onSubmit={handleSave} className="space-y-6">
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Conteúdo Principal</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{t.aboutMainContent}</h3>
 
-            <FormField label="Título">
+            <FormField label={t.aboutTitleLabel}>
               <Input
                 required
                 value={formData.title}
                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="Ex: Sobre a Amazon Wind"
+                placeholder={t.aboutFieldTitlePlaceholder}
               />
             </FormField>
 
-            <FormField label="Subtítulo">
+            <FormField label={t.aboutFieldSubtitle}>
               <Input
                 value={formData.subtitle}
                 onChange={(e) => setFormData((prev) => ({ ...prev, subtitle: e.target.value }))}
-                placeholder="Ex: Escola de Kitesurf & Expedições"
+                placeholder={t.aboutFieldSubtitlePlaceholder}
               />
             </FormField>
 
-            <FormField label="Descrição">
+            <FormField label={t.aboutFieldDescription}>
               <Textarea
                 rows={8}
                 value={formData.description}
                 onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="História completa da empresa..."
+                placeholder={t.aboutFieldDescriptionPlaceholder}
               />
             </FormField>
           </div>
 
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Missão & Visão</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{t.aboutMissionVision}</h3>
 
-            <FormField label="Missão">
+            <FormField label={t.aboutFieldMission}>
               <Textarea
                 rows={3}
                 value={formData.mission}
                 onChange={(e) => setFormData((prev) => ({ ...prev, mission: e.target.value }))}
-                placeholder="Missão da empresa..."
+                placeholder={t.aboutFieldMissionPlaceholder}
               />
             </FormField>
 
-            <FormField label="Visão">
+            <FormField label={t.aboutFieldVision}>
               <Textarea
                 rows={3}
                 value={formData.vision}
                 onChange={(e) => setFormData((prev) => ({ ...prev, vision: e.target.value }))}
-                placeholder="Visão da empresa..."
+                placeholder={t.aboutFieldVisionPlaceholder}
               />
             </FormField>
           </div>
 
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Mídia</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{t.aboutMedia}</h3>
 
             <FileUpload
-              label="Imagem de Capa"
+              label={t.aboutCoverImage}
               accept="image/*"
               value={formData.cover_url}
               onUpload={(url) => setFormData((prev) => ({ ...prev, cover_url: url }))}
               bucket="about"
             />
 
-            <FormField label="Ou cole a URL da capa">
+            <FormField label={t.aboutCoverUrl}>
               <Input
                 type="url"
                 value={formData.cover_url}
@@ -308,7 +310,7 @@ export function AboutManager() {
               />
             </FormField>
 
-            <FormField label="URL do Vídeo (YouTube ou link direto)">
+            <FormField label={t.aboutVideoUrl}>
               <Input
                 type="url"
                 value={formData.video_url}
@@ -319,13 +321,13 @@ export function AboutManager() {
           </div>
 
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06] space-y-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Galeria</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{t.aboutGallery}</h3>
 
             {formData.gallery_urls.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {formData.gallery_urls.map((url, i) => (
                   <div key={i} className="relative group rounded-xl overflow-hidden">
-                    <img src={url} alt={`Galeria ${i + 1}`} className="w-full h-24 object-cover" />
+                    <img src={url} alt={`${t.aboutGalleryAlt} ${i + 1}`} className="w-full h-24 object-cover" />
                     <button
                       type="button"
                       onClick={() => removeGalleryImage(i)}
@@ -344,7 +346,7 @@ export function AboutManager() {
               <Input
                 value={newGalleryUrl}
                 onChange={(e) => setNewGalleryUrl(e.target.value)}
-                placeholder="URL da imagem da galeria"
+                placeholder={t.aboutGalleryPlaceholder}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
@@ -353,17 +355,17 @@ export function AboutManager() {
                 }}
               />
               <GhostButton type="button" onClick={() => addGalleryImage(newGalleryUrl)}>
-                + Adicionar
+                + {t.aboutAddButton}
               </GhostButton>
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
             <GhostButton type="button" onClick={cancelEdit} className="flex-1">
-              Cancelar
+              {t.aboutCancel}
             </GhostButton>
             <PrimaryButton type="submit" disabled={saving} className="flex-1">
-              {saving ? 'Salvando...' : aboutData ? 'Atualizar' : 'Criar'}
+              {saving ? t.aboutSaving : aboutData ? t.aboutUpdate : t.aboutCreate}
             </PrimaryButton>
           </div>
         </form>
@@ -372,27 +374,27 @@ export function AboutManager() {
         <div className="space-y-6">
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider">Conteúdo Principal</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider">{t.aboutMainContent}</h3>
               {!aboutData && (
                 <span className="text-[10px] uppercase tracking-wider text-amber-500 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-lg">
-                  Dados oficiais (não salvos)
+                  {t.aboutUnsavedData}
                 </span>
               )}
             </div>
             <div className="space-y-3">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Título</span>
+                <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">{t.aboutTitleLabel}</span>
                 <p className="text-sm text-gray-900 dark:text-white font-medium">{displayData.title}</p>
               </div>
               {displayData.subtitle && (
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Subtítulo</span>
+                  <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">{t.aboutFieldSubtitle}</span>
                   <p className="text-sm text-gray-700 dark:text-white/70">{displayData.subtitle}</p>
                 </div>
               )}
               {displayData.description && (
                 <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">Descrição</span>
+                  <span className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30 font-semibold">{t.aboutFieldDescription}</span>
                   <p className="text-sm text-gray-700 dark:text-white/70 whitespace-pre-line line-clamp-6">{displayData.description}</p>
                 </div>
               )}
@@ -401,17 +403,17 @@ export function AboutManager() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">Missão</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">{t.aboutFieldMission}</h3>
               <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{displayData.mission || '—'}</p>
             </div>
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">Visão</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-3">{t.aboutFieldVision}</h3>
               <p className="text-sm text-gray-700 dark:text-white/70 leading-relaxed">{displayData.vision || '—'}</p>
             </div>
           </div>
 
           <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-            <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Mídia</h3>
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">{t.aboutMedia}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {displayData.cover_url && (
                 <div>
@@ -430,10 +432,10 @@ export function AboutManager() {
 
           {displayData.gallery_urls.length > 0 && (
             <div className="bg-white dark:bg-white/[0.03] rounded-2xl p-6 border border-gray-100 dark:border-white/[0.06]">
-              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">Galeria ({displayData.gallery_urls.length} imagens)</h3>
+              <h3 className="text-sm font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wider mb-4">{t.aboutGallery} ({displayData.gallery_urls.length})</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {displayData.gallery_urls.map((url, i) => (
-                  <img key={i} src={url} alt={`Galeria ${i + 1}`} className="w-full h-24 object-cover rounded-xl" />
+                  <img key={i} src={url} alt={`${t.aboutGalleryAlt} ${i + 1}`} className="w-full h-24 object-cover rounded-xl" />
                 ))}
               </div>
             </div>

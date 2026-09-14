@@ -65,7 +65,7 @@ export default function BottomNav() {
                 }`}
               >
                 {icons[item.icon]}
-                <span className="text-[9px] font-medium leading-none">{(t as any)[item.labelKey]?.split(' ')[0] || ''}</span>
+                <span className="text-[9px] font-medium leading-none">{String((t as unknown as Record<string, string | undefined>)[item.labelKey] || '').split(' ')[0]}</span>
                 {active && (
                   <div className="absolute -bottom-0.5 w-5 h-0.5 rounded-full bg-amz-dourado" />
                 )}
@@ -101,7 +101,7 @@ export default function BottomNav() {
                   </span>
                 )}
               </div>
-              <span className="text-[9px] font-medium leading-none">{(t as any)[item.labelKey]?.split(' ')[0] || ''}</span>
+              <span className="text-[9px] font-medium leading-none">{String((t as unknown as Record<string, string | undefined>)[item.labelKey] || '').split(' ')[0]}</span>
               {active && (
                 <div className="absolute -bottom-0.5 w-5 h-0.5 rounded-full bg-amz-dourado" />
               )}

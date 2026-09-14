@@ -5,11 +5,25 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useCart } from '../contexts/CartContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { getStaticProduct, staticProducts } from '../data/products'
 
 type Product = Tables<'products'>
 
+const fallbackProductRecords = staticProducts.map((product) => ({
+  id: product.id,
+  title: product.title,
+  description: product.description,
+  price: product.price,
+  stock: product.stock,
+  image_url: product.image_url,
+  category_id: product.category_id,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}) as Product)
+
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>()
+  const productId = id ?? ''
   const { t } = useLanguage()
   const { addItem, items } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
@@ -19,18 +33,60 @@ export default function ProductDetail() {
   const [added, setAdded] = useState(false)
 
   useEffect(() => {
-    if (!id) return
+    if (!productId) {
+      setLoading(false)
+      return
+    }
+
     async function load() {
-      const { data } = await supabase.from('products').select('*').eq('id', id).single()
-      if (data) {
+      try {
+        const { data, error } = await supabase.from('products').select('*').eq('id', productId).single()
+
+        if (error || !data) {
+          const staticProduct = getStaticProduct(productId)
+          if (staticProduct) {
+            setProduct({
+              id: staticProduct.id,
+              title: staticProduct.title,
+              description: staticProduct.description,
+              price: staticProduct.price,
+              stock: staticProduct.stock,
+              image_url: staticProduct.image_url,
+              category_id: staticProduct.category_id,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            } as Product)
+            setRelated(fallbackProductRecords.filter((item) => item.category_id === staticProduct.category_id && item.id !== staticProduct.id).slice(0, 4))
+          }
+          setLoading(false)
+          return
+        }
+
         setProduct(data)
         const { data: rel } = await supabase.from('products').select('*').eq('category_id', data.category_id).neq('id', data.id).limit(4)
         if (rel) setRelated(rel)
+      } catch {
+        const staticProduct = getStaticProduct(productId)
+        if (staticProduct) {
+          setProduct({
+            id: staticProduct.id,
+            title: staticProduct.title,
+            description: staticProduct.description,
+            price: staticProduct.price,
+            stock: staticProduct.stock,
+            image_url: staticProduct.image_url,
+            category_id: staticProduct.category_id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as Product)
+          setRelated(fallbackProductRecords.filter((item) => item.category_id === staticProduct.category_id && item.id !== staticProduct.id).slice(0, 4))
+        }
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     load()
-  }, [id])
+  }, [productId])
 
   if (loading) {
     return (

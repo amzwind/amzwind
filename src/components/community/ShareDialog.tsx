@@ -40,8 +40,9 @@ export default function ShareDialog({ postId, open, onClose, onSuccess }: ShareD
       setSuccess(true)
       onSuccess?.()
       setTimeout(onClose, 1200)
-    } catch (e: any) {
-      setError(e.message || t.adminError)
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : t.adminError
+      setError(message)
     } finally {
       setSharing(null)
     }

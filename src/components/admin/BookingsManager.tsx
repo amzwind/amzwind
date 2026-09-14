@@ -63,7 +63,7 @@ export function BookingsManager() {
     if (error) {
       setToast({ message: error.message, type: 'error' })
     } else {
-      setToast({ message: 'Reserva atualizada com sucesso!', type: 'success' })
+      setToast({ message: t.bookingUpdated, type: 'success' })
       setEditModalOpen(false)
       setSelectedBooking(null)
       await loadData()
@@ -77,7 +77,7 @@ export function BookingsManager() {
     if (error) {
       setToast({ message: error.message, type: 'error' })
     } else {
-      setToast({ message: 'Reserva excluída.', type: 'success' })
+      setToast({ message: t.bookingDeleted, type: 'success' })
       setEditModalOpen(false)
       setSelectedBooking(null)
       await loadData()
@@ -95,7 +95,7 @@ export function BookingsManager() {
   ]
 
   const typeIcon = (type: string) => type === 'experience' ? '🌊' : type === 'class' ? '🎓' : '📦'
-  const typeName = (type: string) => type === 'experience' ? 'Experiência' : type === 'class' ? 'Aula' : 'Produto'
+  const typeName = (type: string) => type === 'experience' ? t.bookingTypeExperience : type === 'class' ? t.bookingTypeClass : t.bookingTypeProduct
 
   const extractClientInfo = (booking: Booking) => {
     const notes = parseNotes(booking.notes)
@@ -115,7 +115,7 @@ export function BookingsManager() {
       {confirmAction && (
         <ConfirmModal
           title={confirmAction.status === 'confirmed' ? t.adminBookConfirm : t.adminBookCancel}
-          message={`Deseja ${confirmAction.status === 'confirmed' ? 'confirmar' : 'cancelar'} esta reserva?`}
+          message={t.bookingConfirmAction}
           onConfirm={() => updateStatus(confirmAction.id, confirmAction.status)}
           onCancel={() => setConfirmAction(null)}
           danger={confirmAction.status === 'cancelled'}
@@ -218,7 +218,7 @@ export function BookingsManager() {
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Pagamento confirmado
+                      {t.bookingPaymentConfirmed}
                     </div>
                   )}
                   {b.status === 'pending' && (
@@ -240,21 +240,21 @@ export function BookingsManager() {
 
       {/* Detail/Edit Modal */}
       {editModalOpen && selectedBooking && (
-        <ModalShell onClose={() => { setEditModalOpen(false); setSelectedBooking(null) }} title="Detalhes da Reserva">
+        <ModalShell onClose={() => { setEditModalOpen(false); setSelectedBooking(null) }} title={t.bookingReservationDetails}>
           <div className="space-y-4">
             {/* Client Info */}
             <div className="bg-gray-50 dark:bg-white/[0.03] rounded-xl p-4 space-y-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">Informações do Cliente</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">{t.bookingClientInfo}</h4>
               {(() => {
                 const info = extractClientInfo(selectedBooking)
                 return (
                   <div className="space-y-1.5 text-sm">
-                    {info.name && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Nome:</span> {info.name}</p>}
-                    {info.email && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Email:</span> {info.email}</p>}
-                    {info.whatsapp && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">WhatsApp:</span> {info.whatsapp}</p>}
-                    {info.phone && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">Telefone:</span> {info.phone}</p>}
+                    {info.name && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">{t.bookingName}:</span> {info.name}</p>}
+                    {info.email && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">{t.bookingEmail}:</span> {info.email}</p>}
+                    {info.whatsapp && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">{t.bookingWhatsApp}:</span> {info.whatsapp}</p>}
+                    {info.phone && <p className="text-gray-900 dark:text-white"><span className="text-gray-400 dark:text-white/30 text-xs">{t.bookingPhone}:</span> {info.phone}</p>}
                     {!info.name && !info.email && !info.whatsapp && !info.phone && (
-                      <p className="text-gray-400 dark:text-white/30 text-xs italic">Nenhuma informação de contato registrada</p>
+                      <p className="text-gray-400 dark:text-white/30 text-xs italic">{t.bookingNoContact}</p>
                     )}
                   </div>
                 )
@@ -263,14 +263,14 @@ export function BookingsManager() {
 
             {/* Booking Details */}
             <div className="bg-gray-50 dark:bg-white/[0.03] rounded-xl p-4 space-y-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">Detalhes da Reserva</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-white/30 mb-2">{t.bookingReservationDetails}</h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-gray-400 dark:text-white/30 text-xs">Tipo</p>
+                  <p className="text-gray-400 dark:text-white/30 text-xs">{t.bookingFieldType}</p>
                   <p className="text-gray-900 dark:text-white font-medium">{typeIcon(selectedBooking.item_type)} {typeName(selectedBooking.item_type)}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 dark:text-white/30 text-xs">ID do Item</p>
+                  <p className="text-gray-400 dark:text-white/30 text-xs">{t.bookingFieldItemId}</p>
                   <p className="text-gray-900 dark:text-white font-mono text-xs">{selectedBooking.item_id?.slice(0, 12) || '—'}</p>
                 </div>
               </div>
@@ -279,8 +279,8 @@ export function BookingsManager() {
                 if (info.items.length === 0) return null
                 return (
                   <div className="mt-2">
-                    <p className="text-gray-400 dark:text-white/30 text-xs mb-1">Itens Reservados</p>
-                    {info.items.map((item: any, i: number) => (
+                    <p className="text-gray-400 dark:text-white/30 text-xs mb-1">{t.bookingReservedItems}</p>
+                    {info.items.map((item: { title: string; price: number; type: string }, i: number) => (
                       <div key={i} className="flex justify-between text-xs py-1">
                         <span className="text-gray-700 dark:text-white/60">{item.title}</span>
                         <span className="text-amz-dourado font-semibold">R$ {Number(item.price).toFixed(2)}</span>
@@ -292,19 +292,19 @@ export function BookingsManager() {
             </div>
 
             {/* Editable Fields */}
-            <FormField label="Status">
+            <FormField label={t.bookingStatusLabel}>
               <select
                 value={editForm.status}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, status: e.target.value }))}
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 focus:border-amz-dourado transition-colors"
               >
-                <option value="pending">Pendente</option>
-                <option value="confirmed">Confirmada</option>
-                <option value="cancelled">Cancelada</option>
+                <option value="pending">{t.bookingStatusPending}</option>
+                <option value="confirmed">{t.bookingStatusConfirmed}</option>
+                <option value="cancelled">{t.bookingStatusCancelled}</option>
               </select>
             </FormField>
 
-            <FormField label="Data da Reserva">
+            <FormField label={t.bookingDateLabel}>
               <Input
                 type="date"
                 value={editForm.booking_date}
@@ -312,7 +312,7 @@ export function BookingsManager() {
               />
             </FormField>
 
-            <FormField label="Notas / Observações">
+            <FormField label={t.bookingNotes}>
               <textarea
                 rows={3}
                 value={editForm.notes}
@@ -323,16 +323,16 @@ export function BookingsManager() {
 
             <div className="flex gap-3 pt-2">
               <GhostButton onClick={() => { setEditModalOpen(false); setSelectedBooking(null) }} className="flex-1">
-                Cancelar
+                {t.bookingCancel}
               </GhostButton>
               <button
                 onClick={() => setDeleteTarget(selectedBooking)}
                 className="px-4 py-2.5 rounded-xl border border-red-200 dark:border-red-500/20 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
               >
-                Excluir
+                {t.bookingDelete}
               </button>
               <PrimaryButton onClick={handleSaveEdit} disabled={saving} className="flex-1">
-                {saving ? 'Salvando...' : 'Salvar Alterações'}
+                {saving ? t.bookingSaving : t.bookingSave}
               </PrimaryButton>
             </div>
           </div>
@@ -342,8 +342,8 @@ export function BookingsManager() {
       {/* Delete Confirmation */}
       {deleteTarget && (
         <ConfirmModal
-          title="Excluir Reserva"
-          message={`Tem certeza que deseja excluir esta reserva? Esta ação não pode ser desfeita.`}
+          title={t.bookingDeleteTitle}
+          message={t.bookingDeleteConfirm}
           onConfirm={handleDeleteBooking}
           onCancel={() => setDeleteTarget(null)}
           danger

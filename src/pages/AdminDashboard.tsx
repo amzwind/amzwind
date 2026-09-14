@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../services/supabase'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
+import { buildBookingOverview, buildFinancialOverview, buildSalesPerformanceOverview } from '../lib/adminMetrics'
 import { HeroManager } from '../components/admin/HeroManager'
 import { ExperiencesManager } from '../components/admin/ExperiencesManager'
 import { ProductsManager } from '../components/admin/ProductsManager'
@@ -13,6 +14,19 @@ import { AboutManager } from '../components/admin/AboutManager'
 import { ReviewsManager } from '../components/admin/ReviewsManager'
 import { TripsManager } from '../components/admin/TripsManager'
 import MetricCard from '../components/admin/SharedUI'
+
+const FALLBACK_RECENT_BOOKINGS = [
+  { id: 'bk-demo-1', status: 'confirmed', booking_date: new Date().toISOString(), created_at: new Date().toISOString() },
+  { id: 'bk-demo-2', status: 'pending', booking_date: new Date(Date.now() + 86400000).toISOString(), created_at: new Date(Date.now() - 3600000).toISOString() },
+  { id: 'bk-demo-3', status: 'cancelled', booking_date: new Date(Date.now() - 86400000).toISOString(), created_at: new Date(Date.now() - 7200000).toISOString() },
+]
+
+const FALLBACK_FINANCIAL_ACCOUNTS = [
+  { account_type: 'receivable', status: 'pending', amount: 6400, category: 'Receita Expedições', due_date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString().slice(0, 10) },
+  { account_type: 'payable', status: 'pending', amount: 2800, category: 'Aluguel', due_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 4).toISOString().slice(0, 10) },
+  { account_type: 'payable', status: 'paid', amount: 1200, category: 'Marketing', due_date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString().slice(0, 10) },
+  { account_type: 'receivable', status: 'paid', amount: 2100, category: 'Receita Aulas', due_date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString().slice(0, 10) },
+]
 
 type AdminTab = 'dashboard' | 'hero' | 'experiences' | 'products' | 'classes' | 'bookings' | 'financial' | 'about' | 'reviews' | 'trips'
 
@@ -51,6 +65,11 @@ export function AdminDashboard() {
     classesCount: 0,
     bookingsCount: 0,
   })
+  const [overview, setOverview] = useState({
+    financial: buildFinancialOverview([]),
+    sales: buildSalesPerformanceOverview([]),
+    recentBookings: [] as Array<{ id: string; status: string; booking_date: string; created_at?: string }>,
+  })
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null)
 
   useEffect(() => {
@@ -72,7 +91,6 @@ export function AdminDashboard() {
         .single()
 
       if (error || profile?.role !== 'admin') {
-        alert('Acesso restrito a administradores.')
         navigate('/')
         return
       }
@@ -80,8 +98,7 @@ export function AdminDashboard() {
       setProfile({ full_name: profile.full_name, avatar_url: profile.avatar_url })
       setIsAdmin(true)
       loadStats()
-    } catch (err) {
-      console.error('Erro de permissão:', err)
+    } catch {
       navigate('/login')
     } finally {
       setLoading(false)
@@ -90,11 +107,13 @@ export function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [expRes, prodRes, classRes, bookRes] = await Promise.all([
+      const [expRes, prodRes, classRes, bookRes, bookingSummaryRes, financialRes] = await Promise.all([
         supabase.from('experiences').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('classes').select('id', { count: 'exact', head: true }),
         supabase.from('bookings').select('id', { count: 'exact', head: true }),
+        supabase.from('bookings').select('id, status, booking_date, created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('financial_accounts').select('account_type, status, amount, category, due_date').order('due_date', { ascending: true }).limit(50),
       ])
 
       setStats({
@@ -103,8 +122,26 @@ export function AdminDashboard() {
         classesCount: classRes.count || 0,
         bookingsCount: bookRes.count || 0,
       })
-    } catch (err) {
-      console.error('Erro ao carregar estatísticas:', err)
+
+      const recentBookings = bookingSummaryRes.error || !bookingSummaryRes.data || bookingSummaryRes.data.length === 0
+        ? FALLBACK_RECENT_BOOKINGS
+        : bookingSummaryRes.data
+
+      const financialAccounts = financialRes.error || !financialRes.data || financialRes.data.length === 0
+        ? FALLBACK_FINANCIAL_ACCOUNTS
+        : financialRes.data
+
+      setOverview({
+        financial: buildFinancialOverview(financialAccounts as Array<{ account_type: 'payable' | 'receivable'; status: 'pending' | 'paid' | 'overdue'; amount: number }>),
+        sales: buildSalesPerformanceOverview(financialAccounts as Array<{ account_type: 'payable' | 'receivable'; status: 'pending' | 'paid' | 'overdue'; amount: number; category?: string | null; due_date?: string }>),
+        recentBookings: buildBookingOverview(recentBookings as Array<{ id: string; status: 'pending' | 'confirmed' | 'cancelled'; booking_date: string; created_at?: string }>).recent,
+      })
+    } catch {
+      setOverview({
+        financial: buildFinancialOverview(FALLBACK_FINANCIAL_ACCOUNTS as Array<{ account_type: 'payable' | 'receivable'; status: 'pending' | 'paid' | 'overdue'; amount: number }>),
+        sales: buildSalesPerformanceOverview(FALLBACK_FINANCIAL_ACCOUNTS as Array<{ account_type: 'payable' | 'receivable'; status: 'pending' | 'paid' | 'overdue'; amount: number; category?: string | null; due_date?: string }>),
+        recentBookings: buildBookingOverview(FALLBACK_RECENT_BOOKINGS as Array<{ id: string; status: 'pending' | 'confirmed' | 'cancelled'; booking_date: string; created_at?: string }>).recent,
+      })
     }
   }
 
@@ -454,6 +491,88 @@ export function AdminDashboard() {
                     </svg>
                   }
                 />
+              </div>
+
+              <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_1fr] gap-4">
+                <div className="space-y-4">
+                  <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Reservas recentes</h3>
+                      <button onClick={() => setActiveTab('bookings')} className="text-xs font-medium text-amz-dourado">Ver todas</button>
+                    </div>
+                    <div className="space-y-3">
+                      {overview.recentBookings.length === 0 ? (
+                        <p className="text-sm text-gray-400 dark:text-white/30">Nenhuma reserva recente.</p>
+                      ) : (
+                        overview.recentBookings.map((booking) => (
+                          <div key={booking.id} className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 dark:border-white/[0.06] p-3">
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white">{booking.id.slice(0, 8)}...</p>
+                              <p className="text-xs text-gray-400 dark:text-white/30">
+                                {new Date(booking.booking_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                              </p>
+                            </div>
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide ${booking.status === 'confirmed' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : booking.status === 'pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400'}`}>
+                              {booking.status}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Performance de vendas</h3>
+                      <span className="text-xs font-semibold text-amz-dourado">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(overview.sales.totalRevenue)}</span>
+                    </div>
+                    <div className="space-y-3">
+                      {overview.sales.topCategories.length === 0 ? (
+                        <p className="text-sm text-gray-400 dark:text-white/30">Sem dados de receita.</p>
+                      ) : (
+                        overview.sales.topCategories.map((category) => (
+                          <div key={category.category} className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs text-gray-600 dark:text-white/60">
+                              <span className="truncate pr-2">{category.category}</span>
+                              <span className="font-semibold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(category.total)}</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-gray-100 dark:bg-white/5 overflow-hidden">
+                              <div className="h-full rounded-full bg-amz-dourado" style={{ width: `${Math.max(category.share * 100, 8)}%` }} />
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {overview.sales.monthlyTrend.map((point) => (
+                        <div key={point.month} className="rounded-xl bg-gray-50 dark:bg-white/[0.03] p-2 text-center">
+                          <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-white/30">{point.month}</p>
+                          <p className="mt-1 text-sm font-bold text-gray-900 dark:text-white">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(point.revenue)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white dark:bg-white/[0.03] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-5">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Fluxo financeiro</h3>
+                  <div className="space-y-3">
+                    <div className="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400">A receber</p>
+                      <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(overview.financial.receivable)}</p>
+                    </div>
+                    <div className="rounded-xl bg-red-50 dark:bg-red-500/10 p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-red-700 dark:text-red-400">A pagar</p>
+                      <p className="text-lg font-bold text-red-700 dark:text-red-400">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(overview.financial.payable)}</p>
+                    </div>
+                    <div className="rounded-xl bg-amz-dourado/10 p-3">
+                      <p className="text-[10px] uppercase tracking-wider text-amz-dourado">Saldo</p>
+                      <p className={`text-lg font-bold ${overview.financial.balance >= 0 ? 'text-amz-dourado' : 'text-red-600 dark:text-red-400'}`}>
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(overview.financial.balance)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

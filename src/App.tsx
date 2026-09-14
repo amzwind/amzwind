@@ -4,9 +4,12 @@ import { LanguageProvider } from './contexts/LanguageContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { CartProvider } from './contexts/CartContext'
 import { FavoritesProvider } from './contexts/FavoritesContext'
+import { NotificationProvider } from './contexts/NotificationContext'
+import { InAppNotificationToast } from './components/notifications/InAppNotificationToast'
 import SplashScreen from './components/SplashScreen'
 import InstallAppBanner from './components/InstallAppBanner'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import BottomNav from './components/BottomNav'
 import { Analytics } from '@vercel/analytics/react'
 
@@ -70,40 +73,45 @@ export default function App() {
       <ThemeProvider>
         <FavoritesProvider>
           <CartProvider>
-            <BrowserRouter>
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-amz-dourado border-t-transparent rounded-full" /></div>}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/galeria" element={<GaleriaPage />} />
-              <Route path="/experiencias" element={<ExperienciasPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/minha-conta" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
-              <Route path="/perfil" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-              <Route path="/experiencia/:id" element={<ExperienceDetail />} />
-              <Route path="/aula/iniciante" element={<KiteCoursePage />} />
-              <Route path="/favoritos" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
-              <Route path="/conversas" element={<ProtectedRoute><ConversationsList /></ProtectedRoute>} />
-              <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-              <Route path="/amigos" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
-              <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-              <Route path="/comunidade" element={<Community />} />
-              <Route path="/trips" element={<TripsPage />} />
-              <Route path="/trips/new" element={<ProtectedRoute><TripCreatePage /></ProtectedRoute>} />
-              <Route path="/trips/:id" element={<TripDetailPage />} />
-              <Route path="/trips/:id/edit" element={<ProtectedRoute><TripEditPage /></ProtectedRoute>} />
-              <Route path="/produtos" element={<ProductCategory />} />
-              <Route path="/produtos/:slug" element={<ProductCategory />} />
-              <Route path="/produto/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<ProtectedRoute><div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            </Suspense>
-            <BottomNav />
-            <InstallAppBanner />
-            <Analytics />
-          </BrowserRouter>
+            <NotificationProvider>
+              <BrowserRouter>
+                <InAppNotificationToast />
+                <ErrorBoundary>
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-amz-dourado border-t-transparent rounded-full" /></div>}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/sobre" element={<Sobre />} />
+                  <Route path="/galeria" element={<GaleriaPage />} />
+                  <Route path="/experiencias" element={<ExperienciasPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/minha-conta" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+                  <Route path="/perfil" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+                  <Route path="/experiencia/:id" element={<ExperienceDetail />} />
+                  <Route path="/aula/iniciante" element={<KiteCoursePage />} />
+                  <Route path="/favoritos" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+                  <Route path="/conversas" element={<ProtectedRoute><ConversationsList /></ProtectedRoute>} />
+                  <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+                  <Route path="/amigos" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+                  <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+                  <Route path="/comunidade" element={<Community />} />
+                  <Route path="/trips" element={<TripsPage />} />
+                  <Route path="/trips/new" element={<ProtectedRoute><TripCreatePage /></ProtectedRoute>} />
+                  <Route path="/trips/:id" element={<TripDetailPage />} />
+                  <Route path="/trips/:id/edit" element={<ProtectedRoute><TripEditPage /></ProtectedRoute>} />
+                  <Route path="/produtos" element={<ProductCategory />} />
+                  <Route path="/produtos/:slug" element={<ProductCategory />} />
+                  <Route path="/produto/:id" element={<ProductDetail />} />
+                  <Route path="/checkout" element={<ProtectedRoute><div className="pt-24 pb-24 md:pb-16 px-4 max-w-7xl mx-auto"><CartCheckout /></div></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                </Suspense>
+                </ErrorBoundary>
+                <BottomNav />
+                <InstallAppBanner />
+                <Analytics />
+              </BrowserRouter>
+            </NotificationProvider>
           </CartProvider>
         </FavoritesProvider>
       </ThemeProvider>

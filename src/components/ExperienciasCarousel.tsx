@@ -1,8 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
-import { useTheme } from '../contexts/ThemeContext'
-import { supabase } from '../services/supabase'
+import { supabase, type Tables } from '../services/supabase'
 import { staticExperiences } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 import FavoriteButton from './FavoriteButton'
@@ -34,12 +33,11 @@ function getFallbackImage(index: number): string {
 
 export default function ExperienciasCarousel() {
   const { t } = useLanguage()
-  useTheme()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  const [dbExperiences, setDbExperiences] = useState<any[]>([])
+  const [dbExperiences, setDbExperiences] = useState<Tables<'experiences'>[]>([])
 
   useEffect(() => {
     fetchDbExperiences()
@@ -61,8 +59,8 @@ export default function ExperienciasCarousel() {
           }))
         )
       }
-    } catch (err) {
-      console.error('Erro ao buscar experiencias do banco:', err)
+    } catch {
+      // Experiences loading failed silently
     }
   }
 

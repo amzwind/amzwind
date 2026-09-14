@@ -3,16 +3,38 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { supabase, type Tables } from '../services/supabase'
 import { useEffect, useState, useMemo } from 'react'
 import { portraitImages, heroDesktopFallback } from '../data/media'
+import { staticExperiences } from '../data/experiences'
 import FavoriteButton from '../components/FavoriteButton'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 type Experience = Tables<'experiences'>
 type Category = Tables<'categories'>
+type SortMode = 'featured' | 'price-asc' | 'price-desc' | 'title'
 
 const FALLBACK_IMAGES = [
   portraitImages[0]?.src, portraitImages[5]?.src, portraitImages[10]?.src, portraitImages[15]?.src, portraitImages[20]?.src,
 ].filter(Boolean)
+
+const fallbackExperiences = staticExperiences.map((exp) => ({
+  id: exp.id,
+  title: exp.title,
+  slug: exp.id,
+  description: exp.description,
+  category_id: '',
+  price: exp.price,
+  duration: exp.duration,
+  level: exp.level,
+  community: exp.community,
+  image_url: exp.image_url,
+  video_url: null,
+  featured: false,
+  type: exp.type,
+  includes: exp.includes ?? null,
+  original_price: exp.originalPrice ?? null,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}) as Experience)
 
 function getExpFallback(id: string): string {
   const hash = id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
@@ -25,6 +47,8 @@ export default function ExperienciasPage() {
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [activeCategory, setActiveCategory] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState<SortMode>('featured')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -32,19 +56,52 @@ export default function ExperienciasPage() {
   }, [])
 
   async function loadExperiences() {
-    const [expRes, catRes] = await Promise.all([
-      supabase.from('experiences').select('*').order('title'),
-      supabase.from('categories').select('*').eq('type', 'experience').order('name'),
-    ])
-    if (expRes.data) setExperiences(expRes.data)
-    if (catRes.data) setCategories(catRes.data)
-    setLoading(false)
+    try {
+      const [expRes, catRes] = await Promise.all([
+        supabase.from('experiences').select('*').order('title'),
+        supabase.from('categories').select('*').eq('type', 'experience').order('name'),
+      ])
+
+      if (expRes.error) throw expRes.error
+      if (catRes.error) throw catRes.error
+
+      const nextExperiences = expRes.data && expRes.data.length > 0 ? expRes.data : fallbackExperiences
+      setExperiences(nextExperiences)
+      setCategories(catRes.data ?? [])
+    } catch {
+      setExperiences(fallbackExperiences)
+      setCategories([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   const filtered = useMemo(() => {
-    if (activeCategory === 'all') return experiences
-    return experiences.filter((exp) => exp.category_id === activeCategory)
-  }, [experiences, activeCategory])
+    const query = searchTerm.trim().toLowerCase()
+    let result = activeCategory === 'all' ? [...experiences] : experiences.filter((exp) => exp.category_id === activeCategory)
+
+    if (query) {
+      result = result.filter((exp) => {
+        const haystack = [exp.title, exp.description, exp.level, exp.community]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+
+        return haystack.includes(query)
+      })
+    }
+
+    switch (sortBy) {
+      case 'price-asc':
+        return result.sort((a, b) => a.price - b.price)
+      case 'price-desc':
+        return result.sort((a, b) => b.price - a.price)
+      case 'title':
+        return result.sort((a, b) => a.title.localeCompare(b.title))
+      default:
+        return result.sort((a, b) => (b.featured === true ? 1 : 0) - (a.featured === true ? 1 : 0) || a.title.localeCompare(b.title))
+    }
+  }, [experiences, activeCategory, searchTerm, sortBy])
 
   const getExperienceImage = (exp: Experience) => {
     if (exp.image_url) return exp.image_url
@@ -93,32 +150,66 @@ export default function ExperienciasPage() {
 
       {/* Experiences Grid */}
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Category Filters */}
-        {!loading && categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-8 justify-center">
-            <button
-              onClick={() => setActiveCategory('all')}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                activeCategory === 'all'
-                  ? 'bg-amz-dourado text-white shadow-md'
-                  : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
-              }`}
-            >
-              Todas
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  activeCategory === cat.id
-                    ? 'bg-amz-dourado text-white shadow-md'
-                    : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
+        {!loading && (
+          <div className="mb-8 space-y-4">
+            <div className="relative">
+              <input
+                aria-label="Buscar experiência"
+                placeholder="Buscar experiência..."
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="w-full rounded-2xl border border-amz-areia-dark/20 bg-white px-4 py-3 pr-11 text-sm text-amz-terra outline-none transition focus:border-amz-dourado focus:ring-2 focus:ring-amz-dourado/20 dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amz-terra-light dark:text-white/30">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                  <button
+                    onClick={() => setActiveCategory('all')}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                      activeCategory === 'all'
+                        ? 'bg-amz-dourado text-white shadow-md'
+                        : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
+                    }`}
+                  >
+                    Todas
+                  </button>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategory(cat.id)}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        activeCategory === cat.id
+                          ? 'bg-amz-dourado text-white shadow-md'
+                          : 'bg-white dark:bg-white/5 text-amz-terra dark:text-amz-areia border border-amz-areia-dark/20 dark:border-white/5 hover:border-amz-dourado hover:text-amz-dourado'
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <label className="flex items-center gap-2 self-end text-xs font-semibold uppercase tracking-[0.2em] text-amz-terra-light dark:text-white/40">
+                <span>Ordenar</span>
+                <select
+                  value={sortBy}
+                  onChange={(event) => setSortBy(event.target.value as SortMode)}
+                  className="rounded-xl border border-amz-areia-dark/20 bg-white px-3 py-2 text-xs font-medium text-amz-terra outline-none focus:border-amz-dourado dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+                >
+                  <option value="featured">Destaques</option>
+                  <option value="price-asc">Preço: menor</option>
+                  <option value="price-desc">Preço: maior</option>
+                  <option value="title">Título</option>
+                </select>
+              </label>
+            </div>
           </div>
         )}
 
@@ -144,10 +235,20 @@ export default function ExperienciasPage() {
               </svg>
             </div>
             <p className="text-gray-500 dark:text-white/40">
-              {activeCategory === 'all'
-                ? 'Nenhuma experiência disponível no momento.'
-                : 'Nenhuma experiência encontrada nesta categoria.'}
+              {searchTerm
+                ? `Nenhuma experiência encontrada para “${searchTerm}”.`
+                : activeCategory === 'all'
+                  ? 'Nenhuma experiência disponível no momento.'
+                  : 'Nenhuma experiência encontrada nesta categoria.'}
             </p>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="mt-4 inline-flex items-center rounded-full bg-amz-dourado px-4 py-2 text-sm font-semibold text-white"
+              >
+                Limpar busca
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

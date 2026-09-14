@@ -16,8 +16,8 @@ export function TripsManager() {
     try {
       const data = await adminListTrips()
       setTrips(data)
-    } catch (err) {
-      console.error('Erro ao carregar trips:', err)
+    } catch {
+      setToast({ message: 'Erro ao carregar trips', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -31,8 +31,9 @@ export function TripsManager() {
       await adminUpdateTripStatus(id, status)
       setTrips((prev) => prev.map((t) => t.id === id ? { ...t, status } : t))
       setToast({ message: 'Status atualizado!', type: 'success' })
-    } catch (err: any) {
-      setToast({ message: 'Erro: ' + err.message, type: 'error' })
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido'
+      setToast({ message, type: 'error' })
     } finally {
       setUpdatingId(null)
     }
@@ -45,8 +46,9 @@ export function TripsManager() {
       await adminDeleteTrip(id)
       setTrips((prev) => prev.filter((t) => t.id !== id))
       setToast({ message: 'Trip excluída!', type: 'success' })
-    } catch (err: any) {
-      setToast({ message: 'Erro: ' + err.message, type: 'error' })
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido'
+      setToast({ message, type: 'error' })
     } finally {
       setUpdatingId(null)
     }

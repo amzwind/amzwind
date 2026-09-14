@@ -52,7 +52,7 @@ export default function Sobre() {
     setLoading(true)
     try {
       const { data, error } = await supabase
-        .from('about_page' as any)
+        .from('about_page')
         .select('*')
         .eq('locale', locale)
         .single()

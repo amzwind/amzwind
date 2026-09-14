@@ -38,15 +38,16 @@ export default function MetricCard({ label, value, icon, color = 'text-amz-doura
 }
 
 export function StatusBadge({ status }: { status: string }) {
+  const { t } = useLanguage()
   const colors: Record<string, string> = {
     pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
     confirmed: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
     cancelled: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',
   }
   const labels: Record<string, string> = {
-    pending: 'Pendente',
-    confirmed: 'Confirmada',
-    cancelled: 'Cancelada',
+    pending: t.sharedStatusPending,
+    confirmed: t.sharedStatusConfirmed,
+    cancelled: t.sharedStatusCancelled,
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide ${colors[status] || colors.pending}`}>
@@ -174,6 +175,7 @@ export function ConfirmModal({ title, message, onConfirm, onCancel, danger }: { 
 }
 
 export function FileUpload({ label, value, onUpload, bucket = 'experiences', accept = 'image/*' }: { label: string; value: string; onUpload: (url: string) => void; bucket?: string; accept?: string }) {
+  const { t } = useLanguage()
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
@@ -194,7 +196,7 @@ export function FileUpload({ label, value, onUpload, bucket = 'experiences', acc
       if (urlData?.publicUrl) {
         onUpload(urlData.publicUrl)
       } else {
-        setUploadError('Não foi possível obter a URL do arquivo.')
+        setUploadError(t.sharedUploadError)
       }
     }
     setUploading(false)
@@ -215,7 +217,7 @@ export function FileUpload({ label, value, onUpload, bucket = 'experiences', acc
         )}
         <label className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-dashed border-gray-300 dark:border-white/10 bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-500 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-white/[0.05] cursor-pointer transition-colors">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-          {uploading ? 'Enviando...' : isVideo ? 'Escolher vídeo' : 'Escolher imagem'}
+          {uploading ? t.sharedUploading : isVideo ? t.sharedChooseVideo : t.sharedChooseImage}
           <input type="file" accept={accept} onChange={handleFile} className="hidden" />
         </label>
       </div>

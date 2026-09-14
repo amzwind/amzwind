@@ -1,4 +1,5 @@
 import { supabase, type Tables, type Inserts } from './supabase'
+import { isMissingRpcError } from './rpcDiagnostics'
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -126,13 +127,7 @@ export async function toggleLike(postId: string): Promise<boolean> {
   return data as boolean
 }
 
-async function loadFeedPosts(rpcName: string, limit: number, offset: number): Promise<FeedResult> {
-  const { data: feedPosts, error } = await supabase
-    .rpc(rpcName, { p_limit: limit, p_offset: offset })
-
-  if (error) throw new Error('Falha ao carregar feed: ' + error.message)
-
-  const posts = (feedPosts || []) as PostFeedItem[]
+async function enrichPosts(posts: PostFeedItem[]): Promise<FeedResult> {
   const authors: Record<string, PostAuthor> = {}
 
   const userIds = [...new Set(posts.map((p) => p.user_id))]
@@ -150,6 +145,62 @@ async function loadFeedPosts(rpcName: string, limit: number, offset: number): Pr
   }
 
   return { posts, authors }
+}
+
+async function fallbackFeedQuery(rpcName: string, limit: number, offset: number): Promise<FeedResult> {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (rpcName === 'get_friends_feed') {
+    if (!user) return { posts: [], authors: {} }
+
+    const { data: friendships } = await supabase
+      .from('friendships')
+      .select('user_id, friend_id')
+      .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
+
+    const friendIds = new Set<string>([user.id])
+    for (const entry of friendships ?? []) {
+      friendIds.add(entry.user_id === user.id ? entry.friend_id : entry.user_id)
+    }
+
+    if (friendIds.size === 1) {
+      return { posts: [], authors: {} }
+    }
+
+    const { data: postsData } = await supabase
+      .from('posts')
+      .select('*')
+      .in('user_id', [...friendIds])
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    return enrichPosts((postsData ?? []) as PostFeedItem[])
+  }
+
+  const { data: postsData } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  return enrichPosts((postsData ?? []) as PostFeedItem[])
+}
+
+async function loadFeedPosts(rpcName: string, limit: number, offset: number): Promise<FeedResult> {
+  try {
+    const { data: feedPosts, error } = await supabase
+      .rpc(rpcName, { p_limit: limit, p_offset: offset })
+
+    if (error) throw error
+
+    return enrichPosts((feedPosts || []) as PostFeedItem[])
+  } catch (error) {
+    if (!isMissingRpcError(error)) {
+      throw new Error('Falha ao carregar feed: ' + (error as Error).message)
+    }
+
+    return fallbackFeedQuery(rpcName, limit, offset)
+  }
 }
 
 export async function loadFeed(limit = 20, offset = 0): Promise<FeedResult> {
