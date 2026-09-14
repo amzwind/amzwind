@@ -12,6 +12,9 @@ import {
 } from '../services/trips'
 import { toggleLike, type PostAuthor } from '../services/feed'
 import { TripInteractiveMap } from '../components/trips/TripInteractiveMap'
+import CheckoutModal from '../components/CheckoutModal'
+
+const TRIP_RESERVATION_PRICE = 499
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return ''
@@ -52,6 +55,7 @@ export default function TripDetailPage() {
   const [invitableFriends, setInvitableFriends] = useState<InvitableFriend[]>([])
   const [loadingFriends, setLoadingFriends] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<string[]>([])
+  const [showCheckout, setShowCheckout] = useState(false)
   const userPendingInvite = userId ? participants.some((p) => p.user_id === userId && p.status === 'pending') : false
 
   useEffect(() => {
@@ -341,6 +345,12 @@ export default function TripDetailPage() {
               {t.tripInvite || 'Convidar'}
             </button>
           )}
+          {userId && trip.status === 'published' && (
+            <button onClick={() => setShowCheckout(true)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-amz-dourado text-white hover:bg-amber-600 transition-colors">
+              Reservar — R$ {TRIP_RESERVATION_PRICE.toFixed(2)}
+            </button>
+          )}
           {conversation && conversation.is_member && (
             <button onClick={() => navigate(`/chat/${conversation.conversation_id}`)}
               className="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-1.5">
@@ -592,6 +602,16 @@ export default function TripDetailPage() {
           </div>
         </div>
       )}
+      <CheckoutModal
+        isOpen={showCheckout}
+        onClose={() => setShowCheckout(false)}
+        itemType="trip"
+        itemId={id ?? trip.id}
+        itemTitle={trip.title}
+        amount={TRIP_RESERVATION_PRICE}
+        imageUrl={trip.cover_url}
+        onSuccess={() => setShowCheckout(false)}
+      />
     </div>
   )
 }

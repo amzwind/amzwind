@@ -980,6 +980,47 @@ export type Database = {
           created_at?: string
         }
       }
+      orders: {
+        Row: {
+          id: string
+          user_id: string
+          item_type: 'trip' | 'experience'
+          item_id: string
+          amount: number
+          currency: string
+          status: 'pending' | 'paid' | 'cancelled'
+          payment_provider_id: string | null
+          payment_method: 'pix' | 'card' | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          item_type: 'trip' | 'experience'
+          item_id: string
+          amount?: number
+          currency?: string
+          status?: 'pending' | 'paid' | 'cancelled'
+          payment_provider_id?: string | null
+          payment_method?: 'pix' | 'card' | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          item_type?: 'trip' | 'experience'
+          item_id?: string
+          amount?: number
+          currency?: string
+          status?: 'pending' | 'paid' | 'cancelled'
+          payment_provider_id?: string | null
+          payment_method?: 'pix' | 'card' | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: Record<string, never>
     Functions: {

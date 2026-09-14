@@ -7,6 +7,7 @@ import { filterBookings, type BookingStatusFilter } from '../lib/bookingFilters'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import MyOrders from '../components/MyOrders'
 
 type Booking = Tables<'bookings'>
 type Profile = Tables<'profiles'>
@@ -272,7 +273,9 @@ export default function CustomerDashboard() {
 
           {/* Bookings */}
           {activeTab === 'bookings' && (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <MyOrders />
+              <div className="space-y-4">
               <div className="bg-white dark:bg-white/5 rounded-2xl border border-amz-areia-dark/20 dark:border-white/5 p-3 sm:p-4 space-y-3">
                 <div className="relative">
                   <input
@@ -430,6 +433,7 @@ export default function CustomerDashboard() {
                   )
                 })
               )}
+              </div>
             </div>
           )}
 

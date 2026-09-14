@@ -6,6 +6,7 @@ import { useCart } from '../contexts/CartContext'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Lightbox from '../components/Lightbox'
+import CheckoutModal from '../components/CheckoutModal'
 import { getStaticExperience, type StaticExperience } from '../data/experiences'
 import { portraitImages, heroDesktopFallback } from '../data/media'
 
@@ -64,6 +65,9 @@ export default function ExperienceDetail() {
 
   // Gallery lightbox
   const [lbIndex, setLbIndex] = useState<number | null>(null)
+
+  // Checkout direto (gateway de pagamento)
+  const [showCheckout, setShowCheckout] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setCurrentUser(data.session?.user?.id || null))
@@ -335,6 +339,12 @@ export default function ExperienceDetail() {
               <button onClick={handleAddToCart} className="btn-primary w-full !py-3.5">
                 {expType === 'package' ? t.expDetailAddToCart : t.expDetailBook}
               </button>
+              <button
+                onClick={() => setShowCheckout(true)}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amz-dourado to-amber-500 text-white font-bold text-sm hover:from-amber-600 hover:to-amber-700 transition-all shadow-lg shadow-amz-dourado/25 active:scale-[0.98]"
+              >
+                Comprar agora — {formatBRL(Number(exp.price))}
+              </button>
               {expType === 'package' && (
                 <p className="text-[10px] text-center text-amz-terra-light dark:text-amz-areia/30">
                   {t.expDetailSecurePayment}
@@ -436,6 +446,19 @@ export default function ExperienceDetail() {
 
       {lbIndex !== null && (
         <Lightbox images={galleryImages} index={lbIndex} onClose={() => setLbIndex(null)} onNav={handleNavLb} />
+      )}
+
+      {exp && (
+        <CheckoutModal
+          isOpen={showCheckout}
+          onClose={() => setShowCheckout(false)}
+          itemType="experience"
+          itemId={exp.id}
+          itemTitle={exp.title}
+          amount={Number(exp.price)}
+          imageUrl={exp.image_url}
+          onSuccess={() => setShowCheckout(false)}
+        />
       )}
     </div>
   )
