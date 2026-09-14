@@ -640,7 +640,7 @@ export default function UserProfile() {
                       published: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
                       full: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
                       cancelled: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',
-                      completed: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+                      completed: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
                     }
                     const statusLabels: Record<string, string> = {
                       draft: t.profileStatusDraft, published: t.profileStatusPublished, full: t.profileStatusFull, cancelled: t.profileStatusCancelled, completed: t.profileStatusCompleted,

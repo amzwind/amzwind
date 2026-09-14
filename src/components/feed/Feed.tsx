@@ -191,51 +191,51 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
         onPostCreated={handlePostCreated}
       />
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <div className="relative">
           <input
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Buscar no feed..."
-            className="w-full rounded-xl border border-amz-areia-dark/20 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-2.5 pl-10 text-sm text-amz-terra dark:text-amz-areia outline-none transition focus:border-amz-oceano focus:ring-2 focus:ring-amz-oceano/20"
+            className="w-full rounded-2xl border border-white/50 dark:border-white/10 bg-white/80 dark:bg-[#241407]/70 backdrop-blur-xl shadow-md shadow-amz-terra/5 px-4 py-2.5 pl-10 text-sm text-amz-terra dark:text-amz-areia outline-none transition focus:border-amz-dourado/60 focus:ring-2 focus:ring-amz-dourado/25"
           />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amz-terra-light dark:text-amz-areia/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
 
-        <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1">
+        <div className="flex items-center gap-1 bg-white/80 dark:bg-[#241407]/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-white/10 shadow-md shadow-amz-terra/5 p-1.5">
           <button
             onClick={() => handleFilterChange('global')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${
               feedFilter === 'global'
-                ? 'bg-amz-oceano text-white'
-                : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+                ? 'bg-gradient-to-r from-amz-oceano to-amz-oceano-dark text-white shadow-md shadow-amz-oceano/30'
+                : 'text-amz-terra-light dark:text-amz-areia/50 hover:bg-amz-terra/5 dark:hover:bg-white/5'
             }`}
           >
             {t.feedGlobal}
           </button>
           <button
             onClick={() => handleFilterChange('friends')}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${
               feedFilter === 'friends'
-                ? 'bg-amz-oceano text-white'
-                : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+                ? 'bg-gradient-to-r from-amz-oceano to-amz-oceano-dark text-white shadow-md shadow-amz-oceano/30'
+                : 'text-amz-terra-light dark:text-amz-areia/50 hover:bg-amz-terra/5 dark:hover:bg-white/5'
             }`}
           >
             {t.feedFriends}
           </button>
         </div>
 
-        <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1">
+        <div className="flex items-center gap-1 bg-white/80 dark:bg-[#241407]/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-white/10 shadow-md shadow-amz-terra/5 p-1.5">
           {(['recent', 'popular'] as FeedSortMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => setSortMode(mode)}
-              className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
+              className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-200 ${
                 sortMode === mode
-                  ? 'bg-amz-dourado text-white'
-                  : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+                  ? 'bg-gradient-to-r from-amz-dourado to-amber-500 text-white shadow-md shadow-amz-dourado/30'
+                  : 'text-amz-terra-light dark:text-amz-areia/50 hover:bg-amz-terra/5 dark:hover:bg-white/5'
               }`}
             >
               {mode === 'recent' ? 'Recentes' : 'Populares'}
@@ -254,10 +254,10 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
       )}
 
       {posts.length === 0 && !error ? (
-        <div className="bg-white dark:bg-white/5 rounded-2xl p-12 text-center border border-amz-areia-dark/20 dark:border-white/5">
-          <div className="text-4xl mb-3">🏄</div>
-          <p className="text-amz-terra-light dark:text-amz-areia/40 mb-1">{t.feedEmpty}</p>
-          <p className="text-xs text-amz-terra-light dark:text-amz-areia/30">{t.feedEmptyHint}</p>
+        <div className="bg-white/80 dark:bg-[#241407]/70 backdrop-blur-xl rounded-3xl border border-white/50 dark:border-white/10 shadow-xl shadow-amz-terra/5 p-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amz-dourado/20 to-amz-oceano/20 flex items-center justify-center text-3xl">🏄</div>
+          <p className="text-amz-terra dark:text-amz-areia font-semibold mb-1">{t.feedEmpty}</p>
+          <p className="text-xs text-amz-terra-light dark:text-amz-areia/40">{t.feedEmptyHint}</p>
         </div>
       ) : (
         <>

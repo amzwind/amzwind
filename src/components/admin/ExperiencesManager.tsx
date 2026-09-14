@@ -116,7 +116,7 @@ export function ExperiencesManager() {
       </span>
     )
     return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10 px-2 py-0.5 rounded-full">
+      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amz-oceano bg-amz-oceano/10 dark:text-amz-dourado dark:bg-amz-dourado/10 px-2 py-0.5 rounded-full">
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
         Avulso
       </span>
@@ -195,13 +195,13 @@ export function ExperiencesManager() {
                 <button
                   type="button"
                   onClick={() => setForm({ ...form, type: 'individual' })}
-                  className={`p-3 rounded-xl border-2 text-center transition-all ${
-                    form.type === 'individual'
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 shadow-sm'
-                      : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
-                  }`}
-                >
-                  <svg className="w-5 h-5 mx-auto mb-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    className={`p-3 rounded-xl border-2 text-center transition-all ${
+                      form.type === 'individual'
+                        ? 'border-amz-dourado bg-amz-dourado/5 dark:bg-amz-dourado/10 shadow-sm'
+                        : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                    }`}
+                  >
+                    <svg className="w-5 h-5 mx-auto mb-1 text-amz-dourado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                   <p className="text-xs font-bold text-gray-900 dark:text-white">Experiência Individual</p>
                   <p className="text-[10px] text-gray-400 dark:text-white/30">Aula avulsa, downwind, etc.</p>
                 </button>

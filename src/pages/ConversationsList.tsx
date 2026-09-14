@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getUserConversations, type ConversationPreview } from '../services/chat'
 import { supabase } from '../services/supabase'
+import { MOCK_CONVERSATIONS } from '../data/community'
 import NotificationBadge from '../components/NotificationBadge'
 
 const fallbackName = 'Rider'
@@ -20,15 +21,50 @@ export default function ConversationsList() {
     avatar_url: string | null
   }>>([])
   const [searching, setSearching] = useState(false)
+  const [isDemo, setIsDemo] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
         const data = await getUserConversations()
-        if (!cancelled) setConversations(data)
+        if (cancelled) return
+        if (data.length === 0) {
+          // Fallback de demonstração: conversas ativas da comunidade
+          setConversations(
+            MOCK_CONVERSATIONS.map((m) => ({
+              conversation_id: m.conversation_id,
+              type: 'direct' as const,
+              name: m.name,
+              avatar_url: m.avatar_url,
+              last_message: m.last_message,
+              last_message_at: m.last_message_at,
+              last_message_sender: m.rider_id,
+              unread_count: m.unread_count,
+              member_count: m.member_count,
+            }))
+          )
+          setIsDemo(true)
+        } else {
+          setConversations(data)
+        }
       } catch {
-        // silent
+        if (!cancelled) {
+          setConversations(
+            MOCK_CONVERSATIONS.map((m) => ({
+              conversation_id: m.conversation_id,
+              type: 'direct' as const,
+              name: m.name,
+              avatar_url: m.avatar_url,
+              last_message: m.last_message,
+              last_message_at: m.last_message_at,
+              last_message_sender: m.rider_id,
+              unread_count: m.unread_count,
+              member_count: m.member_count,
+            }))
+          )
+          setIsDemo(true)
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -73,11 +109,21 @@ export default function ConversationsList() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 pb-20 md:pb-4">
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
+      <header className="sticky top-0 z-30 bg-gradient-to-r from-[#091e24] to-amz-oceano-dark px-4 py-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white flex-1">
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amz-dourado to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amz-dourado/30">
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold text-white flex-1">
             {t.convTitle || 'Conversas'}
           </h1>
+          {isDemo && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-amz-dourado/25 text-amber-200 border border-amz-dourado/40">
+              Demo
+            </span>
+          )}
           <NotificationBadge />
         </div>
         <div className="mt-3 relative">
@@ -135,10 +181,14 @@ export default function ConversationsList() {
             </p>
           </div>
         ) : (
-          conversations.map((conv) => (
+          conversations.map((conv) => {
+            const mockEntry = isDemo
+              ? MOCK_CONVERSATIONS.find((m) => m.conversation_id === conv.conversation_id)
+              : undefined
+            return (
             <button
               key={conv.conversation_id}
-              onClick={() => navigate(`/chat/${conv.conversation_id}`)}
+              onClick={() => navigate(mockEntry ? `/rider/${mockEntry.rider_id}` : `/chat/${conv.conversation_id}`)}
               className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left"
             >
               {conv.avatar_url ? (
@@ -169,7 +219,8 @@ export default function ConversationsList() {
                 </div>
               </div>
             </button>
-          ))
+            )
+          })
         )}
       </main>
     </div>

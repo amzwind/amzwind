@@ -449,7 +449,7 @@ export function AdminDashboard() {
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
+      <div className={`flex-1 flex flex-col min-h-screen min-w-0 w-full transition-all duration-300 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-20'}`}>
         {/* Top Bar */}
         <header className="h-16 bg-white/80 dark:bg-[#1a0f08]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/[0.06] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20">
           <div className="flex items-center gap-3">
@@ -494,7 +494,7 @@ export function AdminDashboard() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
+        <main className="flex-1 min-w-0 w-full p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
           {activeTab === 'dashboard' && (
             <div className="space-y-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

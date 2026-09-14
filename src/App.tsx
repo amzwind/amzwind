@@ -30,6 +30,7 @@ const WishlistPage = lazy(() => import('./pages/WishlistPage'))
 const ConversationsList = lazy(() => import('./pages/ConversationsList'))
 const Chat = lazy(() => import('./pages/Chat'))
 const FriendsPage = lazy(() => import('./pages/FriendsPage'))
+const RiderProfile = lazy(() => import('./pages/RiderProfile'))
 const NotificationsPage = lazy(() => import('./pages/NotificationsPage'))
 const Community = lazy(() => import('./pages/Community'))
 const TripsPage = lazy(() => import('./pages/TripsPage'))
@@ -93,6 +94,7 @@ export default function App() {
                   <Route path="/conversas" element={<ProtectedRoute><ConversationsList /></ProtectedRoute>} />
                   <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
                   <Route path="/amigos" element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+                  <Route path="/rider/:id" element={<ProtectedRoute><RiderProfile /></ProtectedRoute>} />
                   <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
                   <Route path="/comunidade" element={<Community />} />
                   <Route path="/trips" element={<TripsPage />} />

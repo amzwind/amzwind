@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../../services/supabase'
+import { MOCK_POSTS, MOCK_AUTHORS } from '../../data/community'
 import { Toast, ConfirmModal, EmptyState } from './SharedUI'
 
 interface ModPost {
@@ -23,13 +24,26 @@ export function CommunityModeration() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [isDemo, setIsDemo] = useState(false)
 
   useEffect(() => {
     loadPosts()
   }, [])
 
+  function applyMockFallback() {
+    setPosts(
+      MOCK_POSTS.map((p) => ({
+        ...p,
+        author_name: MOCK_AUTHORS[p.user_id]?.full_name ?? 'Rider',
+        author_avatar: MOCK_AUTHORS[p.user_id]?.avatar_url ?? null,
+      }))
+    )
+    setIsDemo(true)
+  }
+
   async function loadPosts() {
     setLoading(true)
+    setIsDemo(false)
     try {
       const { data, error } = await supabase
         .from('posts')
@@ -39,6 +53,12 @@ export function CommunityModeration() {
 
       if (error) throw error
       const rows = (data ?? []) as Omit<ModPost, 'author_name' | 'author_avatar'>[]
+
+      if (rows.length === 0) {
+        // Tabela vazia: exibe demonstração em vez de tela de erro
+        applyMockFallback()
+        return
+      }
 
       const userIds = [...new Set(rows.map((p) => p.user_id))]
       let authorMap = new Map<string, { full_name: string | null; avatar_url: string | null }>()
@@ -59,9 +79,9 @@ export function CommunityModeration() {
           author_avatar: authorMap.get(p.user_id)?.avatar_url ?? null,
         }))
       )
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Erro desconhecido'
-      setToast({ message: 'Falha ao carregar posts: ' + message, type: 'error' })
+    } catch {
+      // Falha amigável: nunca trava a tela — cai para demonstração
+      applyMockFallback()
     } finally {
       setLoading(false)
     }
@@ -70,12 +90,14 @@ export function CommunityModeration() {
   async function handleDelete(id: string) {
     setDeleting(true)
     try {
-      const { error } = await supabase.from('posts').delete().eq('id', id)
-      if (error) throw error
+      if (!isDemo) {
+        const { error } = await supabase.from('posts').delete().eq('id', id)
+        if (error) throw error
+      }
       setPosts((prev) => prev.filter((p) => p.id !== id))
-      setToast({ message: 'Publicação removida!', type: 'success' })
+      setToast({ message: isDemo ? 'Publicação removida (demonstração).' : 'Publicação removida!', type: 'success' })
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Erro desconhecido'
+      const message = err instanceof Error ? err.message : 'Não foi possível remover a publicação.'
       setToast({ message, type: 'error' })
     } finally {
       setDeleting(false)
@@ -113,6 +135,15 @@ export function CommunityModeration() {
           Monitore e remova publicações do feed que violem as diretrizes ({posts.length} recentes)
         </p>
       </div>
+
+      {isDemo && (
+        <div className="flex items-center gap-2 rounded-2xl border border-amz-dourado/30 bg-amz-dourado/5 px-4 py-3 text-xs text-gray-600 dark:text-white/60">
+          <span className="text-base">💬</span>
+          <p>
+            <span className="font-bold">Modo demonstração:</span> o feed está vazio ou indisponível — exibindo publicações de exemplo. A moderação aqui é local.
+          </p>
+        </div>
+      )}
 
       <div className="relative">
         <input

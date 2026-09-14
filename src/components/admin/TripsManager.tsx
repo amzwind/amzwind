@@ -1,8 +1,43 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Toast, ModalShell, FormField, Input, PrimaryButton, GhostButton } from './SharedUI'
 import { adminListTrips, adminDeleteTrip, adminUpdateTripStatus, updateTrip, type TripListItem } from '../../services/trips'
+import { staticTrips, type StaticTrip } from '../../data/trips'
 
 type TripStatus = 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
+
+/** Fallback robusto: espelha as trips estáticas do frontend quando o banco vem vazio. */
+function staticTripToListItem(t: StaticTrip): TripListItem {
+  return {
+    id: t.id,
+    title: t.title,
+    slug: t.slug,
+    description: t.description,
+    body_text: t.body_text,
+    destination: t.destination,
+    start_date: t.start_date,
+    end_date: t.end_date,
+    cover_url: t.cover_url,
+    gallery_urls: t.gallery_urls,
+    video_url: t.video_url,
+    schedule: t.schedule,
+    status: t.status,
+    visibility: t.visibility,
+    max_participants: t.max_participants,
+    created_by: t.created_by,
+    created_at: t.created_at,
+    updated_at: t.updated_at,
+    participant_count: t.participant_count,
+    is_participant: false,
+    start_point: t.start_point ?? null,
+    end_point: t.end_point ?? null,
+    start_coords: t.start_coords ?? null,
+    end_coords: t.end_coords ?? null,
+    route_points: t.route_points ?? [],
+    distance_km: t.distance_km ?? 0,
+    estimated_duration: t.estimated_duration ?? '',
+    wind_condition: t.wind_condition,
+  }
+}
 
 export function TripsManager() {
   const [trips, setTrips] = useState<TripListItem[]>([])
@@ -10,6 +45,7 @@ export function TripsManager() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [filter, setFilter] = useState<'all' | TripStatus>('all')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [isFallback, setIsFallback] = useState(false)
   const [editingTrip, setEditingTrip] = useState<TripListItem | null>(null)
   const [editForm, setEditForm] = useState({
     title: '',
@@ -26,9 +62,18 @@ export function TripsManager() {
     setLoading(true)
     try {
       const data = await adminListTrips()
-      setTrips(data)
+      if (data.length === 0) {
+        // Banco vazio: usa os dados do frontend para o admin nunca ver tela vazia
+        setTrips(staticTrips.map(staticTripToListItem))
+        setIsFallback(true)
+      } else {
+        setTrips(data)
+        setIsFallback(false)
+      }
     } catch {
-      setToast({ message: 'Erro ao carregar trips', type: 'error' })
+      setTrips(staticTrips.map(staticTripToListItem))
+      setIsFallback(true)
+      setToast({ message: 'Banco indisponível — exibindo trips de demonstração.', type: 'error' })
     } finally {
       setLoading(false)
     }
@@ -39,9 +84,11 @@ export function TripsManager() {
   async function handleUpdateStatus(id: string, status: TripStatus) {
     setUpdatingId(id)
     try {
-      await adminUpdateTripStatus(id, status)
+      if (!isFallback) {
+        await adminUpdateTripStatus(id, status)
+      }
       setTrips((prev) => prev.map((t) => t.id === id ? { ...t, status } : t))
-      setToast({ message: 'Status atualizado!', type: 'success' })
+      setToast({ message: isFallback ? 'Status atualizado (demonstração).' : 'Status atualizado!', type: 'success' })
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido'
       setToast({ message, type: 'error' })
@@ -54,9 +101,11 @@ export function TripsManager() {
     if (!window.confirm('Tem certeza que deseja excluir esta trip?')) return
     setUpdatingId(id)
     try {
-      await adminDeleteTrip(id)
+      if (!isFallback) {
+        await adminDeleteTrip(id)
+      }
       setTrips((prev) => prev.filter((t) => t.id !== id))
-      setToast({ message: 'Trip excluída!', type: 'success' })
+      setToast({ message: isFallback ? 'Trip removida (demonstração).' : 'Trip excluída!', type: 'success' })
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido'
       setToast({ message, type: 'error' })
@@ -86,15 +135,17 @@ export function TripsManager() {
     }
     setSaving(true)
     try {
-      await updateTrip(editingTrip.id, {
-        title: editForm.title.trim(),
-        destination: editForm.destination.trim() || undefined,
-        start_date: editForm.start_date || undefined,
-        end_date: editForm.end_date || undefined,
-        max_participants: editForm.max_participants ? Number(editForm.max_participants) : undefined,
-        cover_url: editForm.cover_url.trim() || undefined,
-        visibility: editForm.visibility,
-      })
+      if (!isFallback) {
+        await updateTrip(editingTrip.id, {
+          title: editForm.title.trim(),
+          destination: editForm.destination.trim() || undefined,
+          start_date: editForm.start_date || undefined,
+          end_date: editForm.end_date || undefined,
+          max_participants: editForm.max_participants ? Number(editForm.max_participants) : undefined,
+          cover_url: editForm.cover_url.trim() || undefined,
+          visibility: editForm.visibility,
+        })
+      }
       setTrips((prev) =>
         prev.map((t) =>
           t.id === editingTrip.id
@@ -111,7 +162,7 @@ export function TripsManager() {
             : t
         )
       )
-      setToast({ message: 'Trip atualizada!', type: 'success' })
+      setToast({ message: isFallback ? 'Trip atualizada (demonstração).' : 'Trip atualizada!', type: 'success' })
       setEditingTrip(null)
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido'
@@ -126,7 +177,7 @@ export function TripsManager() {
     published: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
     full: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
     cancelled: 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400',
-    completed: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+    completed: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
   }
 
   const statusLabels: Record<string, string> = {
@@ -162,6 +213,15 @@ export function TripsManager() {
           Trips ({trips.length})
         </h3>
       </div>
+
+      {isFallback && (
+        <div className="flex items-center gap-2 rounded-2xl border border-amz-dourado/30 bg-amz-dourado/5 px-4 py-3 text-xs text-amz-terra dark:text-amz-areia/70">
+          <span className="text-base">🧭</span>
+          <p>
+            <span className="font-bold">Modo demonstração:</span> o banco não retornou trips — exibindo o catálogo do app. Alterações aqui são locais.
+          </p>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -248,13 +308,13 @@ export function TripsManager() {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center justify-end gap-1.5 shrink-0 flex-wrap max-w-[150px] sm:max-w-none">
                     {/* Status dropdown */}
                     <select
                       value={trip.status}
                       onChange={(e) => handleUpdateStatus(trip.id, e.target.value as TripStatus)}
                       disabled={updatingId === trip.id}
-                      className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-white/60 focus:outline-none focus:ring-1 focus:ring-amz-dourado/50 disabled:opacity-50"
+                      className="text-xs px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-white/60 focus:outline-none focus:ring-1 focus:ring-amz-dourado/50 disabled:opacity-50 max-w-[130px]"
                     >
                       <option value="draft">Rascunho</option>
                       <option value="published">Publicada</option>

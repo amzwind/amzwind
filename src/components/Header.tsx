@@ -97,6 +97,14 @@ export default function Header() {
             {t.headerAbout}
           </a>
 
+          {/* Chat */}
+          <a href="/conversas" aria-label="Conversas" className="relative p-2 text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amz-dourado ring-2 ring-white dark:ring-amz-terra-dark" />
+          </a>
+
           {/* Cart */}
           <a href="/checkout" className="relative p-2 text-amz-terra dark:text-amz-areia hover:text-amz-oceano dark:hover:text-amz-dourado transition-colors">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,6 +203,26 @@ export default function Header() {
                     </svg>
                     {t.headerMyProfile}
                   </a>
+                  <a
+                    href="/conversas"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Conversas
+                  </a>
+                  <a
+                    href="/amigos"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-amz-terra dark:text-amz-areia hover:bg-amz-areia dark:hover:bg-white/5 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Amigos
+                  </a>
                   {userProfile?.role === 'admin' && (
                     <a
                       href="/admin"
@@ -239,6 +267,19 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
               </svg>
               {t.headerCart} {cartCount > 0 && <span className="ml-1 px-1.5 py-0.5 bg-amz-dourado text-white text-[10px] font-bold rounded-full">{cartCount}</span>}
+            </a>
+            <a href="/conversas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Conversas
+              <span className="ml-1 w-2 h-2 rounded-full bg-amz-dourado" />
+            </a>
+            <a href="/amigos" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Amigos
             </a>
 
             {/* Mobile Lang + Theme */}

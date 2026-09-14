@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useNotificationContext, type NotificationToastItem } from '../../contexts/NotificationContext'
 
 const typeConfig: Record<string, { icon: string; label: string; badgeColor: string }> = {
-  friend_request: { icon: '👤', label: 'Nova solicitação de amizade', badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  friend_request: { icon: '👤', label: 'Nova solicitação de amizade', badgeColor: 'bg-amz-dourado/20 text-amz-dourado border-amz-dourado/30' },
   friend_accepted: { icon: '🤝', label: 'Amizade conectada', badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
   new_message: { icon: '💬', label: 'Nova mensagem', badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
   group_message: { icon: '👥', label: 'Mensagem no grupo', badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
