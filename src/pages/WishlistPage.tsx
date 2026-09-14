@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useFavorites, type FavoriteItem, type FavoriteItemType } from '../contexts/FavoritesContext'
 import { useCart } from '../contexts/CartContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import type { TranslationKeys } from '../i18n/translations'
 import { useState } from 'react'
 import { Toast } from '../components/admin/SharedUI'
+import { filterWishlistItems, sortWishlistItems, type WishlistSortMode } from '../lib/wishlistFilters'
 
 function getItemLink(item: FavoriteItem): string {
   if (item.type === 'experience') return `/experiencia/${item.id}`
@@ -11,7 +13,7 @@ function getItemLink(item: FavoriteItem): string {
   return '/aula/iniciante'
 }
 
-function getItemTypeLabel(type: FavoriteItemType, t: any): string {
+function getItemTypeLabel(type: FavoriteItemType, t: TranslationKeys): string {
   if (type === 'experience') return t.expLabel || 'Experiência'
   if (type === 'product') return t.prodCategoryTitle || 'Produto'
   return t.customerTypeClass || 'Aula'
@@ -26,6 +28,8 @@ export default function WishlistPage() {
   const { favorites, removeFavorite } = useFavorites()
   const { addItem, items: cartItems } = useCart()
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [query, setQuery] = useState('')
+  const [sortMode, setSortMode] = useState<WishlistSortMode>('recent')
 
   function handleSendToCart(item: FavoriteItem) {
     const alreadyInCart = cartItems.some((c) => c.id === item.id && c.type === item.type)
@@ -47,6 +51,8 @@ export default function WishlistPage() {
     removeFavorite(item.id, item.type)
     setToast({ message: t.wishlistRemoved, type: 'success' })
   }
+
+  const visibleFavorites = sortWishlistItems(filterWishlistItems(favorites, query), sortMode)
 
   return (
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500 pb-24 md:pb-16">
@@ -82,7 +88,31 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {favorites.map((item) => {
+            <div className="flex flex-col gap-3 rounded-2xl border border-amz-areia-dark/20 bg-white dark:border-white/10 dark:bg-white/[0.03] p-3 md:flex-row">
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Buscar no wishlist..."
+                className="w-full rounded-xl border border-amz-areia-dark/20 bg-amz-areia px-3 py-2.5 text-sm text-amz-terra outline-none focus:border-amz-dourado dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+              />
+              <select
+                value={sortMode}
+                onChange={(event) => setSortMode(event.target.value as WishlistSortMode)}
+                className="rounded-xl border border-amz-areia-dark/20 bg-amz-areia px-3 py-2.5 text-sm text-amz-terra outline-none focus:border-amz-dourado dark:border-white/10 dark:bg-white/5 dark:text-amz-areia"
+              >
+                <option value="recent">Mais recentes</option>
+                <option value="price-desc">Maior preço</option>
+                <option value="price-asc">Menor preço</option>
+              </select>
+            </div>
+
+            {visibleFavorites.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-amz-areia-dark/20 bg-white p-8 text-center dark:border-white/10 dark:bg-white/[0.03]">
+                <p className="text-sm text-amz-terra-light dark:text-amz-areia/40">Nenhum item encontrado para esta busca.</p>
+              </div>
+            ) : null}
+
+            {visibleFavorites.map((item) => {
               const inCart = cartItems.some((c) => c.id === item.id && c.type === item.type)
               return (
                 <div
