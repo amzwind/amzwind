@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { loadFeed, loadFriendsFeed, type PostFeedItem, type PostAuthor } from '../../services/feed'
 import { supabase } from '../../services/supabase'
+import { sortFeedPosts, type FeedSortMode } from '../../lib/feedSort'
 import PostCard from './PostCard'
 import CreatePost from './CreatePost'
 
@@ -23,6 +24,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
   const [offset, setOffset] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [feedFilter, setFeedFilter] = useState<FeedFilter>('global')
+  const [sortMode, setSortMode] = useState<FeedSortMode>('recent')
   const instanceId = useRef(Math.random().toString(36).slice(2))
   const PAGE_SIZE = 20
 
@@ -147,6 +149,8 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
     setLoading(true)
   }
 
+  const visiblePosts = sortFeedPosts(posts, sortMode)
+
   function loadMore() {
     if (loadingMore || !hasMore) return
     setLoadingMore(true)
@@ -185,27 +189,45 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
         onPostCreated={handlePostCreated}
       />
 
-      <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1">
-        <button
-          onClick={() => handleFilterChange('global')}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
-            feedFilter === 'global'
-              ? 'bg-amz-oceano text-white'
-              : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
-        >
-          {t.feedGlobal}
-        </button>
-        <button
-          onClick={() => handleFilterChange('friends')}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
-            feedFilter === 'friends'
-              ? 'bg-amz-oceano text-white'
-              : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
-          }`}
-        >
-          {t.feedFriends}
-        </button>
+      <div className="space-y-2">
+        <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1">
+          <button
+            onClick={() => handleFilterChange('global')}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+              feedFilter === 'global'
+                ? 'bg-amz-oceano text-white'
+                : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+          >
+            {t.feedGlobal}
+          </button>
+          <button
+            onClick={() => handleFilterChange('friends')}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+              feedFilter === 'friends'
+                ? 'bg-amz-oceano text-white'
+                : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+            }`}
+          >
+            {t.feedFriends}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1 bg-white dark:bg-white/5 rounded-xl border border-amz-areia-dark/20 dark:border-white/5 p-1">
+          {(['recent', 'popular'] as FeedSortMode[]).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setSortMode(mode)}
+              className={`flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors ${
+                sortMode === mode
+                  ? 'bg-amz-dourado text-white'
+                  : 'text-amz-terra-light dark:text-amz-areia/40 hover:bg-gray-100 dark:hover:bg-white/5'
+              }`}
+            >
+              {mode === 'recent' ? 'Recentes' : 'Populares'}
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && (
@@ -225,7 +247,7 @@ export default function Feed({ currentUserId, currentUserName, currentUserAvatar
         </div>
       ) : (
         <>
-          {posts.map((post) => (
+          {visiblePosts.map((post) => (
             <PostCard
               key={post.id}
               post={post}
