@@ -31,14 +31,29 @@ export function ProtectedRoute({ children, adminOnly = false }: { children: Reac
                     return
                 }
 
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .single()
+                // Verificação server-side via is_admin() com fallback para profiles.role.
+                // A RPC é autoritativa; o fallback cobre ambientes onde a RPC
+                // ainda não foi aplicada ou o cache de schema está desatualizado.
+                let isAdmin = false
+                try {
+                    const { data: rpcResult, error: rpcError } = await supabase.rpc('is_admin')
+                    if (!rpcError && typeof rpcResult === 'boolean') {
+                        isAdmin = rpcResult
+                    } else {
+                        throw new Error('rpc unavailable')
+                    }
+                } catch {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', session.user.id)
+                        .single()
+
+                    isAdmin = profile?.role === 'admin'
+                }
 
                 if (!cancelled) {
-                    setAuthorized(profile?.role === 'admin')
+                    setAuthorized(isAdmin)
                     setLoading(false)
                 }
             } catch {

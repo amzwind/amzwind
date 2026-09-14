@@ -13,6 +13,8 @@ import { FinancialManager } from '../components/admin/FinancialManager'
 import { AboutManager } from '../components/admin/AboutManager'
 import { ReviewsManager } from '../components/admin/ReviewsManager'
 import { TripsManager } from '../components/admin/TripsManager'
+import { OrdersManager } from '../components/admin/OrdersManager'
+import { CommunityModeration } from '../components/admin/CommunityModeration'
 import MetricCard from '../components/admin/SharedUI'
 
 const FALLBACK_RECENT_BOOKINGS = [
@@ -28,7 +30,7 @@ const FALLBACK_FINANCIAL_ACCOUNTS = [
   { account_type: 'receivable', status: 'paid', amount: 2100, category: 'Receita Aulas', due_date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString().slice(0, 10) },
 ]
 
-type AdminTab = 'dashboard' | 'hero' | 'experiences' | 'products' | 'classes' | 'bookings' | 'financial' | 'about' | 'reviews' | 'trips'
+type AdminTab = 'dashboard' | 'hero' | 'experiences' | 'products' | 'classes' | 'bookings' | 'orders' | 'financial' | 'about' | 'reviews' | 'trips' | 'moderation'
 
 interface SidebarItem {
   key: AdminTab
@@ -64,6 +66,8 @@ export function AdminDashboard() {
     productsCount: 0,
     classesCount: 0,
     bookingsCount: 0,
+    ordersCount: 0,
+    ordersRevenue: 0,
   })
   const [overview, setOverview] = useState({
     financial: buildFinancialOverview([]),
@@ -81,6 +85,29 @@ export function AdminDashboard() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
         navigate('/login')
+        return
+      }
+
+      // Verificação server-side via is_admin() com fallback para profiles.role
+      let authorized = false
+      try {
+        const { data: rpcResult, error: rpcError } = await supabase.rpc('is_admin')
+        if (!rpcError && typeof rpcResult === 'boolean') {
+          authorized = rpcResult
+        } else {
+          throw new Error('rpc unavailable')
+        }
+      } catch {
+        const { data: roleRow } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single()
+        authorized = roleRow?.role === 'admin'
+      }
+
+      if (!authorized) {
+        navigate('/')
         return
       }
 
@@ -107,20 +134,27 @@ export function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [expRes, prodRes, classRes, bookRes, bookingSummaryRes, financialRes] = await Promise.all([
+      const [expRes, prodRes, classRes, bookRes, bookingSummaryRes, financialRes, ordersRes] = await Promise.all([
         supabase.from('experiences').select('id', { count: 'exact', head: true }),
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('classes').select('id', { count: 'exact', head: true }),
         supabase.from('bookings').select('id', { count: 'exact', head: true }),
         supabase.from('bookings').select('id, status, booking_date, created_at').order('created_at', { ascending: false }).limit(5),
         supabase.from('financial_accounts').select('account_type, status, amount, category, due_date').order('due_date', { ascending: true }).limit(50),
+        supabase.from('orders').select('id, amount, status'),
       ])
+
+      const paidRevenue = (ordersRes.data ?? [])
+        .filter((o) => o.status === 'paid')
+        .reduce((sum, o) => sum + Number(o.amount ?? 0), 0)
 
       setStats({
         experiencesCount: expRes.count || 0,
         productsCount: prodRes.count || 0,
         classesCount: classRes.count || 0,
         bookingsCount: bookRes.count || 0,
+        ordersCount: ordersRes.count ?? (ordersRes.data?.length || 0),
+        ordersRevenue: paidRevenue,
       })
 
       const recentBookings = bookingSummaryRes.error || !bookingSummaryRes.data || bookingSummaryRes.data.length === 0
@@ -202,6 +236,15 @@ export function AdminDashboard() {
       ),
     },
     {
+      key: 'orders',
+      label: 'Pedidos',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+      ),
+    },
+    {
       key: 'financial',
       label: t.adminFinancial || 'Financeiro',
       icon: (
@@ -235,6 +278,15 @@ export function AdminDashboard() {
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+    },
+    {
+      key: 'moderation',
+      label: 'Moderação',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
         </svg>
       ),
     },
@@ -445,7 +497,7 @@ export function AdminDashboard() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
           {activeTab === 'dashboard' && (
             <div className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 <MetricCard
                   label={t.adminTotalExperiences || 'Experiências'}
                   value={stats.experiencesCount}
@@ -488,6 +540,28 @@ export function AdminDashboard() {
                   icon={
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  }
+                />
+                <MetricCard
+                  label="Pedidos (gateway)"
+                  value={stats.ordersCount}
+                  color="text-amz-dourado"
+                  onClick={() => setActiveTab('orders')}
+                  icon={
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  }
+                />
+                <MetricCard
+                  label="Faturamento pago"
+                  value={new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(stats.ordersRevenue)}
+                  color="text-emerald-600"
+                  onClick={() => setActiveTab('orders')}
+                  icon={
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   }
                 />
@@ -582,10 +656,12 @@ export function AdminDashboard() {
           {activeTab === 'products' && <ProductsManager />}
           {activeTab === 'classes' && <ClassesManager />}
           {activeTab === 'bookings' && <BookingsManager />}
+          {activeTab === 'orders' && <OrdersManager />}
           {activeTab === 'financial' && <FinancialManager />}
           {activeTab === 'about' && <AboutManager />}
           {activeTab === 'reviews' && <ReviewsManager />}
           {activeTab === 'trips' && <TripsManager />}
+          {activeTab === 'moderation' && <CommunityModeration />}
         </main>
       </div>
     </div>

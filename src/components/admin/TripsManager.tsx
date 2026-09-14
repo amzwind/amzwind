@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Toast } from './SharedUI'
-import { adminListTrips, adminDeleteTrip, adminUpdateTripStatus, type TripListItem } from '../../services/trips'
+import { Toast, ModalShell, FormField, Input, PrimaryButton, GhostButton } from './SharedUI'
+import { adminListTrips, adminDeleteTrip, adminUpdateTripStatus, updateTrip, type TripListItem } from '../../services/trips'
 
 type TripStatus = 'draft' | 'published' | 'full' | 'cancelled' | 'completed'
 
@@ -10,6 +10,17 @@ export function TripsManager() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [filter, setFilter] = useState<'all' | TripStatus>('all')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [editingTrip, setEditingTrip] = useState<TripListItem | null>(null)
+  const [editForm, setEditForm] = useState({
+    title: '',
+    destination: '',
+    start_date: '',
+    end_date: '',
+    max_participants: '',
+    cover_url: '',
+    visibility: 'public' as 'public' | 'private',
+  })
+  const [saving, setSaving] = useState(false)
 
   const loadTrips = useCallback(async () => {
     setLoading(true)
@@ -51,6 +62,62 @@ export function TripsManager() {
       setToast({ message, type: 'error' })
     } finally {
       setUpdatingId(null)
+    }
+  }
+
+  function openEdit(trip: TripListItem) {
+    setEditingTrip(trip)
+    setEditForm({
+      title: trip.title || '',
+      destination: trip.destination || '',
+      start_date: trip.start_date ? trip.start_date.slice(0, 10) : '',
+      end_date: trip.end_date ? trip.end_date.slice(0, 10) : '',
+      max_participants: trip.max_participants != null ? String(trip.max_participants) : '',
+      cover_url: trip.cover_url || '',
+      visibility: trip.visibility || 'public',
+    })
+  }
+
+  async function handleSaveEdit() {
+    if (!editingTrip) return
+    if (!editForm.title.trim()) {
+      setToast({ message: 'Título é obrigatório.', type: 'error' })
+      return
+    }
+    setSaving(true)
+    try {
+      await updateTrip(editingTrip.id, {
+        title: editForm.title.trim(),
+        destination: editForm.destination.trim() || undefined,
+        start_date: editForm.start_date || undefined,
+        end_date: editForm.end_date || undefined,
+        max_participants: editForm.max_participants ? Number(editForm.max_participants) : undefined,
+        cover_url: editForm.cover_url.trim() || undefined,
+        visibility: editForm.visibility,
+      })
+      setTrips((prev) =>
+        prev.map((t) =>
+          t.id === editingTrip.id
+            ? {
+                ...t,
+                title: editForm.title.trim(),
+                destination: editForm.destination.trim() || null,
+                start_date: editForm.start_date || null,
+                end_date: editForm.end_date || null,
+                max_participants: editForm.max_participants ? Number(editForm.max_participants) : null,
+                cover_url: editForm.cover_url.trim() || null,
+                visibility: editForm.visibility,
+              }
+            : t
+        )
+      )
+      setToast({ message: 'Trip atualizada!', type: 'success' })
+      setEditingTrip(null)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Erro desconhecido'
+      setToast({ message, type: 'error' })
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -196,6 +263,18 @@ export function TripsManager() {
                       <option value="completed">Concluída</option>
                     </select>
 
+                    {/* Edit */}
+                    <button
+                      onClick={() => openEdit(trip)}
+                      disabled={updatingId === trip.id}
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-amz-oceano hover:bg-amz-oceano/10 transition-colors disabled:opacity-50"
+                      title="Editar"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+
                     {/* Delete */}
                     <button
                       onClick={() => handleDeleteTrip(trip.id)}
@@ -213,6 +292,80 @@ export function TripsManager() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingTrip && (
+        <ModalShell onClose={() => setEditingTrip(null)} title="Editar trip">
+          <div className="space-y-4">
+            <FormField label="Título">
+              <Input
+                value={editForm.title}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Nome da expedição"
+              />
+            </FormField>
+            <FormField label="Destino">
+              <Input
+                value={editForm.destination}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, destination: e.target.value }))}
+                placeholder="Ex: Lençóis Maranhenses, MA"
+              />
+            </FormField>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField label="Início">
+                <Input
+                  type="date"
+                  value={editForm.start_date}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, start_date: e.target.value }))}
+                />
+              </FormField>
+              <FormField label="Fim">
+                <Input
+                  type="date"
+                  value={editForm.end_date}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, end_date: e.target.value }))}
+                />
+              </FormField>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField label="Máx. participantes">
+                <Input
+                  type="number"
+                  min="1"
+                  value={editForm.max_participants}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, max_participants: e.target.value }))}
+                  placeholder="Ex: 8"
+                />
+              </FormField>
+              <FormField label="Visibilidade">
+                <select
+                  value={editForm.visibility}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, visibility: e.target.value as 'public' | 'private' }))}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-50 dark:bg-white/[0.03] text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amz-dourado/30 focus:border-amz-dourado transition-all"
+                >
+                  <option value="public">Pública</option>
+                  <option value="private">Privada</option>
+                </select>
+              </FormField>
+            </div>
+            <FormField label="URL da capa">
+              <Input
+                value={editForm.cover_url}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, cover_url: e.target.value }))}
+                placeholder="https://..."
+              />
+            </FormField>
+            <div className="flex gap-3 pt-2">
+              <GhostButton onClick={() => setEditingTrip(null)} className="flex-1">
+                Cancelar
+              </GhostButton>
+              <PrimaryButton onClick={handleSaveEdit} disabled={saving} className="flex-1">
+                {saving ? 'Salvando...' : 'Salvar alterações'}
+              </PrimaryButton>
+            </div>
+          </div>
+        </ModalShell>
       )}
     </div>
   )
