@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useTheme } from '../contexts/ThemeContext'
-import { useFavorites } from '../contexts/FavoritesContext'
+import { useCart } from '../contexts/CartContext'
+import { getBadgeDisplayValue } from '../lib/headerCounts'
 import { locales } from '../i18n/translations'
 import { supabase } from '../services/supabase'
 import type { Session } from '@supabase/supabase-js'
@@ -12,10 +13,10 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const { locale, setLocale, t } = useLanguage()
   const { theme, toggleTheme } = useTheme()
-  const { getFavoritesCount } = useFavorites()
+  const { getItemCount } = useCart()
   const [session, setSession] = useState<Session | null>(null)
   const [userProfile, setUserProfile] = useState<{ full_name: string | null; avatar_url: string | null; role: string | null } | null>(null)
-  const cartCount = getFavoritesCount()
+  const cartCount = getBadgeDisplayValue(getItemCount())
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: s } }) => {
