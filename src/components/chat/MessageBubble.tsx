@@ -56,7 +56,7 @@ export default function MessageBubble({
         <div className={`max-w-[80%] mb-1 px-3 py-1.5 rounded-lg text-xs ${
           isOwn
             ? 'bg-emerald-600/30 text-emerald-100'
-            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+            : 'bg-amz-areia-dark/70 dark:bg-white/10 text-amz-terra-light dark:text-white/60'
         }`}>
           <span className="font-semibold">{message.reply_sender_name ?? (t.chatRiderFallback || 'Rider')}</span>
           <p className="truncate opacity-80">{message.reply_content}</p>
@@ -65,10 +65,10 @@ export default function MessageBubble({
 
       {/* Bubble */}
       <div
-        className={`relative max-w-[80%] px-3.5 py-2 rounded-2xl text-sm cursor-pointer ${
+        className={`relative max-w-[80%] px-3.5 py-2 rounded-2xl text-sm cursor-pointer shadow-sm ${
           isOwn
             ? 'bg-emerald-500 text-white rounded-br-md'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-md'
+            : 'bg-white dark:bg-white/10 text-amz-terra dark:text-white rounded-bl-md border border-amz-areia-dark/40 dark:border-white/10'
         }`}
         onClick={() => setShowEmojiPicker(showEmojiPicker === message.id ? null : message.id)}
       >
@@ -105,7 +105,7 @@ export default function MessageBubble({
               <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
             </svg>
           )}
-          <span className={`text-[10px] ${isOwn ? 'text-emerald-100' : 'text-gray-400 dark:text-gray-500'}`}>
+          <span className={`text-[10px] ${isOwn ? 'text-emerald-100' : 'text-amz-terra-light/70 dark:text-white/40'}`}>
             {new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function MessageBubble({
         {/* Quick reactions popup */}
         {showEmojiPicker === message.id && (
           <div
-            className={`absolute ${isOwn ? 'right-0' : 'left-0'} bottom-full mb-2 bg-white dark:bg-gray-800 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 px-2 py-1.5 flex gap-1 z-50`}
+            className={`absolute ${isOwn ? 'right-0' : 'left-0'} bottom-full mb-2 bg-white dark:bg-[#162f37] rounded-full shadow-xl border border-amz-areia-dark/40 dark:border-white/10 px-2 py-1.5 flex gap-1 z-50`}
             onClick={(e) => e.stopPropagation()}
           >
             {quickReactions.map((r) => (
@@ -136,10 +136,10 @@ export default function MessageBubble({
             <button
               key={reaction}
               onClick={() => onReact(reaction)}
-              className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-800 rounded-full px-2 py-0.5 text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-0.5 bg-amz-areia dark:bg-white/10 rounded-full px-2 py-0.5 text-xs hover:bg-amz-areia-dark dark:hover:bg-white/15 transition-colors"
             >
               <span>{reaction}</span>
-              {count > 1 && <span className="text-gray-500 dark:text-gray-400">{count}</span>}
+              {count > 1 && <span className="text-amz-terra-light dark:text-white/50">{count}</span>}
             </button>
           ))}
         </div>
@@ -148,27 +148,27 @@ export default function MessageBubble({
       {/* Context menu (long press) */}
       {contextMenu?.messageId === message.id && (
         <div
-          className="fixed z-50 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-1 min-w-[140px]"
+          className="fixed z-50 bg-white dark:bg-[#162f37] rounded-xl shadow-xl border border-amz-areia-dark/40 dark:border-white/10 py-1 min-w-[140px]"
           style={{ left: contextMenu.x, top: contextMenu.y - 80 }}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             onClick={() => { onReply(); setContextMenu(null) }}
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="w-full text-left px-4 py-2 text-sm text-amz-terra dark:text-white/80 hover:bg-amz-areia dark:hover:bg-white/10"
           >
             {t.chatReply || 'Responder'}
           </button>
           {isOwn && (
             <button
               onClick={() => { onDelete(); setContextMenu(null) }}
-              className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10"
             >
               {t.chatDelete || 'Apagar'}
             </button>
           )}
           <button
             onClick={() => setContextMenu(null)}
-            className="w-full text-left px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="w-full text-left px-4 py-2 text-sm text-amz-terra-light dark:text-white/50 hover:bg-amz-areia dark:hover:bg-white/10"
           >
             {t.chatCancel || 'Cancelar'}
           </button>

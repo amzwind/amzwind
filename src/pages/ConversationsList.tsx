@@ -108,19 +108,19 @@ export default function ConversationsList() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pb-20 md:pb-4">
-      <header className="sticky top-0 z-30 bg-gradient-to-r from-[#091e24] to-amz-oceano-dark px-4 py-3">
+    <div className="min-h-screen bg-amz-areia dark:bg-[#091e24] pb-20 md:pb-4">
+      <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#091e24]/95 backdrop-blur-lg border-b border-amz-areia-dark/40 dark:border-white/10 px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-amz-dourado to-amber-500 flex items-center justify-center shrink-0 shadow-lg shadow-amz-dourado/30">
             <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-white flex-1">
+          <h1 className="text-xl font-bold text-amz-terra dark:text-white flex-1">
             {t.convTitle || 'Conversas'}
           </h1>
           {isDemo && (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-amz-dourado/25 text-amber-200 border border-amz-dourado/40">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-amz-dourado/15 text-amz-dourado border border-amz-dourado/30">
               Demo
             </span>
           )}
@@ -132,24 +132,24 @@ export default function ConversationsList() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.convSearchPlaceholder || 'Buscar riders...'}
-            className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-white dark:bg-white/10 rounded-full border border-amz-areia-dark/40 dark:border-white/10 px-4 py-2.5 text-sm text-amz-terra dark:text-white placeholder-amz-terra-light/60 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50"
           />
           {searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 max-h-64 overflow-y-auto z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#162f37] rounded-2xl shadow-xl border border-amz-areia-dark/40 dark:border-white/10 max-h-64 overflow-y-auto z-50">
               {searchResults.map((user) => (
                 <button
                   key={user.id}
                   onClick={() => openChat(user.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-amz-areia dark:hover:bg-white/10 transition-colors"
                 >
                   {user.avatar_url ? (
                     <img src={user.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-amz-dourado/15 flex items-center justify-center text-amz-dourado font-bold text-sm">
                       {(user.full_name?.[0] ?? fallback[0]).toUpperCase()}
                     </div>
                   )}
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-amz-terra dark:text-white">
                     {user.full_name ?? fallback}
                   </span>
                 </button>
@@ -157,70 +157,65 @@ export default function ConversationsList() {
             </div>
           )}
           {searching && searchQuery.trim() && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 text-center text-sm text-gray-500">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#162f37] rounded-2xl shadow-xl border border-amz-areia-dark/40 dark:border-white/10 p-4 text-center text-sm text-amz-terra-light dark:text-white/50">
               {t.convSearching || 'Buscando...'}
             </div>
           )}
         </div>
       </header>
 
-      <main className="divide-y divide-gray-100 dark:divide-gray-800">
+      <main className="divide-y divide-amz-areia-dark/40 dark:divide-white/10">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-amz-dourado border-t-transparent rounded-full animate-spin" />
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-16 h-16 rounded-full bg-amz-dourado/10 dark:bg-amz-dourado/15 flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-amz-dourado" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            <p className="text-amz-terra-light dark:text-white/50 text-sm">
               {t.convEmpty || 'Nenhuma conversa ainda. Busque um rider acima para iniciar!'}
             </p>
           </div>
         ) : (
-          conversations.map((conv) => {
-            const mockEntry = isDemo
-              ? MOCK_CONVERSATIONS.find((m) => m.conversation_id === conv.conversation_id)
-              : undefined
-            return (
+          conversations.map((conv) => (
             <button
               key={conv.conversation_id}
-              onClick={() => navigate(mockEntry ? `/rider/${mockEntry.rider_id}` : `/chat/${conv.conversation_id}`)}
-              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-left"
+              onClick={() => navigate(`/chat/${conv.conversation_id}`)}
+              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-amz-terra/5 dark:hover:bg-white/5 transition-colors text-left"
             >
               {conv.avatar_url ? (
                 <img src={conv.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-amz-dourado/15 flex items-center justify-center text-amz-dourado font-bold flex-shrink-0">
                   {(conv.name?.[0] ?? fallback[0]).toUpperCase()}
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-gray-900 dark:text-white truncate">
+                  <span className="font-semibold text-amz-terra dark:text-white truncate">
                     {conv.name ?? fallback}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                  <span className="text-xs text-amz-terra-light dark:text-white/40 flex-shrink-0">
                     {formatTime(conv.last_message_at)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-sm text-amz-terra-light dark:text-white/50 truncate">
                     {conv.last_message ?? (t.convStartChat || 'Iniciar conversa...')}
                   </p>
                   {conv.unread_count > 0 && (
-                    <span className="flex-shrink-0 bg-emerald-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
+                    <span className="flex-shrink-0 bg-amz-dourado text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5">
                       {conv.unread_count > 99 ? '99+' : conv.unread_count}
                     </span>
                   )}
                 </div>
               </div>
             </button>
-            )
-          })
+          ))
         )}
       </main>
     </div>

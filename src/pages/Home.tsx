@@ -64,7 +64,7 @@ export default function Home() {
       title: t.homeStartExperiences,
       description: t.homeStartExperiencesDesc,
       to: '/experiencias',
-      accent: 'from-sky-500/15 to-sky-500/5',
+      accent: 'from-amz-oceano/15 to-amz-oceano/5',
       icon: '🌊',
     },
     {

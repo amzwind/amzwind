@@ -305,3 +305,131 @@ export const MOCK_AUTHORS: Record<string, { full_name: string | null; avatar_url
 export function getMockPostsByRider(riderId: string): MockPost[] {
   return MOCK_POSTS.filter((p) => p.user_id === riderId)
 }
+
+// ---------------------------------------------------------------
+// Mensagens de demonstração (modo demo do Chat, sem banco)
+// ---------------------------------------------------------------
+
+export interface MockChatMessage {
+  id: string
+  sender_id: string
+  sender_name: string
+  sender_avatar: string | null
+  content: string | null
+  created_at: string
+  reactions: Record<string, number>
+}
+
+function minutesAgo(m: number): string {
+  return new Date(Date.now() - m * 60_000).toISOString()
+}
+
+const ME_ID = 'demo-me'
+const ME_NAME = 'Você'
+
+export const DEMO_ME_ID = ME_ID
+
+export const MOCK_MESSAGES: Record<string, MockChatMessage[]> = {
+  'mock-conv-marina': [
+    {
+      id: 'mock-msg-marina-1',
+      sender_id: MOCK_RIDERS[1].id,
+      sender_name: MOCK_RIDERS[1].full_name,
+      sender_avatar: MOCK_RIDERS[1].avatar_url,
+      content: 'Oi! Vi que você curtiu o post da aula de sábado 😊',
+      created_at: minutesAgo(95),
+      reactions: {},
+    },
+    {
+      id: 'mock-msg-marina-2',
+      sender_id: ME_ID,
+      sender_name: ME_NAME,
+      sender_avatar: null,
+      content: 'Curti sim! Ainda tem vaga na turma das 9h?',
+      created_at: minutesAgo(88),
+      reactions: {},
+    },
+    {
+      id: 'mock-msg-marina-3',
+      sender_id: MOCK_RIDERS[1].id,
+      sender_name: MOCK_RIDERS[1].full_name,
+      sender_avatar: MOCK_RIDERS[1].avatar_url,
+      content: 'Tem sim! Vou te reservar. Traz protetor e água, o resto é comigo.',
+      created_at: minutesAgo(80),
+      reactions: { '❤️': 1 },
+    },
+    {
+      id: 'mock-msg-marina-4',
+      sender_id: MOCK_RIDERS[1].id,
+      sender_name: MOCK_RIDERS[1].full_name,
+      sender_avatar: MOCK_RIDERS[1].avatar_url,
+      content: 'Bora pro downwind de sábado? Vai ter barco de apoio! 🪁',
+      created_at: minutesAgo(24),
+      reactions: {},
+    },
+  ],
+  'mock-conv-joao': [
+    {
+      id: 'mock-msg-joao-1',
+      sender_id: ME_ID,
+      sender_name: ME_NAME,
+      sender_avatar: null,
+      content: 'João, qual foi a média de vento na travessia de ontem?',
+      created_at: minutesAgo(150),
+      reactions: {},
+    },
+    {
+      id: 'mock-msg-joao-2',
+      sender_id: MOCK_RIDERS[0].id,
+      sender_name: MOCK_RIDERS[0].full_name,
+      sender_avatar: MOCK_RIDERS[0].avatar_url,
+      content: 'Ficou entre 18 e 22 nós o dia todo. Água flat na maior parte!',
+      created_at: minutesAgo(140),
+      reactions: {},
+    },
+    {
+      id: 'mock-msg-joao-3',
+      sender_id: MOCK_RIDERS[0].id,
+      sender_name: MOCK_RIDERS[0].full_name,
+      sender_avatar: MOCK_RIDERS[0].avatar_url,
+      content: 'As fotos da travessia ficaram insanas, te mandei no grupo',
+      created_at: minutesAgo(120),
+      reactions: { '🔥': 2 },
+    },
+  ],
+  'mock-conv-luiza': [
+    {
+      id: 'mock-msg-luiza-1',
+      sender_id: MOCK_RIDERS[5].id,
+      sender_name: MOCK_RIDERS[5].full_name,
+      sender_avatar: MOCK_RIDERS[5].avatar_url,
+      content: 'Consegui velejar sozinha hoje!! 🎉',
+      created_at: minutesAgo(300),
+      reactions: { '❤️': 3, '👏': 1 },
+    },
+    {
+      id: 'mock-msg-luiza-2',
+      sender_id: ME_ID,
+      sender_name: ME_NAME,
+      sender_avatar: null,
+      content: 'Aêêê! sabia que ia rolar! Quando vamos comemorar com um downwind? 😄',
+      created_at: minutesAgo(290),
+      reactions: {},
+    },
+  ],
+  'mock-conv-beatriz': [
+    {
+      id: 'mock-msg-beatriz-1',
+      sender_id: MOCK_RIDERS[9].id,
+      sender_name: MOCK_RIDERS[9].full_name,
+      sender_avatar: MOCK_RIDERS[9].avatar_url,
+      content: 'Me passa o contato do guia de Atins?',
+      created_at: minutesAgo(1800),
+      reactions: {},
+    },
+  ],
+}
+
+export function getMockMessages(conversationId: string): MockChatMessage[] {
+  return MOCK_MESSAGES[conversationId] ?? []
+}

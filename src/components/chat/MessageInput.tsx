@@ -62,9 +62,9 @@ export default function MessageInput({
   }
 
   return (
-    <div className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2">
+    <div className="border-t border-amz-areia-dark/40 dark:border-white/10 bg-amz-areia/80 dark:bg-[#091e24]/95 backdrop-blur-lg px-3 py-2">
       {replyTo && (
-        <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
+        <div className="flex items-center gap-2 mb-2 px-3 py-2 bg-white dark:bg-white/10 rounded-xl border border-amz-areia-dark/30 dark:border-white/10">
           <div className="w-0.5 h-8 bg-emerald-500 rounded-full flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
@@ -112,7 +112,7 @@ export default function MessageInput({
           onKeyDown={handleKeyDown}
           placeholder={t.chatMessagePlaceholder || 'Mensagem...'}
           rows={1}
-          className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none max-h-[120px]"
+          className="flex-1 bg-white dark:bg-white/10 rounded-2xl border border-amz-areia-dark/40 dark:border-white/10 px-4 py-2.5 text-sm text-amz-terra dark:text-white placeholder-amz-terra-light/60 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 resize-none max-h-[120px]"
           disabled={sending}
         />
 
