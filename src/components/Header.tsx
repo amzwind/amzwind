@@ -44,6 +44,15 @@ export default function Header() {
     }
   }, [userMenuOpen])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [menuOpen])
+
   async function loadProfile(userId: string) {
     const { data } = await supabase
       .from('profiles')
@@ -248,95 +257,155 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-white dark:bg-amz-terra-dark border-t border-amz-areia-dark dark:border-white/10">
-          <nav className="flex flex-col p-4 gap-3">
-            <a href="#experiencias" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              {t.navExperiencias}
-            </a>
-            <a href="#escola" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              {t.navEscola}
-            </a>
-            <a href="#servicos" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              {t.navServicos}
-            </a>
-            <a href="/sobre" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              {t.headerAbout}
-            </a>
-            <a href="/checkout" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-              </svg>
-              {t.headerCart} {cartCount > 0 && <span className="ml-1 px-1.5 py-0.5 bg-amz-dourado text-white text-[10px] font-bold rounded-full">{cartCount}</span>}
-            </a>
-            <a href="/conversas" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              Conversas
-              <span className="ml-1 w-2 h-2 rounded-full bg-amz-dourado" />
-            </a>
-            <a href="/amigos" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Amigos
-            </a>
-
-            {/* Mobile Lang + Theme */}
-            <div className="flex items-center justify-between py-2 border-t border-amz-areia-dark dark:border-white/10">
-              <div className="flex gap-2">
-                {locales.map((loc) => (
-                  <button
-                    key={loc.code}
-                    onClick={() => setLocale(loc.code)}
-                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                      locale === loc.code
-                        ? 'bg-amz-terra text-white'
-                        : 'bg-amz-areia dark:bg-white/10 text-amz-terra dark:text-amz-areia'
-                    }`}
-                  >
-                    {loc.flag} {loc.label}
-                  </button>
-                ))}
-              </div>
+        <div className="md:hidden fixed inset-0 z-[70] bg-amz-areia dark:bg-[#091e24] overflow-y-auto">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-amz-dourado/15 blur-3xl" />
+            <div className="absolute bottom-10 -left-24 w-72 h-72 rounded-full bg-amz-oceano/15 blur-3xl" />
+          </div>
+          <nav className="relative flex flex-col min-h-full px-6 pt-4 pb-10">
+            <div className="flex items-center justify-between mb-1">
+              <img
+                src={theme === 'dark' ? '/logo-horizontal-branca.svg' : '/logo-horizontal.svg'}
+                alt="Amazon Wind"
+                className="h-9"
+              />
               <button
-                onClick={toggleTheme}
-                className="w-10 h-6 rounded-full bg-amz-areia dark:bg-amz-terra border-2 border-amz-areia-dark dark:border-amz-terra-light transition-colors relative"
-                aria-label={t.headerToggleTheme}
+                onClick={() => setMenuOpen(false)}
+                aria-label="Fechar menu"
+                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-amz-terra/5 dark:bg-white/10 text-amz-terra dark:text-amz-areia hover:bg-amz-dourado hover:text-white transition-colors"
               >
-                <div
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white dark:bg-amz-areia shadow transition-all duration-300 flex items-center justify-center text-[10px] ${
-                    theme === 'dark' ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                >
-                  {theme === 'dark' ? '🌙' : '☀️'}
-                </div>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-amz-dourado mb-2">Navegar</p>
+            <a href="/" onClick={() => setMenuOpen(false)} style={{ animationDelay: '30ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">01</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amz-dourado to-amber-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-amz-dourado/25 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.navHome}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Voltar ao início</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href="/trips" onClick={() => setMenuOpen(false)} style={{ animationDelay: '90ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">02</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amz-oceano to-amz-oceano-dark text-white flex items-center justify-center shrink-0 shadow-lg shadow-amz-oceano/25 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.navTrips}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Downwinds & expedições</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href="/experiencias" onClick={() => setMenuOpen(false)} style={{ animationDelay: '150ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">03</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amz-bio to-emerald-700 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-900/25 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.expTitle}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Aulas, vivências e pacotes</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href="/comunidade" onClick={() => setMenuOpen(false)} style={{ animationDelay: '210ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">04</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amz-terra to-amz-terra-dark text-white flex items-center justify-center shrink-0 shadow-lg shadow-amz-terra/25 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.navCommunity}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Feed dos riders</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href="/amigos" onClick={() => setMenuOpen(false)} style={{ animationDelay: '270ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">05</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-amz-dourado text-white flex items-center justify-center shrink-0 shadow-lg shadow-amz-dourado/25 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.friendsTitle}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Conexões e convites</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href="/conversas" onClick={() => setMenuOpen(false)} style={{ animationDelay: '330ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5 border-b border-amz-terra/10 dark:border-white/10">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">06</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-600 to-[#091e24] text-white flex items-center justify-center shrink-0 shadow-lg shadow-teal-950/30 group-active:scale-95 transition-transform">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none">{t.convTitle}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">Suas mensagens</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+            <a href={session ? '/perfil' : '/login'} onClick={() => setMenuOpen(false)} style={{ animationDelay: '390ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] group flex items-center gap-4 py-3.5">
+              <span className="text-[11px] font-bold text-amz-terra-light/60 dark:text-white/30 w-6">07</span>
+              <span className="w-11 h-11 rounded-2xl bg-gradient-to-br from-stone-500 to-stone-700 text-white flex items-center justify-center shrink-0 shadow-lg shadow-stone-900/25 group-active:scale-95 transition-transform overflow-hidden">
+                {userProfile?.avatar_url ? (
+                  <img src={userProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                )}
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block font-maybug text-2xl text-amz-terra dark:text-amz-areia leading-none truncate">{userProfile?.full_name || t.navProfile}</span>
+                <span className="block text-[11px] text-amz-terra-light dark:text-white/40 mt-1">{session ? (session.user.email || 'Sua conta') : t.headerLogin}</span>
+              </span>
+              <svg className="w-5 h-5 text-amz-dourado shrink-0 group-active:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
 
-            {session ? (
-              <div className="flex flex-col gap-2 mt-2 border-t border-amz-areia-dark dark:border-white/10 pt-3">
-                <a href="/perfil" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  {t.headerMyProfile}
+            {/* Menu footer: idioma, tema e atalhos */}
+            <div style={{ animationDelay: '450ms' }} className="animate-[menuItemIn_0.45s_ease-out_both] mt-6 rounded-3xl bg-amz-terra/5 dark:bg-white/5 border border-amz-terra/10 dark:border-white/10 p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  {locales.map((loc) => (
+                    <button
+                      key={loc.code}
+                      onClick={() => setLocale(loc.code)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                        locale === loc.code
+                          ? 'bg-amz-dourado text-white shadow-md shadow-amz-dourado/30'
+                          : 'bg-white dark:bg-white/10 text-amz-terra dark:text-amz-areia'
+                      }`}
+                    >
+                      {loc.flag} {loc.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={toggleTheme}
+                  className="h-8 px-3 rounded-full bg-white dark:bg-white/10 border border-amz-terra/10 dark:border-white/10 text-amz-terra dark:text-amz-areia text-xs font-semibold flex items-center gap-1.5"
+                  aria-label={t.headerToggleTheme}
+                >
+                  <span>{theme === 'dark' ? '🌙' : '☀️'}</span>
+                  {theme === 'dark' ? 'Escuro' : 'Claro'}
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                <a href="/checkout" onClick={() => setMenuOpen(false)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-amz-terra dark:bg-white/10 text-white dark:text-amz-areia text-xs font-bold">
+                  {t.headerCart}
+                  {cartCount > 0 && <span className="px-1.5 py-0.5 bg-amz-dourado text-white text-[10px] font-bold rounded-full">{cartCount}</span>}
                 </a>
                 {userProfile?.role === 'admin' && (
-                  <a href="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 text-sm font-medium text-amz-terra dark:text-amz-areia py-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                  <a href="/admin" onClick={() => setMenuOpen(false)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl border border-amz-dourado/40 text-amz-dourado text-xs font-bold">
                     {t.headerAdminPanel}
                   </a>
                 )}
               </div>
-            ) : (
-              <a href="/login" onClick={() => setMenuOpen(false)} className="btn-primary text-sm text-center mt-2">
-                {t.headerLogin}
-              </a>
-            )}
+
+              {!session && (
+                <a href="/login" onClick={() => setMenuOpen(false)} className="block text-center py-3 rounded-2xl bg-gradient-to-r from-amz-dourado to-amber-500 text-white text-sm font-bold shadow-lg shadow-amz-dourado/25">
+                  {t.headerLogin}
+                </a>
+              )}
+            </div>
           </nav>
         </div>
       )}

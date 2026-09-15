@@ -142,6 +142,11 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes menuItemIn {
+  from { transform: translateY(18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 /* PWA Safe Area */
 .safe-area-pb {
   padding-bottom: env(safe-area-inset-bottom, 0);

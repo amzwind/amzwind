@@ -225,25 +225,25 @@ export default function FriendsPage() {
     : []
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pb-20 md:pb-4">
-      <header className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+    <div className="min-h-screen bg-amz-areia dark:bg-[#091e24] pb-24 md:pb-6">
+      <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#091e24]/95 backdrop-blur-lg border-b border-amz-areia-dark/40 dark:border-white/10 px-4 py-3">
+        <h1 className="text-xl font-bold text-amz-terra dark:text-white mb-3">
           {t.friendsTitle || 'Amigos'}
         </h1>
-        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+        <div className="flex gap-1 bg-amz-areia-dark/40 dark:bg-white/10 rounded-full p-1">
           {tabs.map((tabItem) => (
             <button
               key={tabItem.key}
               onClick={() => setTab(tabItem.key)}
               className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 tab === tabItem.key
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400'
+                  ? 'bg-white dark:bg-white/15 text-amz-terra dark:text-white shadow'
+                  : 'text-amz-terra-light dark:text-white/50'
               }`}
             >
               {tabItem.label}
               {tabItem.count !== undefined && tabItem.count > 0 && (
-                <span className="ml-1 bg-emerald-500 text-white text-[10px] rounded-full px-1.5">
+                <span className="ml-1 bg-amz-dourado text-white text-[10px] rounded-full px-1.5">
                   {tabItem.count}
                 </span>
               )}
@@ -255,7 +255,7 @@ export default function FriendsPage() {
       <main className="px-4 py-4">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-amz-dourado border-t-transparent rounded-full animate-spin" />
           </div>
         ) : tab === 'friends' ? (
           <>
@@ -265,13 +265,13 @@ export default function FriendsPage() {
                 placeholder={t.friendsSearchPlaceholder || 'Buscar amigos por nome...'}
                 value={friendSearch}
                 onChange={(event) => setFriendSearch(event.target.value)}
-                className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-white dark:bg-white/10 border border-amz-areia-dark/40 dark:border-white/10 rounded-full px-4 py-2.5 text-sm text-amz-terra dark:text-white placeholder-amz-terra-light/60 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50"
               />
             </div>
 
             {filteredFriends.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                <p className="text-amz-terra-light dark:text-white/50 text-sm">
                   {friendSearch
                     ? 'Nenhum amigo encontrado para esta busca.'
                     : t.friendsEmpty || 'Nenhum amigo ainda. Vá para "Encontrar" para adicionar riders!'}
@@ -286,17 +286,17 @@ export default function FriendsPage() {
                     {friend.avatar_url ? (
                       <img src={friend.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
                     ) : (
-                      <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+                      <div className="w-11 h-11 rounded-full bg-amz-dourado/15 flex items-center justify-center text-amz-dourado font-bold">
                         {(friend.full_name?.[0] ?? 'R').toUpperCase()}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       {isMock ? (
-                        <Link to={`/rider/${friend.id}`} className="font-medium text-gray-900 dark:text-white truncate text-sm hover:text-amz-dourado transition-colors block">
+                        <Link to={`/rider/${friend.id}`} className="font-medium text-amz-terra dark:text-white truncate text-sm hover:text-amz-dourado transition-colors block">
                           {friend.full_name ?? (t.friendsRiderFallback || 'Rider')}
                         </Link>
                       ) : (
-                        <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
+                        <p className="font-medium text-amz-terra dark:text-white truncate text-sm">
                           {friend.full_name ?? (t.friendsRiderFallback || 'Rider')}
                         </p>
                       )}
@@ -333,7 +333,7 @@ export default function FriendsPage() {
         ) : tab === 'requests' ? (
           requests.length === 0 && mockRequests.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
+              <p className="text-amz-terra-light dark:text-white/50 text-sm">
                 {t.friendsNoRequests || 'Nenhum pedido pendente.'}
               </p>
             </div>
@@ -349,10 +349,10 @@ export default function FriendsPage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <Link to={`/rider/${req.sender.id}`} className="font-medium text-gray-900 dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
+                    <Link to={`/rider/${req.sender.id}`} className="font-medium text-amz-terra dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
                       {req.sender.full_name}
                     </Link>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-amz-terra-light dark:text-white/50">
                       {t.friendsRequestReceived || 'Pedido recebido'} · {req.sender.mutual_friends} amigos em comum
                     </p>
                   </div>
@@ -365,7 +365,7 @@ export default function FriendsPage() {
                     </button>
                     <button
                       onClick={() => handleMockRespond(req.id, false)}
-                      className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                      className="px-3 py-1.5 bg-amz-areia-dark/60 dark:bg-white/10 text-amz-terra dark:text-white/70 text-xs font-medium rounded-full hover:bg-amz-areia-dark dark:hover:bg-white/15 transition-colors"
                     >
                       {t.friendsReject || 'Rejeitar'}
                     </button>
@@ -376,19 +376,19 @@ export default function FriendsPage() {
                 const isSender = req.sender_id === currentUserId
                 const other = isSender ? req.sender_profile : req.receiver_profile
                 return (
-                  <div key={req.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                  <div key={req.id} className="flex items-center gap-3 p-3 bg-white dark:bg-white/5 border border-amz-areia-dark/40 dark:border-white/10 rounded-xl">
                     {other?.avatar_url ? (
                       <img src={other.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
                     ) : (
-                      <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+                      <div className="w-11 h-11 rounded-full bg-amz-dourado/15 flex items-center justify-center text-amz-dourado font-bold">
                         {(other?.full_name?.[0] ?? 'R').toUpperCase()}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-white text-sm">
+                      <p className="font-medium text-amz-terra dark:text-white text-sm">
                         {other?.full_name ?? (t.friendsRiderFallback || 'Rider')}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-amz-terra-light dark:text-white/50">
                         {isSender ? (t.friendsRequestSent || 'Pedido enviado') : (t.friendsRequestReceived || 'Pedido recebido')}
                       </p>
                     </div>
@@ -404,7 +404,7 @@ export default function FriendsPage() {
                         <button
                           onClick={() => handleRespond(req.id, false)}
                           disabled={actionLoading === req.id}
-                          className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                          className="px-3 py-1.5 bg-amz-areia-dark/60 dark:bg-white/10 text-amz-terra dark:text-white/70 text-xs font-medium rounded-full hover:bg-amz-areia-dark dark:hover:bg-white/15 transition-colors disabled:opacity-50"
                         >
                           {t.friendsReject || 'Rejeitar'}
                         </button>
@@ -422,18 +422,18 @@ export default function FriendsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.friendsSearchPlaceholder || 'Buscar riders por nome...'}
-              className="w-full bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 mb-4"
+              className="w-full bg-white dark:bg-white/10 border border-amz-areia-dark/40 dark:border-white/10 rounded-full px-4 py-2.5 text-sm text-amz-terra dark:text-white placeholder-amz-terra-light/60 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amz-dourado/50 mb-4"
             />
             {!searchQuery.trim() && suggestions.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-amz-terra-light dark:text-white/50 mb-3">
                   Sugestões para você
                 </h3>
                 <div className="space-y-1">
                   {suggestions.map((rider) => {
                     const pending = mockPendingIds.includes(rider.id)
                     return (
-                      <div key={rider.id} className="flex items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                      <div key={rider.id} className="flex items-center gap-3 py-3 border-b border-amz-areia-dark/30 dark:border-white/10 last:border-0">
                         {rider.avatar_url ? (
                           <img src={rider.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
                         ) : (
@@ -442,10 +442,10 @@ export default function FriendsPage() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <Link to={`/rider/${rider.id}`} className="font-medium text-gray-900 dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
+                          <Link to={`/rider/${rider.id}`} className="font-medium text-amz-terra dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
                             {rider.full_name}
                           </Link>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          <p className="text-xs text-amz-terra-light dark:text-white/50 truncate">
                             {rider.mutual_friends} amigos em comum · {rider.home_spot}
                           </p>
                           <div className="flex gap-1 mt-1 flex-wrap">
@@ -457,7 +457,7 @@ export default function FriendsPage() {
                           </div>
                         </div>
                         {pending ? (
-                          <span className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full shrink-0">
+                          <span className="px-3 py-1.5 bg-amz-areia-dark/60 dark:bg-white/10 text-amz-terra-light dark:text-white/50 text-xs font-medium rounded-full shrink-0">
                             {t.friendsPending || 'Pendente'}
                           </span>
                         ) : (
@@ -477,7 +477,7 @@ export default function FriendsPage() {
             )}
             {mockSearchMatches.length > 0 && (
               <div className="mb-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-amz-terra-light dark:text-white/50 mb-2">
                   Riders da comunidade
                 </h3>
                 <div className="space-y-1">
@@ -493,13 +493,13 @@ export default function FriendsPage() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <Link to={`/rider/${rider.id}`} className="font-medium text-gray-900 dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
+                          <Link to={`/rider/${rider.id}`} className="font-medium text-amz-terra dark:text-white text-sm hover:text-amz-dourado transition-colors block truncate">
                             {rider.full_name}
                           </Link>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{rider.location}</p>
+                          <p className="text-xs text-amz-terra-light dark:text-white/50 truncate">{rider.location}</p>
                         </div>
                         {pending ? (
-                          <span className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full shrink-0">
+                          <span className="px-3 py-1.5 bg-amz-areia-dark/60 dark:bg-white/10 text-amz-terra-light dark:text-white/50 text-xs font-medium rounded-full shrink-0">
                             {t.friendsPending || 'Pendente'}
                           </span>
                         ) : (
@@ -524,12 +524,12 @@ export default function FriendsPage() {
                     {user.avatar_url ? (
                       <img src={user.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover" />
                     ) : (
-                      <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+                      <div className="w-11 h-11 rounded-full bg-amz-dourado/15 flex items-center justify-center text-amz-dourado font-bold">
                         {(user.full_name?.[0] ?? 'R').toUpperCase()}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-white text-sm">
+                      <p className="font-medium text-amz-terra dark:text-white text-sm">
                         {user.full_name ?? (t.friendsRiderFallback || 'Rider')}
                       </p>
                     </div>
@@ -541,7 +541,7 @@ export default function FriendsPage() {
                         {t.friendsAlreadyFriend || 'Amigo'}
                       </button>
                     ) : user.request_status === 'pending' ? (
-                      <span className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-medium rounded-full">
+                      <span className="px-3 py-1.5 bg-amz-areia-dark/60 dark:bg-white/10 text-amz-terra-light dark:text-white/50 text-xs font-medium rounded-full">
                         {t.friendsPending || 'Pendente'}
                       </span>
                     ) : user.request_status === 'self' ? null : (
@@ -559,7 +559,7 @@ export default function FriendsPage() {
             )}
             {searchQuery.trim() && orderedSearchResults.length === 0 && mockSearchMatches.length === 0 && (
               <div className="text-center py-10">
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                <p className="text-amz-terra-light dark:text-white/50 text-sm">
                   {t.friendsNoResults || 'Nenhum rider encontrado.'}
                 </p>
               </div>

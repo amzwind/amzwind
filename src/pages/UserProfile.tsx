@@ -198,7 +198,7 @@ export default function UserProfile() {
     <div className="min-h-screen bg-amz-areia dark:bg-amz-terra-dark transition-colors duration-500">
       <Header />
 
-      <div className="pt-24 pb-16 px-4">
+      <div className="pt-24 pb-24 px-4">
         <div className="max-w-3xl mx-auto">
           {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 

@@ -378,7 +378,7 @@ export default function Chat() {
   const displayName = otherUser?.full_name ?? t.chatRiderFallback
 
   return (
-    <div className="flex flex-col h-screen bg-amz-areia dark:bg-[#091e24]">
+    <div className="flex flex-col h-[100dvh] pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0 bg-amz-areia dark:bg-[#091e24]">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-amz-areia/95 dark:bg-[#091e24]/95 backdrop-blur-lg border-b border-amz-areia-dark/40 dark:border-white/10 px-4 py-2.5 flex items-center gap-3">
         <button onClick={() => navigate(-1)} aria-label={t.adminBack} className="p-1 text-amz-terra dark:text-amz-areia hover:bg-amz-terra/10 dark:hover:bg-white/10 rounded-full transition-colors">

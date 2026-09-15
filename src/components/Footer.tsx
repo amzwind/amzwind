@@ -4,7 +4,7 @@ export default function Footer() {
   const { t } = useLanguage()
 
   return (
-    <footer id="contato" className="relative bg-amz-terra-dark dark:bg-[#1A0D06] text-white py-12 px-4 transition-colors duration-500 overflow-hidden">
+    <footer id="contato" className="relative bg-amz-terra-dark dark:bg-[#1A0D06] text-white pt-12 pb-24 md:pb-12 px-4 transition-colors duration-500 overflow-hidden">
       <div className="absolute inset-0 bg-patterns opacity-5 pointer-events-none" />
       <div className="relative max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
