@@ -68,7 +68,7 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-amz-terra-dark/90 backdrop-blur-xl border-b border-amz-areia-dark/50 dark:border-white/5 transition-colors duration-500">
+    <header className="fixed top-0 left-0 right-0 z-[60] bg-white/80 dark:bg-amz-terra-dark/90 backdrop-blur-xl border-b border-amz-areia-dark/50 dark:border-white/5 transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2">
           <img
@@ -257,7 +257,7 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden fixed inset-0 z-[70] bg-amz-areia dark:bg-[#091e24] overflow-y-auto">
+        <div className="md:hidden fixed inset-0 z-[9999] bg-amz-areia dark:bg-[#091e24] overflow-y-auto">
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-amz-dourado/15 blur-3xl" />
             <div className="absolute bottom-10 -left-24 w-72 h-72 rounded-full bg-amz-oceano/15 blur-3xl" />

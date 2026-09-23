@@ -8,6 +8,7 @@ import ExperienciasCarousel from '../components/ExperienciasCarousel'
 import KiteSchool from '../components/KiteSchool'
 import Servicos from '../components/Servicos'
 import GalleryPreview from '../components/GalleryPreview'
+import Partners from '../components/Partners'
 import ContactNewsletter from '../components/ContactNewsletter'
 import Footer from '../components/Footer'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -130,6 +131,7 @@ export default function Home() {
       <KiteSchool />
       <Servicos />
       <GalleryPreview />
+      <Partners />
       <ContactNewsletter />
       <Footer />
     </div>
